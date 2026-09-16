@@ -684,82 +684,110 @@ function GenericPage({ title, subtitle, breadcrumb, hero, sections }: {
 
 function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"tree" | "horizontal">("tree");
+  const [collapsedBranches, setCollapsedBranches] = useState<Record<string, boolean>>({});
 
-  const corporateSections = [
+  const toggleBranch = (id: string) => {
+    setCollapsedBranches((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const expandAll = () => setCollapsedBranches({});
+  const collapseAll = () => {
+    setCollapsedBranches({
+      quanta: true,
+      catalyx: true,
+      consultease: true,
+      sheshifr: true,
+      company: true,
+      solutions: true,
+      technology: true,
+      resources: true,
+      partners: true,
+      legal: true,
+    });
+  };
+
+  const corporatePillars = [
     {
+      id: "company",
       title: "Company",
-      page: "company",
       icon: "🏢",
-      badge: "6 pages",
-      links: [
-        { label: "About Sheshi", sub: "about", desc: "Our mission, vision, and core values" },
-        { label: "Our Story", sub: "story", desc: "Genesis of the financial platform" },
-        { label: "Leadership", sub: "leadership", desc: "Executive team and board" },
-        { label: "Our Team", sub: "team", desc: "The specialists behind the software" },
-        { label: "Careers", sub: "careers", desc: "Open positions and company culture" },
-        { label: "Contact Us", sub: "contact", desc: "Get in touch with regional teams" },
+      color: "#2563eb",
+      badge: "6 Pages",
+      leaves: [
+        { label: "About Sheshi", sub: "about" },
+        { label: "Our Story", sub: "story" },
+        { label: "Leadership", sub: "leadership" },
+        { label: "Our Team", sub: "team" },
+        { label: "Careers", sub: "careers" },
+        { label: "Contact Us", sub: "contact" },
       ],
     },
     {
+      id: "solutions",
       title: "Solutions",
-      page: "solutions",
       icon: "💼",
-      badge: "4 verticals",
-      links: [
-        { label: "Enterprise Finance", sub: "enterprise", desc: "Complex global financial operations" },
-        { label: "Startup Finance", sub: "startup", desc: "Speed, runway, and cap-table agility" },
-        { label: "Consulting & Advisory", sub: "consulting", desc: "Powering external client engagements" },
-        { label: "Finance Professionals", sub: "professionals", desc: "Individual toolkits for CFOs & controllers" },
+      color: "#0891b2",
+      badge: "4 Pages",
+      leaves: [
+        { label: "Enterprise Finance", sub: "enterprise" },
+        { label: "Startup Finance", sub: "startup" },
+        { label: "Consulting & Advisory", sub: "consulting" },
+        { label: "Finance Professionals", sub: "professionals" },
       ],
     },
     {
+      id: "technology",
       title: "Technology",
-      page: "technology",
       icon: "⚡",
-      badge: "4 pillars",
-      links: [
-        { label: "Financial OS", sub: "fos", desc: "Core infrastructure architecture" },
-        { label: "AI & Automation", sub: "ai", desc: "Machine intelligence & automated workflows" },
-        { label: "Integrations", sub: "integrations", desc: "ERP, banking & database connectors" },
-        { label: "Security & Compliance", sub: "security", desc: "SOC2, GDPR & financial data protection" },
+      color: "#4f46e5",
+      badge: "4 Pages",
+      leaves: [
+        { label: "Financial OS", sub: "fos" },
+        { label: "AI & Automation", sub: "ai" },
+        { label: "Integrations", sub: "integrations" },
+        { label: "Security & Compliance", sub: "security" },
       ],
     },
     {
+      id: "resources",
       title: "Resources",
-      page: "resources",
       icon: "📚",
-      badge: "6 libraries",
-      links: [
-        { label: "Blog", sub: "blog", desc: "Articles, editorial news & opinion" },
-        { label: "Insights", sub: "insights", desc: "Deep analytical reports & guides" },
-        { label: "Case Studies", sub: "casestudies", desc: "Proven customer success benchmarks" },
-        { label: "Research", sub: "research", desc: "Whitepapers on financial systems" },
-        { label: "Webinars & Events", sub: "webinars", desc: "Interactive keynotes and sessions" },
-        { label: "Product Updates", sub: "updates", desc: "Changelog and release notes" },
+      color: "#059669",
+      badge: "6 Pages",
+      leaves: [
+        { label: "Blog", sub: "blog" },
+        { label: "Insights", sub: "insights" },
+        { label: "Case Studies", sub: "casestudies" },
+        { label: "Research", sub: "research" },
+        { label: "Webinars & Events", sub: "webinars" },
+        { label: "Product Updates", sub: "updates" },
       ],
     },
     {
+      id: "partners",
       title: "Partners",
-      page: "partners",
       icon: "🤝",
-      badge: "3 tracks",
-      links: [
-        { label: "Technology Partners", sub: "tech", desc: "Ecosystem ISV integrations" },
-        { label: "Strategic Partners", sub: "strategic", desc: "Consultancy and system integrators" },
-        { label: "Become a Partner", sub: "join", desc: "Ecosystem onboarding application" },
+      color: "#d97706",
+      badge: "3 Pages",
+      leaves: [
+        { label: "Technology Partners", sub: "tech" },
+        { label: "Strategic Partners", sub: "strategic" },
+        { label: "Become a Partner", sub: "join" },
       ],
     },
     {
-      title: "Legal & Governance",
-      page: "legal",
+      id: "legal",
+      title: "Governance",
       icon: "⚖️",
-      badge: "5 documents",
-      links: [
-        { label: "Privacy Policy", sub: "privacy", desc: "User privacy & data retention terms" },
-        { label: "Terms of Use", sub: "terms", desc: "Master service agreement terms" },
-        { label: "Cookie Policy", sub: "cookies", desc: "Tracking and cookie consent preferences" },
-        { label: "Security Disclosure", sub: "security", desc: "Vulnerability reporting & compliance" },
-        { label: "Sitemap Index", sub: "sitemap", desc: "Formal document indexing tree" },
+      color: "#475569",
+      badge: "5 Pages",
+      leaves: [
+        { label: "Privacy Policy", sub: "privacy" },
+        { label: "Terms of Use", sub: "terms" },
+        { label: "Cookie Policy", sub: "cookies" },
+        { label: "Security Disclosure", sub: "security" },
+        { label: "Sitemap Index", sub: "sitemap" },
       ],
     },
   ];
@@ -767,36 +795,87 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
   const term = searchTerm.toLowerCase().trim();
 
   return (
-    <section className="bg-[#f1f4f8] border-t border-b border-[#dde1e7] py-20 px-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+    <section className="bg-[#f4f6fa] border-t border-b border-[#dde1e7] py-20 px-4 md:px-8 relative overflow-hidden">
+      {/* Blueprint Grid Canvas Styling */}
+      <div
+        className="absolute inset-0 opacity-40 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#cbd5e1 1.2px, transparent 1.2px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header and Interactive Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#3b5bdb] bg-[#3b5bdb]/10 border border-[#3b5bdb]/20 px-3 py-1 rounded-full mb-3">
-              Interactive Site Architecture
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1a2744]">
-              Complete Sheshi Site Map
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#3b5bdb] bg-[#3b5bdb]/10 border border-[#3b5bdb]/20 px-3 py-1 rounded-full mb-3">
+              <span className="w-2 h-2 rounded-full bg-[#3b5bdb] animate-pulse" />
+              Interactive Architectural Flowchart
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#1a2744] tracking-tight">
+              Sheshi Platform Flowchart &amp; Hierarchy
             </h2>
             <p className="text-sm md:text-base text-[#6b7280] max-w-2xl mt-2">
-              Browse every page, product subsite, solution vertical, and resource library across the entire platform. Click any item to visit that page directly.
+              Visual system tree depicting the full routing structure across core pillars and product subsites. Click any node to navigate directly into that page.
             </p>
           </div>
 
-          {/* Quick Search Bar */}
-          <div className="w-full md:w-72">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* View Mode Toggle */}
+            <div className="bg-white border border-[#dde1e7] p-1 rounded-lg flex items-center shadow-sm">
+              <button
+                onClick={() => setViewMode("tree")}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  viewMode === "tree"
+                    ? "bg-[#1a2744] text-white shadow-sm"
+                    : "text-[#6b7280] hover:text-[#1a2744]"
+                }`}
+              >
+                🌳 Hierarchy Tree
+              </button>
+              <button
+                onClick={() => setViewMode("horizontal")}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  viewMode === "horizontal"
+                    ? "bg-[#1a2744] text-white shadow-sm"
+                    : "text-[#6b7280] hover:text-[#1a2744]"
+                }`}
+              >
+                🔀 Horizontal Flow
+              </button>
+            </div>
+
+            {/* Expand / Collapse All */}
+            <div className="flex items-center gap-1.5 bg-white border border-[#dde1e7] p-1 rounded-lg shadow-sm">
+              <button
+                onClick={expandAll}
+                className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
+              >
+                Expand All
+              </button>
+              <span className="text-[#dde1e7]">|</span>
+              <button
+                onClick={collapseAll}
+                className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
+              >
+                Collapse All
+              </button>
+            </div>
+
+            {/* Quick Search */}
+            <div className="relative w-full sm:w-60">
               <input
                 type="text"
-                placeholder="Filter pages & subsites..."
+                placeholder="Highlight node..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white border border-[#dde1e7] rounded-lg px-4 py-2.5 text-sm text-[#1a2744] placeholder-[#9ca3af] focus:outline-none focus:border-[#3b5bdb] shadow-sm transition-colors"
+                className="w-full bg-white border border-[#dde1e7] rounded-lg pl-3 pr-8 py-2 text-xs text-[#1a2744] placeholder-[#9ca3af] focus:outline-none focus:border-[#3b5bdb] shadow-sm"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-2.5 text-xs text-[#9ca3af] hover:text-[#1a2744]"
+                  className="absolute right-2.5 top-2 text-xs text-[#9ca3af] hover:text-[#1a2744] cursor-pointer"
                 >
                   ✕
                 </button>
@@ -805,164 +884,407 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
           </div>
         </div>
 
-        {/* Sub-Section 1: Product Subsites */}
-        <div className="mb-14">
-          <div className="flex items-center gap-2 mb-6">
-            <h3 className="text-lg font-bold text-[#1a2744] uppercase tracking-wider text-xs">
-              1. Dedicated Product Subsites
-            </h3>
-            <span className="text-xs bg-white border border-[#dde1e7] text-[#6b7280] px-2 py-0.5 rounded-full font-medium">
-              4 Subsites • 25 Pages
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PRODUCTS.map((prod) => {
-              const accent = ACCENT_COLORS[prod.id] ?? "#1a2744";
-              const matchingPages = prod.pages.filter(
-                (pg) =>
-                  !term ||
-                  prod.label.toLowerCase().includes(term) ||
-                  pg.label.toLowerCase().includes(term)
-              );
-
-              return (
-                <div
-                  key={prod.id}
-                  className="bg-white border border-[#dde1e7] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
-                >
-                  {/* Product Card Header */}
-                  <div
-                    className="p-5 text-white flex items-center justify-between"
-                    style={{ backgroundColor: accent }}
-                  >
-                    <div>
-                      <div className="font-bold text-lg tracking-tight uppercase">
-                        {prod.label}
-                      </div>
-                      <div className="text-xs text-white/70 truncate max-w-[200px]">
-                        {prod.tagline}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => navigate({ page: "products", sub: prod.id, productPage: "home" })}
-                      className="text-[11px] bg-white/15 hover:bg-white/30 text-white font-semibold px-2.5 py-1 rounded transition-colors cursor-pointer"
-                    >
-                      Visit Site →
-                    </button>
+        {/* ─── FLOWCHART CANVAS ─── */}
+        <div className="bg-white/80 backdrop-blur-sm border border-[#dde1e7] rounded-2xl p-6 md:p-10 shadow-sm overflow-x-auto">
+          {viewMode === "tree" ? (
+            /* LEVEL 0: ROOT SYSTEM HUB */
+            <div className="flex flex-col items-center">
+              <div
+                onClick={() => navigate({ page: "home" })}
+                className={`group relative bg-[#1a2744] text-white px-8 py-4 rounded-xl shadow-lg border-2 transition-all cursor-pointer flex items-center gap-4 hover:scale-105 ${
+                  term && "sheshi home".includes(term)
+                    ? "border-[#3b5bdb] ring-4 ring-[#3b5bdb]/30"
+                    : "border-[#3b5bdb]/40 hover:border-[#3b5bdb]"
+                }`}
+              >
+                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center font-bold text-lg text-white border border-white/20">
+                  🌐
+                </div>
+                <div className="text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-[#60a5fa] tracking-wider uppercase">
+                      Root Gateway (Level 0)
+                    </span>
+                    <span className="text-[10px] bg-white/10 text-white/80 px-2 py-0.5 rounded-full">
+                      53 Total Nodes
+                    </span>
                   </div>
+                  <div className="text-lg font-bold tracking-tight">SHESHI PLATFORM HUB</div>
+                  <div className="text-xs text-white/60">Main Corporate Portal • / (Home)</div>
+                </div>
+                <div className="text-xs bg-white/10 group-hover:bg-[#3b5bdb] text-white px-3 py-1.5 rounded-md font-semibold transition-colors ml-4">
+                  Explore Hub →
+                </div>
+              </div>
 
-                  {/* Subpages List */}
-                  <div className="p-4 flex-1 flex flex-col justify-between bg-white">
-                    <ul className="space-y-1.5 mb-4">
-                      {matchingPages.map((pg) => (
-                        <li key={pg.id}>
-                          <button
-                            onClick={() =>
-                              navigate({ page: "products", sub: prod.id, productPage: pg.id })
-                            }
-                            className="w-full text-left px-3 py-1.5 rounded-md text-xs font-medium text-[#374151] hover:bg-[#f8f9fb] hover:text-[#3b5bdb] transition-colors flex items-center justify-between group cursor-pointer"
-                          >
-                            <span>{pg.label}</span>
-                            <span className="text-[10px] text-[#9ca3af] opacity-0 group-hover:opacity-100 transition-opacity">
-                              Open ↗
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+              {/* Vertical Trunk Line from Root */}
+              <div className="w-0.5 h-10 bg-[#94a3b8]" />
 
-                    <div className="border-t border-[#f1f4f8] pt-3 text-[11px] text-[#9ca3af] flex justify-between items-center">
-                      <span>Subsite Layout</span>
-                      <span className="font-semibold text-[#1a2744]">
-                        {prod.pages.length} Pages
+              {/* Horizontal Split Bar between Products Wing & Corporate Wing */}
+              <div className="w-full max-w-4xl relative flex items-center justify-between">
+                <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full h-0.5 bg-[#94a3b8]" />
+                <div className="w-3 h-3 rounded-full bg-[#1a2744] border-2 border-white shadow-sm z-10 mx-auto" />
+              </div>
+
+              {/* LEVEL 1: TWO MAIN SYSTEM WINGS */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-4">
+                {/* ─── WING A: DEDICATED PRODUCT SUBSITES ─── */}
+                <div className="border border-[#dde1e7] bg-[#f8f9fb]/60 rounded-xl p-5 relative">
+                  <div className="flex items-center justify-between border-b border-[#dde1e7] pb-3 mb-6">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#0d6b4e]" />
+                      <span className="text-xs font-bold text-[#1a2744] uppercase tracking-wider">
+                        Branch A: Product Subsite Ecosystem
                       </span>
                     </div>
+                    <span className="text-[11px] font-semibold text-[#0d6b4e] bg-[#0d6b4e]/10 px-2.5 py-0.5 rounded-full">
+                      4 Autonomous Subsites • 25 Pages
+                    </span>
+                  </div>
+
+                  <div className="space-y-6">
+                    {PRODUCTS.map((prod) => {
+                      const accent = ACCENT_COLORS[prod.id] ?? "#1a2744";
+                      const isCollapsed = !!collapsedBranches[prod.id];
+                      const isMatchingProd = !term || prod.label.toLowerCase().includes(term);
+
+                      return (
+                        <div
+                          key={prod.id}
+                          className={`border rounded-xl transition-all ${
+                            isMatchingProd && term
+                              ? "ring-2 ring-[#3b5bdb] border-[#3b5bdb]"
+                              : "border-[#dde1e7] bg-white"
+                          }`}
+                        >
+                          <div
+                            className="p-3.5 rounded-t-xl flex items-center justify-between text-white"
+                            style={{ backgroundColor: accent }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => toggleBranch(prod.id)}
+                                className="w-5 h-5 rounded bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs font-bold cursor-pointer transition-colors"
+                                title={isCollapsed ? "Expand branch" : "Collapse branch"}
+                              >
+                                {isCollapsed ? "+" : "−"}
+                              </button>
+                              <div>
+                                <div className="font-bold text-sm tracking-wide">
+                                  {prod.label.toUpperCase()}
+                                </div>
+                                <div className="text-[11px] text-white/70">{prod.tagline}</div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() =>
+                                navigate({ page: "products", sub: prod.id, productPage: "home" })
+                              }
+                              className="text-[11px] bg-white/20 hover:bg-white/30 text-white font-medium px-2.5 py-1 rounded transition-colors cursor-pointer"
+                            >
+                              Open Subsite ↗
+                            </button>
+                          </div>
+
+                          {!isCollapsed && (
+                            <div className="p-4 bg-white rounded-b-xl">
+                              <div className="text-[10px] font-semibold uppercase text-[#9ca3af] tracking-wider mb-2 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#cbd5e1]" />
+                                Subsite Flow Pages ({prod.pages.length})
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {prod.pages.map((pg) => {
+                                  const isMatch =
+                                    !term ||
+                                    prod.label.toLowerCase().includes(term) ||
+                                    pg.label.toLowerCase().includes(term);
+
+                                  return (
+                                    <button
+                                      key={pg.id}
+                                      onClick={() =>
+                                        navigate({
+                                          page: "products",
+                                          sub: prod.id,
+                                          productPage: pg.id,
+                                        })
+                                      }
+                                      className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        isMatch && term
+                                          ? "bg-[#3b5bdb] text-white border-[#3b5bdb] shadow-sm font-semibold"
+                                          : "bg-[#f8f9fb] hover:bg-[#eef2f6] text-[#374151] border-[#dde1e7] hover:border-[#3b5bdb]"
+                                      }`}
+                                    >
+                                      <span
+                                        className="w-1.5 h-1.5 rounded-full"
+                                        style={{ backgroundColor: accent }}
+                                      />
+                                      <span>{pg.label}</span>
+                                      <span className="text-[10px] opacity-40">→</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Sub-Section 2: Main Corporate Portal Sections */}
-        <div>
-          <div className="flex items-center gap-2 mb-6">
-            <h3 className="text-lg font-bold text-[#1a2744] uppercase tracking-wider text-xs">
-              2. Sheshi Core Platform & Corporate Directory
-            </h3>
-            <span className="text-xs bg-white border border-[#dde1e7] text-[#6b7280] px-2 py-0.5 rounded-full font-medium">
-              6 Sections • 28 Pages
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {corporateSections.map((sec) => {
-              const matchingLinks = sec.links.filter(
-                (lnk) =>
-                  !term ||
-                  sec.title.toLowerCase().includes(term) ||
-                  lnk.label.toLowerCase().includes(term) ||
-                  lnk.desc.toLowerCase().includes(term)
-              );
-
-              if (term && matchingLinks.length === 0) return null;
-
-              return (
-                <div
-                  key={sec.title}
-                  className="bg-white border border-[#dde1e7] rounded-xl p-6 shadow-sm hover:border-[#3b5bdb]/50 transition-colors flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-xl">{sec.icon}</span>
-                        <h4 className="font-bold text-base text-[#1a2744]">{sec.title}</h4>
-                      </div>
-                      <span className="text-[11px] font-semibold text-[#3b5bdb] bg-[#3b5bdb]/10 px-2 py-0.5 rounded-full">
-                        {sec.badge}
+                {/* ─── WING B: CORE CORPORATE PILLARS ─── */}
+                <div className="border border-[#dde1e7] bg-[#f8f9fb]/60 rounded-xl p-5 relative">
+                  <div className="flex items-center justify-between border-b border-[#dde1e7] pb-3 mb-6">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
+                      <span className="text-xs font-bold text-[#1a2744] uppercase tracking-wider">
+                        Branch B: Core Platform Pillars
                       </span>
                     </div>
+                    <span className="text-[11px] font-semibold text-[#3b5bdb] bg-[#3b5bdb]/10 px-2.5 py-0.5 rounded-full">
+                      6 Pillars • 28 Modules
+                    </span>
+                  </div>
 
-                    <ul className="space-y-2">
-                      {matchingLinks.map((lnk) => (
-                        <li key={lnk.sub}>
-                          <button
-                            onClick={() =>
-                              navigate({
-                                page: sec.page,
-                                sub: lnk.sub,
-                              })
-                            }
-                            className="w-full text-left p-2.5 rounded-lg hover:bg-[#f8f9fb] transition-colors group block cursor-pointer"
-                          >
-                            <div className="flex items-center justify-between text-xs font-semibold text-[#1a2744] group-hover:text-[#3b5bdb] transition-colors">
-                              <span>{lnk.label}</span>
-                              <span className="text-[#9ca3af] group-hover:text-[#3b5bdb] text-[11px] transition-colors">
-                                →
+                  <div className="space-y-4">
+                    {corporatePillars.map((pil) => {
+                      const isCollapsed = !!collapsedBranches[pil.id];
+                      const isMatchPil = !term || pil.title.toLowerCase().includes(term);
+
+                      return (
+                        <div
+                          key={pil.id}
+                          className={`border rounded-xl transition-all ${
+                            isMatchPil && term
+                              ? "ring-2 ring-[#3b5bdb] border-[#3b5bdb]"
+                              : "border-[#dde1e7] bg-white"
+                          }`}
+                        >
+                          <div className="p-3 bg-[#f8f9fb] border-b border-[#dde1e7] rounded-t-xl flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                              <button
+                                onClick={() => toggleBranch(pil.id)}
+                                className="w-5 h-5 rounded bg-white border border-[#dde1e7] hover:bg-[#eef2f6] text-[#1a2744] flex items-center justify-center text-xs font-bold cursor-pointer transition-colors"
+                                title={isCollapsed ? "Expand pillar" : "Collapse pillar"}
+                              >
+                                {isCollapsed ? "+" : "−"}
+                              </button>
+                              <span className="text-base">{pil.icon}</span>
+                              <span className="font-bold text-xs text-[#1a2744] uppercase tracking-wider">
+                                {pil.title}
                               </span>
                             </div>
-                            <div className="text-[11px] text-[#6b7280] mt-0.5">
-                              {lnk.desc}
-                            </div>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
 
-                  <div className="mt-4 pt-3 border-t border-[#f1f4f8] flex items-center justify-between text-[11px] text-[#9ca3af]">
-                    <span>Section</span>
-                    <button
-                      onClick={() => navigate({ page: sec.page })}
-                      className="font-semibold text-[#3b5bdb] hover:underline cursor-pointer"
-                    >
-                      View Category Index →
-                    </button>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white"
+                                style={{ backgroundColor: pil.color }}
+                              >
+                                {pil.badge}
+                              </span>
+                              <button
+                                onClick={() => navigate({ page: pil.id })}
+                                className="text-[11px] font-semibold text-[#3b5bdb] hover:underline cursor-pointer"
+                              >
+                                Open Pillar →
+                              </button>
+                            </div>
+                          </div>
+
+                          {!isCollapsed && (
+                            <div className="p-3.5 bg-white rounded-b-xl">
+                              <div className="flex flex-wrap gap-2">
+                                {pil.leaves.map((leaf) => {
+                                  const isMatch =
+                                    !term ||
+                                    pil.title.toLowerCase().includes(term) ||
+                                    leaf.label.toLowerCase().includes(term);
+
+                                  return (
+                                    <button
+                                      key={leaf.sub}
+                                      onClick={() =>
+                                        navigate({
+                                          page: pil.id,
+                                          sub: leaf.sub,
+                                        })
+                                      }
+                                      className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        isMatch && term
+                                          ? "bg-[#3b5bdb] text-white border-[#3b5bdb] shadow-sm font-semibold"
+                                          : "bg-[#f8f9fb] hover:bg-[#eef2f6] text-[#374151] border-[#dde1e7] hover:border-[#3b5bdb]"
+                                      }`}
+                                    >
+                                      <span
+                                        className="w-1.5 h-1.5 rounded-full"
+                                        style={{ backgroundColor: pil.color }}
+                                      />
+                                      <span>{leaf.label}</span>
+                                      <span className="text-[10px] opacity-40">→</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            </div>
+          ) : (
+            /* HORIZONTAL FLOW PIPELINE VIEW */
+            <div className="min-w-[920px] py-4">
+              <div className="flex items-start gap-8">
+                {/* Node 1: Origin */}
+                <div className="w-56 shrink-0 pt-12">
+                  <div
+                    onClick={() => navigate({ page: "home" })}
+                    className="bg-[#1a2744] text-white p-5 rounded-xl border-2 border-[#3b5bdb] shadow-lg cursor-pointer hover:scale-105 transition-transform"
+                  >
+                    <div className="text-[10px] font-bold tracking-widest text-[#60a5fa] uppercase mb-1">
+                      System Root
+                    </div>
+                    <div className="font-bold text-base flex items-center gap-2">
+                      <span>🌐</span> SHESHI ROOT
+                    </div>
+                    <div className="text-xs text-white/60 mt-1">/ (Home Gateway)</div>
+                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/80">
+                      <span>Explore</span>
+                      <span className="text-[#60a5fa]">➔</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Connector Stem */}
+                <div className="shrink-0 pt-24 flex flex-col items-center">
+                  <div className="w-8 h-0.5 bg-[#94a3b8]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
+                </div>
+
+                {/* Node 2: System Branches */}
+                <div className="flex-1 space-y-6">
+                  {/* Products Pipeline */}
+                  <div className="border border-[#dde1e7] bg-[#f8f9fb] rounded-xl p-4">
+                    <div className="text-xs font-bold text-[#1a2744] uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#0d6b4e]" />
+                      Products Subsite Pipelines
+                    </div>
+                    <div className="space-y-3">
+                      {PRODUCTS.map((prod) => {
+                        const accent = ACCENT_COLORS[prod.id] ?? "#1a2744";
+                        return (
+                          <div
+                            key={prod.id}
+                            className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#dde1e7]"
+                          >
+                            <button
+                              onClick={() =>
+                                navigate({ page: "products", sub: prod.id, productPage: "home" })
+                              }
+                              className="w-32 shrink-0 text-left px-3 py-2 rounded-md text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity"
+                              style={{ backgroundColor: accent }}
+                            >
+                              {prod.label} ↗
+                            </button>
+                            <div className="w-3 h-0.5 bg-[#cbd5e1] shrink-0" />
+                            <div className="flex flex-wrap gap-1.5 flex-1">
+                              {prod.pages.map((pg) => (
+                                <button
+                                  key={pg.id}
+                                  onClick={() =>
+                                    navigate({
+                                      page: "products",
+                                      sub: prod.id,
+                                      productPage: pg.id,
+                                    })
+                                  }
+                                  className="px-2.5 py-1 text-xs bg-[#f8f9fb] hover:bg-[#3b5bdb] hover:text-white text-[#374151] rounded border border-[#dde1e7] hover:border-[#3b5bdb] transition-colors cursor-pointer"
+                                >
+                                  {pg.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Corporate Architecture Pipelines */}
+                  <div className="border border-[#dde1e7] bg-[#f8f9fb] rounded-xl p-4">
+                    <div className="text-xs font-bold text-[#1a2744] uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#3b5bdb]" />
+                      Corporate Architecture Pipelines
+                    </div>
+                    <div className="space-y-3">
+                      {corporatePillars.map((pil) => (
+                        <div
+                          key={pil.id}
+                          className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#dde1e7]"
+                        >
+                          <button
+                            onClick={() => navigate({ page: pil.id })}
+                            className="w-32 shrink-0 text-left px-3 py-2 rounded-md text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1.5"
+                            style={{ backgroundColor: pil.color }}
+                          >
+                            <span>{pil.icon}</span> {pil.title} ↗
+                          </button>
+                          <div className="w-3 h-0.5 bg-[#cbd5e1] shrink-0" />
+                          <div className="flex flex-wrap gap-1.5 flex-1">
+                            {pil.leaves.map((leaf) => (
+                              <button
+                                key={leaf.sub}
+                                onClick={() => navigate({ page: pil.id, sub: leaf.sub })}
+                                className="px-2.5 py-1 text-xs bg-[#f8f9fb] hover:bg-[#3b5bdb] hover:text-white text-[#374151] rounded border border-[#dde1e7] hover:border-[#3b5bdb] transition-colors cursor-pointer"
+                              >
+                                {leaf.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Flowchart Diagram Legend */}
+          <div className="mt-10 pt-6 border-t border-[#dde1e7] flex flex-wrap items-center justify-between gap-4 text-xs text-[#6b7280]">
+            <div className="flex items-center gap-6 flex-wrap">
+              <span className="font-semibold text-[#1a2744]">Flow Legend:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-[#1a2744]" />
+                <span>Quanta Subsite</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-[#0d6b4e]" />
+                <span>Catalyx Subsite</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-[#7c3aed]" />
+                <span>ConsultEase Subsite</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-[#b45309]" />
+                <span>Sheshi FR Subsite</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded bg-[#3b5bdb]" />
+                <span>Core Pillar Gateways</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] bg-[#e8ecf0] text-[#475569] px-2.5 py-1 rounded-md font-medium">
+                Click any leaf to jump to wireframe
+              </span>
+            </div>
           </div>
         </div>
       </div>
