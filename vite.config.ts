@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const isSingleFile = mode === 'singlefile'
 
   return {
-    base: './',
+    base: mode === 'production' || isSingleFile ? './' : '/',
     plugins: [
       react(),
       tailwindcss(),
