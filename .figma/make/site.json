@@ -1,0 +1,10 @@
+{
+  "description": "This platform offers tailored financial solutions for enterprises, startups, and consulting firms, enhancing efficiency through AI-driven technology and resources.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
