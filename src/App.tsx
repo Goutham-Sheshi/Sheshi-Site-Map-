@@ -682,6 +682,294 @@ function GenericPage({ title, subtitle, breadcrumb, hero, sections }: {
   );
 }
 
+function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const corporateSections = [
+    {
+      title: "Company",
+      page: "company",
+      icon: "🏢",
+      badge: "6 pages",
+      links: [
+        { label: "About Sheshi", sub: "about", desc: "Our mission, vision, and core values" },
+        { label: "Our Story", sub: "story", desc: "Genesis of the financial platform" },
+        { label: "Leadership", sub: "leadership", desc: "Executive team and board" },
+        { label: "Our Team", sub: "team", desc: "The specialists behind the software" },
+        { label: "Careers", sub: "careers", desc: "Open positions and company culture" },
+        { label: "Contact Us", sub: "contact", desc: "Get in touch with regional teams" },
+      ],
+    },
+    {
+      title: "Solutions",
+      page: "solutions",
+      icon: "💼",
+      badge: "4 verticals",
+      links: [
+        { label: "Enterprise Finance", sub: "enterprise", desc: "Complex global financial operations" },
+        { label: "Startup Finance", sub: "startup", desc: "Speed, runway, and cap-table agility" },
+        { label: "Consulting & Advisory", sub: "consulting", desc: "Powering external client engagements" },
+        { label: "Finance Professionals", sub: "professionals", desc: "Individual toolkits for CFOs & controllers" },
+      ],
+    },
+    {
+      title: "Technology",
+      page: "technology",
+      icon: "⚡",
+      badge: "4 pillars",
+      links: [
+        { label: "Financial OS", sub: "fos", desc: "Core infrastructure architecture" },
+        { label: "AI & Automation", sub: "ai", desc: "Machine intelligence & automated workflows" },
+        { label: "Integrations", sub: "integrations", desc: "ERP, banking & database connectors" },
+        { label: "Security & Compliance", sub: "security", desc: "SOC2, GDPR & financial data protection" },
+      ],
+    },
+    {
+      title: "Resources",
+      page: "resources",
+      icon: "📚",
+      badge: "6 libraries",
+      links: [
+        { label: "Blog", sub: "blog", desc: "Articles, editorial news & opinion" },
+        { label: "Insights", sub: "insights", desc: "Deep analytical reports & guides" },
+        { label: "Case Studies", sub: "casestudies", desc: "Proven customer success benchmarks" },
+        { label: "Research", sub: "research", desc: "Whitepapers on financial systems" },
+        { label: "Webinars & Events", sub: "webinars", desc: "Interactive keynotes and sessions" },
+        { label: "Product Updates", sub: "updates", desc: "Changelog and release notes" },
+      ],
+    },
+    {
+      title: "Partners",
+      page: "partners",
+      icon: "🤝",
+      badge: "3 tracks",
+      links: [
+        { label: "Technology Partners", sub: "tech", desc: "Ecosystem ISV integrations" },
+        { label: "Strategic Partners", sub: "strategic", desc: "Consultancy and system integrators" },
+        { label: "Become a Partner", sub: "join", desc: "Ecosystem onboarding application" },
+      ],
+    },
+    {
+      title: "Legal & Governance",
+      page: "legal",
+      icon: "⚖️",
+      badge: "5 documents",
+      links: [
+        { label: "Privacy Policy", sub: "privacy", desc: "User privacy & data retention terms" },
+        { label: "Terms of Use", sub: "terms", desc: "Master service agreement terms" },
+        { label: "Cookie Policy", sub: "cookies", desc: "Tracking and cookie consent preferences" },
+        { label: "Security Disclosure", sub: "security", desc: "Vulnerability reporting & compliance" },
+        { label: "Sitemap Index", sub: "sitemap", desc: "Formal document indexing tree" },
+      ],
+    },
+  ];
+
+  const term = searchTerm.toLowerCase().trim();
+
+  return (
+    <section className="bg-[#f1f4f8] border-t border-b border-[#dde1e7] py-20 px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <span className="inline-block text-xs font-bold tracking-widest uppercase text-[#3b5bdb] bg-[#3b5bdb]/10 border border-[#3b5bdb]/20 px-3 py-1 rounded-full mb-3">
+              Interactive Site Architecture
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#1a2744]">
+              Complete Sheshi Site Map
+            </h2>
+            <p className="text-sm md:text-base text-[#6b7280] max-w-2xl mt-2">
+              Browse every page, product subsite, solution vertical, and resource library across the entire platform. Click any item to visit that page directly.
+            </p>
+          </div>
+
+          {/* Quick Search Bar */}
+          <div className="w-full md:w-72">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Filter pages & subsites..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white border border-[#dde1e7] rounded-lg px-4 py-2.5 text-sm text-[#1a2744] placeholder-[#9ca3af] focus:outline-none focus:border-[#3b5bdb] shadow-sm transition-colors"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-2.5 text-xs text-[#9ca3af] hover:text-[#1a2744]"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Sub-Section 1: Product Subsites */}
+        <div className="mb-14">
+          <div className="flex items-center gap-2 mb-6">
+            <h3 className="text-lg font-bold text-[#1a2744] uppercase tracking-wider text-xs">
+              1. Dedicated Product Subsites
+            </h3>
+            <span className="text-xs bg-white border border-[#dde1e7] text-[#6b7280] px-2 py-0.5 rounded-full font-medium">
+              4 Subsites • 25 Pages
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {PRODUCTS.map((prod) => {
+              const accent = ACCENT_COLORS[prod.id] ?? "#1a2744";
+              const matchingPages = prod.pages.filter(
+                (pg) =>
+                  !term ||
+                  prod.label.toLowerCase().includes(term) ||
+                  pg.label.toLowerCase().includes(term)
+              );
+
+              return (
+                <div
+                  key={prod.id}
+                  className="bg-white border border-[#dde1e7] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
+                >
+                  {/* Product Card Header */}
+                  <div
+                    className="p-5 text-white flex items-center justify-between"
+                    style={{ backgroundColor: accent }}
+                  >
+                    <div>
+                      <div className="font-bold text-lg tracking-tight uppercase">
+                        {prod.label}
+                      </div>
+                      <div className="text-xs text-white/70 truncate max-w-[200px]">
+                        {prod.tagline}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate({ page: "products", sub: prod.id, productPage: "home" })}
+                      className="text-[11px] bg-white/15 hover:bg-white/30 text-white font-semibold px-2.5 py-1 rounded transition-colors cursor-pointer"
+                    >
+                      Visit Site →
+                    </button>
+                  </div>
+
+                  {/* Subpages List */}
+                  <div className="p-4 flex-1 flex flex-col justify-between bg-white">
+                    <ul className="space-y-1.5 mb-4">
+                      {matchingPages.map((pg) => (
+                        <li key={pg.id}>
+                          <button
+                            onClick={() =>
+                              navigate({ page: "products", sub: prod.id, productPage: pg.id })
+                            }
+                            className="w-full text-left px-3 py-1.5 rounded-md text-xs font-medium text-[#374151] hover:bg-[#f8f9fb] hover:text-[#3b5bdb] transition-colors flex items-center justify-between group cursor-pointer"
+                          >
+                            <span>{pg.label}</span>
+                            <span className="text-[10px] text-[#9ca3af] opacity-0 group-hover:opacity-100 transition-opacity">
+                              Open ↗
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="border-t border-[#f1f4f8] pt-3 text-[11px] text-[#9ca3af] flex justify-between items-center">
+                      <span>Subsite Layout</span>
+                      <span className="font-semibold text-[#1a2744]">
+                        {prod.pages.length} Pages
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sub-Section 2: Main Corporate Portal Sections */}
+        <div>
+          <div className="flex items-center gap-2 mb-6">
+            <h3 className="text-lg font-bold text-[#1a2744] uppercase tracking-wider text-xs">
+              2. Sheshi Core Platform & Corporate Directory
+            </h3>
+            <span className="text-xs bg-white border border-[#dde1e7] text-[#6b7280] px-2 py-0.5 rounded-full font-medium">
+              6 Sections • 28 Pages
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {corporateSections.map((sec) => {
+              const matchingLinks = sec.links.filter(
+                (lnk) =>
+                  !term ||
+                  sec.title.toLowerCase().includes(term) ||
+                  lnk.label.toLowerCase().includes(term) ||
+                  lnk.desc.toLowerCase().includes(term)
+              );
+
+              if (term && matchingLinks.length === 0) return null;
+
+              return (
+                <div
+                  key={sec.title}
+                  className="bg-white border border-[#dde1e7] rounded-xl p-6 shadow-sm hover:border-[#3b5bdb]/50 transition-colors flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-xl">{sec.icon}</span>
+                        <h4 className="font-bold text-base text-[#1a2744]">{sec.title}</h4>
+                      </div>
+                      <span className="text-[11px] font-semibold text-[#3b5bdb] bg-[#3b5bdb]/10 px-2 py-0.5 rounded-full">
+                        {sec.badge}
+                      </span>
+                    </div>
+
+                    <ul className="space-y-2">
+                      {matchingLinks.map((lnk) => (
+                        <li key={lnk.sub}>
+                          <button
+                            onClick={() =>
+                              navigate({
+                                page: sec.page,
+                                sub: lnk.sub,
+                              })
+                            }
+                            className="w-full text-left p-2.5 rounded-lg hover:bg-[#f8f9fb] transition-colors group block cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between text-xs font-semibold text-[#1a2744] group-hover:text-[#3b5bdb] transition-colors">
+                              <span>{lnk.label}</span>
+                              <span className="text-[#9ca3af] group-hover:text-[#3b5bdb] text-[11px] transition-colors">
+                                →
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-[#6b7280] mt-0.5">
+                              {lnk.desc}
+                            </div>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-[#f1f4f8] flex items-center justify-between text-[11px] text-[#9ca3af]">
+                    <span>Section</span>
+                    <button
+                      onClick={() => navigate({ page: sec.page })}
+                      className="font-semibold text-[#3b5bdb] hover:underline cursor-pointer"
+                    >
+                      View Category Index →
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function HomePage({ navigate }: { navigate: (r: Route) => void }) {
   return (
     <div>
@@ -704,7 +992,7 @@ function HomePage({ navigate }: { navigate: (r: Route) => void }) {
               <button
                 key={p.id}
                 onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
-                className="text-left bg-white border border-[#dde1e7] rounded-xl p-7 hover:border-[#3b5bdb] transition-all hover:shadow-md group"
+                className="text-left bg-white border border-[#dde1e7] rounded-xl p-7 hover:border-[#3b5bdb] transition-all hover:shadow-md group cursor-pointer"
               >
                 <div className="w-10 h-10 rounded-lg mb-5" style={{ backgroundColor: ACCENT_COLORS[p.id] + "20" }}>
                   <div className="w-full h-full rounded-lg" style={{ backgroundColor: ACCENT_COLORS[p.id] + "40" }} />
@@ -717,6 +1005,9 @@ function HomePage({ navigate }: { navigate: (r: Route) => void }) {
           </div>
         </div>
       </div>
+
+      {/* Complete Interactive Site Map */}
+      <SiteMapSection navigate={navigate} />
 
       <ZigzagSection rows={3} />
       <TestimonialBlock />
