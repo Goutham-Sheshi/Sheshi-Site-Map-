@@ -682,10 +682,39 @@ function GenericPage({ title, subtitle, breadcrumb, hero, sections }: {
   );
 }
 
+interface FlowLeaf {
+  id: string;
+  label: string;
+  route: Route;
+  tagline?: string;
+}
+
+interface FlowProduct {
+  id: string;
+  label: string;
+  icon: string;
+  color: string;
+  tagline: string;
+  subsiteLabel: string;
+  pages: FlowLeaf[];
+}
+
+interface FlowPillar {
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+  tagline: string;
+  route: Route;
+  leaves?: FlowLeaf[];
+  products?: FlowProduct[];
+}
+
 function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<"tree" | "horizontal">("tree");
+  const [viewMode, setViewMode] = useState<"tree" | "horizontal" | "ascii">("tree");
   const [collapsedBranches, setCollapsedBranches] = useState<Record<string, boolean>>({});
+  const [copiedAscii, setCopiedAscii] = useState(false);
 
   const toggleBranch = (id: string) => {
     setCollapsedBranches((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -694,33 +723,120 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
   const expandAll = () => setCollapsedBranches({});
   const collapseAll = () => {
     setCollapsedBranches({
+      company: true,
+      products: true,
       quanta: true,
       catalyx: true,
       consultease: true,
       sheshifr: true,
-      company: true,
       solutions: true,
       technology: true,
       resources: true,
       partners: true,
+      contact: true,
       legal: true,
     });
   };
 
-  const corporatePillars = [
+  // Full Flowchart Hierarchy matching the user's diagram
+  const pillars: FlowPillar[] = [
+    {
+      id: "home",
+      title: "Home",
+      icon: "🏠",
+      color: "#1a2744",
+      tagline: "Corporate Homepage & Executive Overview",
+      route: { page: "home" },
+    },
     {
       id: "company",
       title: "Company",
       icon: "🏢",
       color: "#2563eb",
-      badge: "6 Pages",
+      tagline: "Corporate Identity, Team & Leadership",
+      route: { page: "company" },
       leaves: [
-        { label: "About Sheshi", sub: "about" },
-        { label: "Our Story", sub: "story" },
-        { label: "Leadership", sub: "leadership" },
-        { label: "Our Team", sub: "team" },
-        { label: "Careers", sub: "careers" },
-        { label: "Contact Us", sub: "contact" },
+        { id: "about", label: "About Sheshi", route: { page: "company", sub: "about" }, tagline: "Mission, vision and corporate values" },
+        { id: "story", label: "Our Story", route: { page: "company", sub: "story" }, tagline: "How Sheshi was created and scaled" },
+        { id: "leadership", label: "Leadership", route: { page: "company", sub: "leadership" }, tagline: "Executive management and board" },
+        { id: "team", label: "Our Team", route: { page: "company", sub: "team" }, tagline: "Engineers, analysts & advisors" },
+        { id: "careers", label: "Careers", route: { page: "company", sub: "careers" }, tagline: "Open positions and culture" },
+        { id: "contact-us", label: "Contact Us", route: { page: "contact" }, tagline: "Reach our global corporate office" },
+      ],
+    },
+    {
+      id: "products",
+      title: "Products",
+      icon: "📦",
+      color: "#0d9488",
+      tagline: "Autonomous Product Subsite Ecosystem",
+      route: { page: "products" },
+      products: [
+        {
+          id: "quanta",
+          label: "Quanta",
+          icon: "🔹",
+          color: "#1a2744",
+          tagline: "Enterprise Intelligence Platform",
+          subsiteLabel: "Independent Product Website",
+          pages: [
+            { id: "quanta-home", label: "Home", route: { page: "products", sub: "quanta", productPage: "home" } },
+            { id: "quanta-platform", label: "Platform", route: { page: "products", sub: "quanta", productPage: "platform" } },
+            { id: "quanta-solutions", label: "Solutions", route: { page: "products", sub: "quanta", productPage: "solutions" } },
+            { id: "quanta-capabilities", label: "Capabilities", route: { page: "products", sub: "quanta", productPage: "capabilities" } },
+            { id: "quanta-enterprise", label: "Enterprise", route: { page: "products", sub: "quanta", productPage: "enterprise" } },
+            { id: "quanta-resources", label: "Resources", route: { page: "products", sub: "quanta", productPage: "resources" } },
+            { id: "quanta-contact", label: "Contact Us", route: { page: "products", sub: "quanta", productPage: "contact" } },
+          ],
+        },
+        {
+          id: "catalyx",
+          label: "Catalyx",
+          icon: "🚀",
+          color: "#0d6b4e",
+          tagline: "Startup Finance Accelerator",
+          subsiteLabel: "Independent Product Website",
+          pages: [
+            { id: "catalyx-home", label: "Home", route: { page: "products", sub: "catalyx", productPage: "home" } },
+            { id: "catalyx-solutions", label: "Solutions", route: { page: "products", sub: "catalyx", productPage: "solutions" } },
+            { id: "catalyx-features", label: "Features", route: { page: "products", sub: "catalyx", productPage: "features" } },
+            { id: "catalyx-startups", label: "For Startups", route: { page: "products", sub: "catalyx", productPage: "startups" } },
+            { id: "catalyx-resources", label: "Resources", route: { page: "products", sub: "catalyx", productPage: "resources" } },
+            { id: "catalyx-contact", label: "Get in Touch", route: { page: "products", sub: "catalyx", productPage: "contact" } },
+          ],
+        },
+        {
+          id: "consultease",
+          label: "ConsultEase",
+          icon: "📊",
+          color: "#7c3aed",
+          tagline: "Advisory Workflow Management",
+          subsiteLabel: "Independent Product Website",
+          pages: [
+            { id: "consultease-home", label: "Home", route: { page: "products", sub: "consultease", productPage: "home" } },
+            { id: "consultease-solutions", label: "Solutions", route: { page: "products", sub: "consultease", productPage: "solutions" } },
+            { id: "consultease-features", label: "Features", route: { page: "products", sub: "consultease", productPage: "features" } },
+            { id: "consultease-firms", label: "For Consulting Firms", route: { page: "products", sub: "consultease", productPage: "firms" } },
+            { id: "consultease-resources", label: "Resources", route: { page: "products", sub: "consultease", productPage: "resources" } },
+            { id: "consultease-contact", label: "Contact Us", route: { page: "products", sub: "consultease", productPage: "contact" } },
+          ],
+        },
+        {
+          id: "sheshifr",
+          label: "Sheshi FR",
+          icon: "📈",
+          color: "#b45309",
+          tagline: "Financial Reporting Suite",
+          subsiteLabel: "Independent Product Website",
+          pages: [
+            { id: "sheshifr-home", label: "Home", route: { page: "products", sub: "sheshifr", productPage: "home" } },
+            { id: "sheshifr-features", label: "Features", route: { page: "products", sub: "sheshifr", productPage: "features" } },
+            { id: "sheshifr-workflows", label: "Workflows", route: { page: "products", sub: "sheshifr", productPage: "workflows" } },
+            { id: "sheshifr-professionals", label: "For Finance Professionals", route: { page: "products", sub: "sheshifr", productPage: "professionals" } },
+            { id: "sheshifr-resources", label: "Resources", route: { page: "products", sub: "sheshifr", productPage: "resources" } },
+            { id: "sheshifr-contact", label: "Contact Us", route: { page: "products", sub: "sheshifr", productPage: "contact" } },
+          ],
+        },
       ],
     },
     {
@@ -728,12 +844,13 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       title: "Solutions",
       icon: "💼",
       color: "#0891b2",
-      badge: "4 Pages",
+      tagline: "Tailored Architecture by Segment",
+      route: { page: "solutions" },
       leaves: [
-        { label: "Enterprise Finance", sub: "enterprise" },
-        { label: "Startup Finance", sub: "startup" },
-        { label: "Consulting & Advisory", sub: "consulting" },
-        { label: "Finance Professionals", sub: "professionals" },
+        { id: "sol-enterprise", label: "Enterprise Finance", route: { page: "solutions", sub: "enterprise" } },
+        { id: "sol-startup", label: "Startup Finance", route: { page: "solutions", sub: "startup" } },
+        { id: "sol-consulting", label: "Consulting and Advisory Firms", route: { page: "solutions", sub: "consulting" } },
+        { id: "sol-professionals", label: "Finance Professionals", route: { page: "solutions", sub: "professionals" } },
       ],
     },
     {
@@ -741,12 +858,13 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       title: "Technology",
       icon: "⚡",
       color: "#4f46e5",
-      badge: "4 Pages",
+      tagline: "Financial Operating System & Intelligence Engine",
+      route: { page: "technology" },
       leaves: [
-        { label: "Financial OS", sub: "fos" },
-        { label: "AI & Automation", sub: "ai" },
-        { label: "Integrations", sub: "integrations" },
-        { label: "Security & Compliance", sub: "security" },
+        { id: "tech-fos", label: "Financial Operating System", route: { page: "technology", sub: "fos" } },
+        { id: "tech-ai", label: "AI and Automation", route: { page: "technology", sub: "ai" } },
+        { id: "tech-integrations", label: "Integrations", route: { page: "technology", sub: "integrations" } },
+        { id: "tech-security", label: "Security and Compliance", route: { page: "technology", sub: "security" } },
       ],
     },
     {
@@ -754,14 +872,15 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       title: "Resources",
       icon: "📚",
       color: "#059669",
-      badge: "6 Pages",
+      tagline: "Knowledge Base, Research & Media",
+      route: { page: "resources" },
       leaves: [
-        { label: "Blog", sub: "blog" },
-        { label: "Insights", sub: "insights" },
-        { label: "Case Studies", sub: "casestudies" },
-        { label: "Research", sub: "research" },
-        { label: "Webinars & Events", sub: "webinars" },
-        { label: "Product Updates", sub: "updates" },
+        { id: "res-blog", label: "Blog", route: { page: "resources", sub: "blog" } },
+        { id: "res-insights", label: "Insights", route: { page: "resources", sub: "insights" } },
+        { id: "res-casestudies", label: "Case Studies", route: { page: "resources", sub: "casestudies" } },
+        { id: "res-research", label: "Research", route: { page: "resources", sub: "research" } },
+        { id: "res-webinars", label: "Webinars and Events", route: { page: "resources", sub: "webinars" } },
+        { id: "res-updates", label: "Product Updates", route: { page: "resources", sub: "updates" } },
       ],
     },
     {
@@ -769,34 +888,145 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       title: "Partners",
       icon: "🤝",
       color: "#d97706",
-      badge: "3 Pages",
+      tagline: "Technology & Strategic Ecosystem",
+      route: { page: "partners" },
       leaves: [
-        { label: "Technology Partners", sub: "tech" },
-        { label: "Strategic Partners", sub: "strategic" },
-        { label: "Become a Partner", sub: "join" },
+        { id: "part-tech", label: "Technology Partners", route: { page: "partners", sub: "tech" } },
+        { id: "part-strategic", label: "Strategic Partners", route: { page: "partners", sub: "strategic" } },
+        { id: "part-join", label: "Become a Partner", route: { page: "partners", sub: "join" } },
+      ],
+    },
+    {
+      id: "contact",
+      title: "Contact",
+      icon: "✉️",
+      color: "#0284c7",
+      tagline: "Dedicated Inquiries & Inbound Channels",
+      route: { page: "contact" },
+      leaves: [
+        { id: "con-sales", label: "Sales Enquiries", route: { page: "contact" } },
+        { id: "con-partnerships", label: "Partnership Enquiries", route: { page: "contact" } },
+        { id: "con-media", label: "Media Enquiries", route: { page: "contact" } },
+        { id: "con-general", label: "General Enquiries", route: { page: "contact" } },
       ],
     },
     {
       id: "legal",
-      title: "Governance",
+      title: "Legal",
       icon: "⚖️",
       color: "#475569",
-      badge: "5 Pages",
+      tagline: "Compliance, Privacy & Terms of Governance",
+      route: { page: "legal" },
       leaves: [
-        { label: "Privacy Policy", sub: "privacy" },
-        { label: "Terms of Use", sub: "terms" },
-        { label: "Cookie Policy", sub: "cookies" },
-        { label: "Security Disclosure", sub: "security" },
-        { label: "Sitemap Index", sub: "sitemap" },
+        { id: "leg-privacy", label: "Privacy Policy", route: { page: "legal", sub: "privacy" } },
+        { id: "leg-terms", label: "Terms of Use", route: { page: "legal", sub: "terms" } },
+        { id: "leg-cookies", label: "Cookie Policy", route: { page: "legal", sub: "cookies" } },
+        { id: "leg-security", label: "Security Disclosure", route: { page: "legal", sub: "security" } },
+        { id: "leg-sitemap", label: "Sitemap", route: { page: "legal", sub: "sitemap" } },
       ],
     },
   ];
 
   const term = searchTerm.toLowerCase().trim();
 
+  const asciiTree = `SHESHI
+│
+├── Home
+│
+├── Company
+│   ├── About Sheshi
+│   ├── Our Story
+│   ├── Leadership
+│   ├── Our Team
+│   ├── Careers
+│   └── Contact Us
+│
+├── Products
+│   │
+│   ├── Quanta
+│   │   └── Independent Product Website
+│   │       ├── Home
+│   │       ├── Platform
+│   │       ├── Solutions
+│   │       ├── Capabilities
+│   │       ├── Enterprise
+│   │       ├── Resources
+│   │       └── Contact Us
+│   │
+│   ├── Catalyx
+│   │   └── Independent Product Website
+│   │       ├── Home
+│   │       ├── Solutions
+│   │       ├── Features
+│   │       ├── For Startups
+│   │       ├── Resources
+│   │       └── Get in Touch
+│   │
+│   ├── ConsultEase
+│   │   └── Independent Product Website
+│   │       ├── Home
+│   │       ├── Solutions
+│   │       ├── Features
+│   │       ├── For Consulting Firms
+│   │       ├── Resources
+│   │       └── Contact Us
+│   │
+│   └── Sheshi FR
+│       └── Independent Product Website
+│           ├── Home
+│           ├── Features
+│           ├── Workflows
+│           ├── For Finance Professionals
+│           ├── Resources
+│           └── Contact Us
+│
+├── Solutions
+│   ├── Enterprise Finance
+│   ├── Startup Finance
+│   ├── Consulting and Advisory Firms
+│   └── Finance Professionals
+│
+├── Technology
+│   ├── Financial Operating System
+│   ├── AI and Automation
+│   ├── Integrations
+│   └── Security and Compliance
+│
+├── Resources
+│   ├── Blog
+│   ├── Insights
+│   ├── Case Studies
+│   ├── Research
+│   ├── Webinars and Events
+│   └── Product Updates
+│
+├── Partners
+│   ├── Technology Partners
+│   ├── Strategic Partners
+│   └── Become a Partner
+│
+├── Contact
+│   ├── Sales Enquiries
+│   ├── Partnership Enquiries
+│   ├── Media Enquiries
+│   └── General Enquiries
+│
+└── Legal
+    ├── Privacy Policy
+    ├── Terms of Use
+    ├── Cookie Policy
+    ├── Security Disclosure
+    └── Sitemap`;
+
+  const copyAscii = () => {
+    navigator.clipboard.writeText(asciiTree);
+    setCopiedAscii(true);
+    setTimeout(() => setCopiedAscii(false), 2000);
+  };
+
   return (
     <section className="bg-[#f4f6fa] border-t border-b border-[#dde1e7] py-20 px-4 md:px-8 relative overflow-hidden">
-      {/* Blueprint Grid Canvas Styling */}
+      {/* Flowchart Blueprint Dot-Grid Canvas Background */}
       <div
         className="absolute inset-0 opacity-40 pointer-events-none"
         style={{
@@ -806,18 +1036,18 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header and Interactive Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+        {/* Header & Controls */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#3b5bdb] bg-[#3b5bdb]/10 border border-[#3b5bdb]/20 px-3 py-1 rounded-full mb-3">
               <span className="w-2 h-2 rounded-full bg-[#3b5bdb] animate-pulse" />
-              Interactive Architectural Flowchart
+              Interactive Flowchart Graph
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-[#1a2744] tracking-tight">
-              Sheshi Platform Flowchart &amp; Hierarchy
+              Sheshi Platform Tree Flowchart
             </h2>
             <p className="text-sm md:text-base text-[#6b7280] max-w-2xl mt-2">
-              Visual system tree depicting the full routing structure across core pillars and product subsites. Click any node to navigate directly into that page.
+              System routing tree rendered as an interconnected graph with branch spines, intermediate subsite gateways, and interactive page nodes.
             </p>
           </div>
 
@@ -832,7 +1062,7 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                     : "text-[#6b7280] hover:text-[#1a2744]"
                 }`}
               >
-                🌳 Hierarchy Tree
+                🌳 Tree Flowchart
               </button>
               <button
                 onClick={() => setViewMode("horizontal")}
@@ -842,32 +1072,44 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                     : "text-[#6b7280] hover:text-[#1a2744]"
                 }`}
               >
-                🔀 Horizontal Flow
+                🔀 Horizontal Graph
+              </button>
+              <button
+                onClick={() => setViewMode("ascii")}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  viewMode === "ascii"
+                    ? "bg-[#1a2744] text-white shadow-sm"
+                    : "text-[#6b7280] hover:text-[#1a2744]"
+                }`}
+              >
+                📋 Raw Diagram
               </button>
             </div>
 
             {/* Expand / Collapse All */}
-            <div className="flex items-center gap-1.5 bg-white border border-[#dde1e7] p-1 rounded-lg shadow-sm">
-              <button
-                onClick={expandAll}
-                className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
-              >
-                Expand All
-              </button>
-              <span className="text-[#dde1e7]">|</span>
-              <button
-                onClick={collapseAll}
-                className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
-              >
-                Collapse All
-              </button>
-            </div>
+            {viewMode !== "ascii" && (
+              <div className="flex items-center gap-1.5 bg-white border border-[#dde1e7] p-1 rounded-lg shadow-sm">
+                <button
+                  onClick={expandAll}
+                  className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
+                >
+                  Expand All
+                </button>
+                <span className="text-[#dde1e7]">|</span>
+                <button
+                  onClick={collapseAll}
+                  className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
+                >
+                  Collapse All
+                </button>
+              </div>
+            )}
 
             {/* Quick Search */}
             <div className="relative w-full sm:w-60">
               <input
                 type="text"
-                placeholder="Highlight node..."
+                placeholder="Search node..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-white border border-[#dde1e7] rounded-lg pl-3 pr-8 py-2 text-xs text-[#1a2744] placeholder-[#9ca3af] focus:outline-none focus:border-[#3b5bdb] shadow-sm"
@@ -885,262 +1127,293 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
         </div>
 
         {/* ─── FLOWCHART CANVAS ─── */}
-        <div className="bg-white/80 backdrop-blur-sm border border-[#dde1e7] rounded-2xl p-6 md:p-10 shadow-sm overflow-x-auto">
-          {viewMode === "tree" ? (
-            /* LEVEL 0: ROOT SYSTEM HUB */
-            <div className="flex flex-col items-center">
-              <div
-                onClick={() => navigate({ page: "home" })}
-                className={`group relative bg-[#1a2744] text-white px-8 py-4 rounded-xl shadow-lg border-2 transition-all cursor-pointer flex items-center gap-4 hover:scale-105 ${
-                  term && "sheshi home".includes(term)
-                    ? "border-[#3b5bdb] ring-4 ring-[#3b5bdb]/30"
-                    : "border-[#3b5bdb]/40 hover:border-[#3b5bdb]"
-                }`}
-              >
-                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center font-bold text-lg text-white border border-white/20">
-                  🌐
+        <div className="bg-white/90 backdrop-blur-sm border border-[#dde1e7] rounded-2xl p-6 md:p-10 shadow-sm overflow-x-auto">
+          {viewMode === "ascii" ? (
+            /* RAW MONOSPACE DIAGRAM VIEW */
+            <div className="relative">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#dde1e7]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
+                  <span className="text-xs font-bold text-[#1a2744] uppercase tracking-wider">
+                    Full Platform Structure (Hierarchy Diagram)
+                  </span>
                 </div>
-                <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#60a5fa] tracking-wider uppercase">
-                      Root Gateway (Level 0)
-                    </span>
-                    <span className="text-[10px] bg-white/10 text-white/80 px-2 py-0.5 rounded-full">
-                      53 Total Nodes
-                    </span>
+                <button
+                  onClick={copyAscii}
+                  className="px-3 py-1.5 bg-[#1a2744] text-white text-xs font-semibold rounded-md hover:bg-[#3b5bdb] transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  {copiedAscii ? "✓ Copied!" : "📋 Copy ASCII Diagram"}
+                </button>
+              </div>
+              <pre className="font-mono text-xs md:text-sm text-[#1e293b] bg-[#f8fafc] p-6 rounded-xl border border-[#dde1e7] leading-relaxed overflow-x-auto">
+                {asciiTree}
+              </pre>
+            </div>
+          ) : viewMode === "tree" ? (
+            /* ─── TREE FLOWCHART GRAPH VIEW ─── */
+            <div className="flex flex-col items-start min-w-[760px] pl-2">
+              {/* ROOT NODE: SHESHI */}
+              <div className="flex items-center gap-3">
+                <div
+                  onClick={() => navigate({ page: "home" })}
+                  className={`group relative bg-[#1a2744] text-white px-6 py-3.5 rounded-xl shadow-md border-2 transition-all cursor-pointer flex items-center gap-3.5 hover:scale-105 ${
+                    term && "sheshi".includes(term)
+                      ? "border-[#3b5bdb] ring-4 ring-[#3b5bdb]/30"
+                      : "border-[#3b5bdb]/40 hover:border-[#3b5bdb]"
+                  }`}
+                >
+                  <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center font-bold text-base text-white border border-white/20">
+                    🌐
                   </div>
-                  <div className="text-lg font-bold tracking-tight">SHESHI PLATFORM HUB</div>
-                  <div className="text-xs text-white/60">Main Corporate Portal • / (Home)</div>
-                </div>
-                <div className="text-xs bg-white/10 group-hover:bg-[#3b5bdb] text-white px-3 py-1.5 rounded-md font-semibold transition-colors ml-4">
-                  Explore Hub →
-                </div>
-              </div>
-
-              {/* Vertical Trunk Line from Root */}
-              <div className="w-0.5 h-10 bg-[#94a3b8]" />
-
-              {/* Horizontal Split Bar between Products Wing & Corporate Wing */}
-              <div className="w-full max-w-4xl relative flex items-center justify-between">
-                <div className="absolute left-1/2 -translate-x-1/2 top-0 w-full h-0.5 bg-[#94a3b8]" />
-                <div className="w-3 h-3 rounded-full bg-[#1a2744] border-2 border-white shadow-sm z-10 mx-auto" />
-              </div>
-
-              {/* LEVEL 1: TWO MAIN SYSTEM WINGS */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mt-4">
-                {/* ─── WING A: DEDICATED PRODUCT SUBSITES ─── */}
-                <div className="border border-[#dde1e7] bg-[#f8f9fb]/60 rounded-xl p-5 relative">
-                  <div className="flex items-center justify-between border-b border-[#dde1e7] pb-3 mb-6">
+                  <div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#0d6b4e]" />
-                      <span className="text-xs font-bold text-[#1a2744] uppercase tracking-wider">
-                        Branch A: Product Subsite Ecosystem
+                      <span className="text-xs font-bold tracking-widest text-[#60a5fa]">
+                        SHESHI
+                      </span>
+                      <span className="text-[10px] bg-white/10 text-white/80 px-2 py-0.5 rounded-full">
+                        Root System Gateway
                       </span>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#0d6b4e] bg-[#0d6b4e]/10 px-2.5 py-0.5 rounded-full">
-                      4 Autonomous Subsites • 25 Pages
-                    </span>
+                    <div className="text-xs text-white/60">
+                      Global Financial Operating System &amp; Intelligence Hub
+                    </div>
                   </div>
+                  <div className="ml-3 text-[11px] bg-white/10 group-hover:bg-[#3b5bdb] text-white px-2.5 py-1 rounded font-medium transition-colors">
+                    / (Home) →
+                  </div>
+                </div>
+              </div>
 
-                  <div className="space-y-6">
-                    {PRODUCTS.map((prod) => {
-                      const accent = ACCENT_COLORS[prod.id] ?? "#1a2744";
-                      const isCollapsed = !!collapsedBranches[prod.id];
-                      const isMatchingProd = !term || prod.label.toLowerCase().includes(term);
+              {/* VERTICAL SPINAL TRUNK WITH BRANCH ARMS */}
+              <div className="relative pl-6 sm:pl-8 ml-6 sm:ml-8 border-l-2 border-[#94a3b8] mt-2 space-y-6">
+                {pillars.map((pil, pilIdx) => {
+                  const isLastPillar = pilIdx === pillars.length - 1;
+                  const isCollapsed = !!collapsedBranches[pil.id];
+                  const hasLeaves = !!(pil.leaves && pil.leaves.length > 0);
+                  const hasProducts = !!(pil.products && pil.products.length > 0);
+                  const isBranchMatch =
+                    !term ||
+                    pil.title.toLowerCase().includes(term) ||
+                    (pil.leaves && pil.leaves.some((l) => l.label.toLowerCase().includes(term))) ||
+                    (pil.products &&
+                      pil.products.some(
+                        (p) =>
+                          p.label.toLowerCase().includes(term) ||
+                          p.pages.some((pg) => pg.label.toLowerCase().includes(term))
+                      ));
 
-                      return (
+                  return (
+                    <div key={pil.id} className="relative pt-2">
+                      {/* Horizontal Connector Arm from Spine to Pillar */}
+                      <div className="absolute -left-6 sm:-left-8 top-6 w-6 sm:w-8 h-0.5 bg-[#94a3b8] flex items-center">
+                        <div className="w-2 h-2 -ml-1 rounded-full bg-[#1a2744] border border-white" />
+                      </div>
+
+                      {/* PILLAR FLOWCHART NODE */}
+                      <div className="flex items-center gap-3">
                         <div
-                          key={prod.id}
-                          className={`border rounded-xl transition-all ${
-                            isMatchingProd && term
-                              ? "ring-2 ring-[#3b5bdb] border-[#3b5bdb]"
-                              : "border-[#dde1e7] bg-white"
+                          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all ${
+                            isBranchMatch && term
+                              ? "bg-white border-[#3b5bdb] ring-2 ring-[#3b5bdb]/30 shadow-md"
+                              : "bg-white border-[#dde1e7] hover:border-[#3b5bdb] shadow-sm"
                           }`}
                         >
-                          <div
-                            className="p-3.5 rounded-t-xl flex items-center justify-between text-white"
-                            style={{ backgroundColor: accent }}
-                          >
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => toggleBranch(prod.id)}
-                                className="w-5 h-5 rounded bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xs font-bold cursor-pointer transition-colors"
-                                title={isCollapsed ? "Expand branch" : "Collapse branch"}
-                              >
-                                {isCollapsed ? "+" : "−"}
-                              </button>
-                              <div>
-                                <div className="font-bold text-sm tracking-wide">
-                                  {prod.label.toUpperCase()}
-                                </div>
-                                <div className="text-[11px] text-white/70">{prod.tagline}</div>
-                              </div>
-                            </div>
+                          {/* Expand/Collapse Toggle */}
+                          {(hasLeaves || hasProducts) ? (
                             <button
-                              onClick={() =>
-                                navigate({ page: "products", sub: prod.id, productPage: "home" })
-                              }
-                              className="text-[11px] bg-white/20 hover:bg-white/30 text-white font-medium px-2.5 py-1 rounded transition-colors cursor-pointer"
+                              onClick={() => toggleBranch(pil.id)}
+                              className="w-5 h-5 rounded bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#1a2744] flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
+                              title={isCollapsed ? "Expand branch" : "Collapse branch"}
                             >
-                              Open Subsite ↗
+                              {isCollapsed ? "+" : "−"}
                             </button>
-                          </div>
-
-                          {!isCollapsed && (
-                            <div className="p-4 bg-white rounded-b-xl">
-                              <div className="text-[10px] font-semibold uppercase text-[#9ca3af] tracking-wider mb-2 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#cbd5e1]" />
-                                Subsite Flow Pages ({prod.pages.length})
-                              </div>
-                              <div className="flex flex-wrap gap-2">
-                                {prod.pages.map((pg) => {
-                                  const isMatch =
-                                    !term ||
-                                    prod.label.toLowerCase().includes(term) ||
-                                    pg.label.toLowerCase().includes(term);
-
-                                  return (
-                                    <button
-                                      key={pg.id}
-                                      onClick={() =>
-                                        navigate({
-                                          page: "products",
-                                          sub: prod.id,
-                                          productPage: pg.id,
-                                        })
-                                      }
-                                      className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 ${
-                                        isMatch && term
-                                          ? "bg-[#3b5bdb] text-white border-[#3b5bdb] shadow-sm font-semibold"
-                                          : "bg-[#f8f9fb] hover:bg-[#eef2f6] text-[#374151] border-[#dde1e7] hover:border-[#3b5bdb]"
-                                      }`}
-                                    >
-                                      <span
-                                        className="w-1.5 h-1.5 rounded-full"
-                                        style={{ backgroundColor: accent }}
-                                      />
-                                      <span>{pg.label}</span>
-                                      <span className="text-[10px] opacity-40">→</span>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                          ) : (
+                            <span className="w-2 h-2 rounded-full bg-[#94a3b8]" />
                           )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
 
-                {/* ─── WING B: CORE CORPORATE PILLARS ─── */}
-                <div className="border border-[#dde1e7] bg-[#f8f9fb]/60 rounded-xl p-5 relative">
-                  <div className="flex items-center justify-between border-b border-[#dde1e7] pb-3 mb-6">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
-                      <span className="text-xs font-bold text-[#1a2744] uppercase tracking-wider">
-                        Branch B: Core Platform Pillars
-                      </span>
+                          <span className="text-base">{pil.icon}</span>
+
+                          <button
+                            onClick={() => navigate(pil.route)}
+                            className="font-bold text-sm text-[#1a2744] hover:text-[#3b5bdb] transition-colors cursor-pointer text-left"
+                          >
+                            {pil.title}
+                          </button>
+
+                          {/* Badge */}
+                          {hasLeaves && (
+                            <span className="text-[10px] font-semibold text-[#64748b] bg-[#f1f5f9] px-2 py-0.5 rounded-full">
+                              {pil.leaves!.length} Pages
+                            </span>
+                          )}
+                          {hasProducts && (
+                            <span className="text-[10px] font-semibold text-[#0d9488] bg-[#0d9488]/10 px-2 py-0.5 rounded-full">
+                              4 Subsites • 25 Pages
+                            </span>
+                          )}
+
+                          <button
+                            onClick={() => navigate(pil.route)}
+                            className="text-[11px] font-medium text-[#3b5bdb] hover:underline cursor-pointer ml-1"
+                          >
+                            Explore →
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* ─── EXPANDED LEAVES OR PRODUCTS FLOW ─── */}
+                      {!isCollapsed && hasLeaves && (
+                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-[#cbd5e1] mt-3 space-y-2.5">
+                          {pil.leaves!.map((leaf, leafIdx) => {
+                            const isLastLeaf = leafIdx === pil.leaves!.length - 1;
+                            const isMatch =
+                              !term ||
+                              leaf.label.toLowerCase().includes(term) ||
+                              pil.title.toLowerCase().includes(term);
+
+                            return (
+                              <div key={leaf.id} className="relative flex items-center gap-2">
+                                {/* Connector arm */}
+                                <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-[#cbd5e1] flex items-center">
+                                  <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-[#94a3b8]" />
+                                </div>
+
+                                {/* Leaf Page Node */}
+                                <button
+                                  onClick={() => navigate(leaf.route)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer flex items-center gap-2 ${
+                                    isMatch && term
+                                      ? "bg-[#3b5bdb] text-white border-[#3b5bdb] shadow-sm font-semibold"
+                                      : "bg-[#f8fafc] hover:bg-white text-[#334155] border-[#dde1e7] hover:border-[#3b5bdb] hover:shadow-sm"
+                                  }`}
+                                >
+                                  <span
+                                    className="w-1.5 h-1.5 rounded-full"
+                                    style={{ backgroundColor: pil.color }}
+                                  />
+                                  <span>{leaf.label}</span>
+                                  <span className="text-[10px] opacity-40">→</span>
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* ─── SPECIAL PRODUCTS SUBSITES ECOSYSTEM FLOW ─── */}
+                      {!isCollapsed && hasProducts && (
+                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-[#cbd5e1] mt-4 space-y-6">
+                          {pil.products!.map((prod) => {
+                            const isProdCollapsed = !!collapsedBranches[prod.id];
+                            const isMatchProd =
+                              !term ||
+                              prod.label.toLowerCase().includes(term) ||
+                              prod.pages.some((p) => p.label.toLowerCase().includes(term));
+
+                            return (
+                              <div key={prod.id} className="relative">
+                                {/* Connector Arm to Product Node */}
+                                <div className="absolute -left-6 sm:-left-8 top-5 w-6 sm:w-8 h-0.5 bg-[#cbd5e1] flex items-center">
+                                  <div className="w-2 h-2 -ml-1 rounded-full bg-[#0d9488]" />
+                                </div>
+
+                                {/* Flow Row: Product Node ──→ Independent Product Website */}
+                                <div className="flex flex-wrap items-center gap-3">
+                                  {/* Product Node */}
+                                  <div
+                                    className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-sm transition-all ${
+                                      isMatchProd && term ? "ring-2 ring-[#3b5bdb]" : ""
+                                    }`}
+                                    style={{ backgroundColor: prod.color }}
+                                  >
+                                    <button
+                                      onClick={() => toggleBranch(prod.id)}
+                                      className="w-4 h-4 rounded bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-[10px] font-bold cursor-pointer"
+                                      title={isProdCollapsed ? "Expand subsite" : "Collapse subsite"}
+                                    >
+                                      {isProdCollapsed ? "+" : "−"}
+                                    </button>
+                                    <span>{prod.icon}</span>
+                                    <span>{prod.label}</span>
+                                  </div>
+
+                                  {/* Flow Arrow */}
+                                  <div className="hidden sm:flex items-center gap-1 text-[#94a3b8]">
+                                    <div className="w-4 h-0.5 bg-[#94a3b8]" />
+                                    <span className="text-xs font-bold">➔</span>
+                                  </div>
+
+                                  {/* Independent Product Website Gateway Node */}
+                                  <button
+                                    onClick={() =>
+                                      navigate({
+                                        page: "products",
+                                        sub: prod.id,
+                                        productPage: "home",
+                                      })
+                                    }
+                                    className="bg-white border-2 border-dashed border-[#0d9488]/40 hover:border-[#0d9488] text-[#1a2744] hover:text-[#0d9488] px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+                                  >
+                                    <span className="w-2 h-2 rounded-full bg-[#0d9488] animate-pulse" />
+                                    <span>Independent Product Website</span>
+                                    <span className="text-[10px] bg-[#0d9488]/10 text-[#0d9488] px-1.5 py-0.5 rounded font-mono">
+                                      {prod.pages.length} Pages ↗
+                                    </span>
+                                  </button>
+                                </div>
+
+                                {/* Subsite Sub-pages Tree */}
+                                {!isProdCollapsed && (
+                                  <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-[#94a3b8]/50 mt-3 space-y-2">
+                                    {prod.pages.map((pg) => {
+                                      const isPageMatch =
+                                        !term ||
+                                        prod.label.toLowerCase().includes(term) ||
+                                        pg.label.toLowerCase().includes(term);
+
+                                      return (
+                                        <div key={pg.id} className="relative flex items-center gap-2">
+                                          {/* Sub-branch arm */}
+                                          <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-[#94a3b8]/50 flex items-center">
+                                            <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-[#0d9488]" />
+                                          </div>
+
+                                          <button
+                                            onClick={() => navigate(pg.route)}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer flex items-center gap-2 ${
+                                              isPageMatch && term
+                                                ? "bg-[#0d9488] text-white border-[#0d9488] shadow-sm font-semibold"
+                                                : "bg-white hover:bg-[#f0fdf4] text-[#334155] border-[#dde1e7] hover:border-[#0d9488] hover:shadow-xs"
+                                            }`}
+                                          >
+                                            <span
+                                              className="w-1.5 h-1.5 rounded-full"
+                                              style={{ backgroundColor: prod.color }}
+                                            />
+                                            <span>{pg.label}</span>
+                                            <span className="text-[10px] opacity-40">→</span>
+                                          </button>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                    <span className="text-[11px] font-semibold text-[#3b5bdb] bg-[#3b5bdb]/10 px-2.5 py-0.5 rounded-full">
-                      6 Pillars • 28 Modules
-                    </span>
-                  </div>
-
-                  <div className="space-y-4">
-                    {corporatePillars.map((pil) => {
-                      const isCollapsed = !!collapsedBranches[pil.id];
-                      const isMatchPil = !term || pil.title.toLowerCase().includes(term);
-
-                      return (
-                        <div
-                          key={pil.id}
-                          className={`border rounded-xl transition-all ${
-                            isMatchPil && term
-                              ? "ring-2 ring-[#3b5bdb] border-[#3b5bdb]"
-                              : "border-[#dde1e7] bg-white"
-                          }`}
-                        >
-                          <div className="p-3 bg-[#f8f9fb] border-b border-[#dde1e7] rounded-t-xl flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                              <button
-                                onClick={() => toggleBranch(pil.id)}
-                                className="w-5 h-5 rounded bg-white border border-[#dde1e7] hover:bg-[#eef2f6] text-[#1a2744] flex items-center justify-center text-xs font-bold cursor-pointer transition-colors"
-                                title={isCollapsed ? "Expand pillar" : "Collapse pillar"}
-                              >
-                                {isCollapsed ? "+" : "−"}
-                              </button>
-                              <span className="text-base">{pil.icon}</span>
-                              <span className="font-bold text-xs text-[#1a2744] uppercase tracking-wider">
-                                {pil.title}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <span
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white"
-                                style={{ backgroundColor: pil.color }}
-                              >
-                                {pil.badge}
-                              </span>
-                              <button
-                                onClick={() => navigate({ page: pil.id })}
-                                className="text-[11px] font-semibold text-[#3b5bdb] hover:underline cursor-pointer"
-                              >
-                                Open Pillar →
-                              </button>
-                            </div>
-                          </div>
-
-                          {!isCollapsed && (
-                            <div className="p-3.5 bg-white rounded-b-xl">
-                              <div className="flex flex-wrap gap-2">
-                                {pil.leaves.map((leaf) => {
-                                  const isMatch =
-                                    !term ||
-                                    pil.title.toLowerCase().includes(term) ||
-                                    leaf.label.toLowerCase().includes(term);
-
-                                  return (
-                                    <button
-                                      key={leaf.sub}
-                                      onClick={() =>
-                                        navigate({
-                                          page: pil.id,
-                                          sub: leaf.sub,
-                                        })
-                                      }
-                                      className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-all cursor-pointer flex items-center gap-1.5 ${
-                                        isMatch && term
-                                          ? "bg-[#3b5bdb] text-white border-[#3b5bdb] shadow-sm font-semibold"
-                                          : "bg-[#f8f9fb] hover:bg-[#eef2f6] text-[#374151] border-[#dde1e7] hover:border-[#3b5bdb]"
-                                      }`}
-                                    >
-                                      <span
-                                        className="w-1.5 h-1.5 rounded-full"
-                                        style={{ backgroundColor: pil.color }}
-                                      />
-                                      <span>{leaf.label}</span>
-                                      <span className="text-[10px] opacity-40">→</span>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           ) : (
-            /* HORIZONTAL FLOW PIPELINE VIEW */
-            <div className="min-w-[920px] py-4">
+            /* ─── HORIZONTAL PIPELINE GRAPH VIEW ─── */
+            <div className="min-w-[960px] py-4">
               <div className="flex items-start gap-8">
-                {/* Node 1: Origin */}
-                <div className="w-56 shrink-0 pt-12">
+                {/* Column 0: Root Node */}
+                <div className="w-52 shrink-0 pt-20">
                   <div
                     onClick={() => navigate({ page: "home" })}
                     className="bg-[#1a2744] text-white p-5 rounded-xl border-2 border-[#3b5bdb] shadow-lg cursor-pointer hover:scale-105 transition-transform"
@@ -1149,106 +1422,88 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                       System Root
                     </div>
                     <div className="font-bold text-base flex items-center gap-2">
-                      <span>🌐</span> SHESHI ROOT
+                      <span>🌐</span> SHESHI
                     </div>
                     <div className="text-xs text-white/60 mt-1">/ (Home Gateway)</div>
                     <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/80">
-                      <span>Explore</span>
+                      <span>69 Nodes</span>
                       <span className="text-[#60a5fa]">➔</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Connector Stem */}
-                <div className="shrink-0 pt-24 flex flex-col items-center">
+                {/* Connector Arrow */}
+                <div className="shrink-0 pt-32 flex flex-col items-center">
                   <div className="w-8 h-0.5 bg-[#94a3b8]" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
                 </div>
 
-                {/* Node 2: System Branches */}
-                <div className="flex-1 space-y-6">
-                  {/* Products Pipeline */}
-                  <div className="border border-[#dde1e7] bg-[#f8f9fb] rounded-xl p-4">
-                    <div className="text-xs font-bold text-[#1a2744] uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#0d6b4e]" />
-                      Products Subsite Pipelines
-                    </div>
-                    <div className="space-y-3">
-                      {PRODUCTS.map((prod) => {
-                        const accent = ACCENT_COLORS[prod.id] ?? "#1a2744";
-                        return (
-                          <div
-                            key={prod.id}
-                            className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#dde1e7]"
-                          >
-                            <button
-                              onClick={() =>
-                                navigate({ page: "products", sub: prod.id, productPage: "home" })
-                              }
-                              className="w-32 shrink-0 text-left px-3 py-2 rounded-md text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity"
-                              style={{ backgroundColor: accent }}
-                            >
-                              {prod.label} ↗
-                            </button>
-                            <div className="w-3 h-0.5 bg-[#cbd5e1] shrink-0" />
-                            <div className="flex flex-wrap gap-1.5 flex-1">
-                              {prod.pages.map((pg) => (
-                                <button
-                                  key={pg.id}
-                                  onClick={() =>
-                                    navigate({
-                                      page: "products",
-                                      sub: prod.id,
-                                      productPage: pg.id,
-                                    })
-                                  }
-                                  className="px-2.5 py-1 text-xs bg-[#f8f9fb] hover:bg-[#3b5bdb] hover:text-white text-[#374151] rounded border border-[#dde1e7] hover:border-[#3b5bdb] transition-colors cursor-pointer"
-                                >
-                                  {pg.label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                {/* Column 1: Core Branches & Sub-Pipes */}
+                <div className="flex-1 space-y-4">
+                  {pillars.map((pil) => (
+                    <div
+                      key={pil.id}
+                      className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-[#dde1e7] shadow-xs hover:border-[#3b5bdb] transition-colors"
+                    >
+                      <button
+                        onClick={() => navigate(pil.route)}
+                        className="w-36 shrink-0 text-left px-3 py-2 rounded-lg text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs"
+                        style={{ backgroundColor: pil.color }}
+                      >
+                        <span>{pil.icon}</span> {pil.title} ↗
+                      </button>
 
-                  {/* Corporate Architecture Pipelines */}
-                  <div className="border border-[#dde1e7] bg-[#f8f9fb] rounded-xl p-4">
-                    <div className="text-xs font-bold text-[#1a2744] uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#3b5bdb]" />
-                      Corporate Architecture Pipelines
-                    </div>
-                    <div className="space-y-3">
-                      {corporatePillars.map((pil) => (
-                        <div
-                          key={pil.id}
-                          className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#dde1e7]"
-                        >
-                          <button
-                            onClick={() => navigate({ page: pil.id })}
-                            className="w-32 shrink-0 text-left px-3 py-2 rounded-md text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1.5"
-                            style={{ backgroundColor: pil.color }}
-                          >
-                            <span>{pil.icon}</span> {pil.title} ↗
-                          </button>
-                          <div className="w-3 h-0.5 bg-[#cbd5e1] shrink-0" />
-                          <div className="flex flex-wrap gap-1.5 flex-1">
+                      <div className="w-4 h-0.5 bg-[#cbd5e1] shrink-0 mt-3.5" />
+
+                      <div className="flex-1">
+                        {pil.leaves && (
+                          <div className="flex flex-wrap gap-1.5">
                             {pil.leaves.map((leaf) => (
                               <button
-                                key={leaf.sub}
-                                onClick={() => navigate({ page: pil.id, sub: leaf.sub })}
-                                className="px-2.5 py-1 text-xs bg-[#f8f9fb] hover:bg-[#3b5bdb] hover:text-white text-[#374151] rounded border border-[#dde1e7] hover:border-[#3b5bdb] transition-colors cursor-pointer"
+                                key={leaf.id}
+                                onClick={() => navigate(leaf.route)}
+                                className="px-2.5 py-1 text-xs bg-[#f8fafc] hover:bg-[#3b5bdb] hover:text-white text-[#334155] rounded-md border border-[#dde1e7] hover:border-[#3b5bdb] transition-colors cursor-pointer"
                               >
                                 {leaf.label}
                               </button>
                             ))}
                           </div>
-                        </div>
-                      ))}
+                        )}
+
+                        {pil.products && (
+                          <div className="space-y-2 w-full">
+                            {pil.products.map((prod) => (
+                              <div
+                                key={prod.id}
+                                className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-lg border border-[#dde1e7]"
+                              >
+                                <span
+                                  className="text-[11px] font-bold text-white px-2 py-0.5 rounded"
+                                  style={{ backgroundColor: prod.color }}
+                                >
+                                  {prod.label}
+                                </span>
+                                <span className="text-[10px] text-[#64748b] font-mono">
+                                  Independent Website:
+                                </span>
+                                <div className="flex flex-wrap gap-1 flex-1">
+                                  {prod.pages.map((pg) => (
+                                    <button
+                                      key={pg.id}
+                                      onClick={() => navigate(pg.route)}
+                                      className="px-2 py-0.5 text-[11px] bg-white hover:bg-[#0d9488] hover:text-white text-[#334155] rounded border border-[#dde1e7] hover:border-[#0d9488] transition-colors cursor-pointer"
+                                    >
+                                      {pg.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -1257,32 +1512,28 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
           {/* Flowchart Diagram Legend */}
           <div className="mt-10 pt-6 border-t border-[#dde1e7] flex flex-wrap items-center justify-between gap-4 text-xs text-[#6b7280]">
             <div className="flex items-center gap-6 flex-wrap">
-              <span className="font-semibold text-[#1a2744]">Flow Legend:</span>
+              <span className="font-semibold text-[#1a2744]">Graph Legend:</span>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded bg-[#1a2744]" />
-                <span>Quanta Subsite</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1a2744]" />
+                <span>Root Platform Gateway (Level 0)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded bg-[#0d6b4e]" />
-                <span>Catalyx Subsite</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
+                <span>Pillar Branch Nodes (Level 1)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded bg-[#7c3aed]" />
-                <span>ConsultEase Subsite</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#0d9488]" />
+                <span>Independent Product Subsite (Level 2)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded bg-[#b45309]" />
-                <span>Sheshi FR Subsite</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded bg-[#3b5bdb]" />
-                <span>Core Pillar Gateways</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#64748b]" />
+                <span>Leaf Page Nodes (Level 2/3)</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <span className="text-[11px] bg-[#e8ecf0] text-[#475569] px-2.5 py-1 rounded-md font-medium">
-                Click any leaf to jump to wireframe
+                Click any graph node to jump to wireframe
               </span>
             </div>
           </div>
