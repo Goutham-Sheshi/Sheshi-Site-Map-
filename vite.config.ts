@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
   return {
     base: mode === 'production' || isSingleFile ? './' : '/',
     plugins: [
-      react(),
       tailwindcss(),
+      react(),
       ...(isSingleFile ? [viteSingleFile()] : []),
     ],
     resolve: {
