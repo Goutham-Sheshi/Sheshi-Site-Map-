@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,6 +34,16 @@ const NAV = [
       { label: "Catalyx (Startups)", sub: "catalyx" },
       { label: "ConsultEase (Advisory)", sub: "consultease" },
       { label: "Sheshi FR (Reporting)", sub: "sheshifr" },
+    ],
+  },
+  {
+    label: "Topics & Guides",
+    page: "topics",
+    children: [
+      { label: "Financial Consolidation Software", sub: "financial-consolidation" },
+      { label: "Continuous Financial Close", sub: "continuous-close" },
+      { label: "Autonomous Account Reconciliation", sub: "account-reconciliation" },
+      { label: "Intercompany Accounting", sub: "intercompany-accounting" },
     ],
   },
   {
@@ -218,50 +228,50 @@ function FinancialLedgerMockup() {
   ];
 
   return (
-    <div className="bg-[#090e17] text-white rounded-2xl border border-slate-800 shadow-2xl overflow-hidden text-left max-w-5xl mx-auto">
+    <div className="bg-white text-slate-900 rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden text-left max-w-5xl mx-auto">
       {/* Top Application Bar */}
-      <div className="bg-[#0f172a] px-5 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-slate-600">
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-            <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-            <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+            <div className="w-3 h-3 rounded-full bg-rose-400" />
+            <div className="w-3 h-3 rounded-full bg-amber-400" />
+            <div className="w-3 h-3 rounded-full bg-emerald-400" />
           </div>
-          <span className="text-xs font-mono text-slate-400 pl-2 border-l border-slate-700">
+          <span className="text-xs font-mono text-slate-500 pl-2 border-l border-slate-300">
             Sheshi Financial OS • Session ID: #SH-2026-LIVE
           </span>
         </div>
         <div className="flex items-center gap-2 text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-emerald-400 font-medium">99.99% Live Sync</span>
-          <span className="text-slate-600">•</span>
-          <span className="text-slate-400 font-mono">Entity: Sheshi Global Holdings Inc.</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-emerald-700 font-semibold">99.99% Live Sync</span>
+          <span className="text-slate-300">•</span>
+          <span className="text-slate-500 font-mono">Entity: Sheshi Global Holdings Inc.</span>
         </div>
       </div>
 
       {/* Control Strip */}
-      <div className="bg-[#0b132b]/80 px-6 py-4 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2 bg-slate-900/90 p-1 rounded-lg border border-slate-800">
+      <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-lg border border-slate-200">
           <button
             onClick={() => setActiveTab("close")}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              activeTab === "close" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === "close" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
             Financial Close Progress
           </button>
           <button
             onClick={() => setActiveTab("ledger")}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              activeTab === "ledger" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === "ledger" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
             Governed General Ledger
           </button>
           <button
             onClick={() => setActiveTab("audit")}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              activeTab === "audit" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === "audit" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
             }`}
           >
             Audit Trail &amp; Lineage
@@ -270,11 +280,11 @@ function FinancialLedgerMockup() {
 
         <div className="flex items-center gap-4 text-xs">
           <div>
-            <span className="text-slate-400">Close Phase: </span>
-            <span className="font-semibold text-white">Day 3 of Close (89% Complete)</span>
+            <span className="text-slate-500">Close Phase: </span>
+            <span className="font-bold text-slate-900">Day 3 of Close (89% Complete)</span>
           </div>
-          <div className="w-28 h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div className="w-[89%] h-full bg-blue-500 rounded-full" />
+          <div className="w-28 h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div className="w-[89%] h-full bg-blue-600 rounded-full" />
           </div>
         </div>
       </div>
@@ -284,55 +294,55 @@ function FinancialLedgerMockup() {
         {activeTab === "close" && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">Total Journal Entries</span>
-                <p className="text-xl font-bold text-white mt-1">42,890</p>
-                <span className="text-[11px] text-emerald-400 font-medium">↑ 99.4% Auto-Verified</span>
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span className="text-xs text-slate-500 font-medium">Total Journal Entries</span>
+                <p className="text-xl font-bold text-slate-900 mt-1 font-mono">42,890</p>
+                <span className="text-[11px] text-emerald-700 font-semibold">↑ 99.4% Auto-Verified</span>
               </div>
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">Unreconciled Variances</span>
-                <p className="text-xl font-bold text-emerald-400 mt-1">$0.00</p>
-                <span className="text-[11px] text-slate-400">Zero variance tolerance</span>
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span className="text-xs text-slate-500 font-medium">Unreconciled Variances</span>
+                <p className="text-xl font-bold text-emerald-700 mt-1 font-mono">$0.00</p>
+                <span className="text-[11px] text-slate-500">Zero variance tolerance</span>
               </div>
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">Multi-Entity Consolidations</span>
-                <p className="text-xl font-bold text-white mt-1">14 Subsidiaries</p>
-                <span className="text-[11px] text-blue-400">FX Remeasured (USD)</span>
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span className="text-xs text-slate-500 font-medium">Multi-Entity Consolidations</span>
+                <p className="text-xl font-bold text-slate-900 mt-1 font-mono">14 Subsidiaries</p>
+                <span className="text-[11px] text-blue-700 font-semibold">FX Remeasured (USD)</span>
               </div>
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">External Auditor Status</span>
-                <p className="text-xl font-bold text-white mt-1">Pre-Certified</p>
-                <span className="text-[11px] text-emerald-400">SOC 1 / SOX Aligned</span>
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span className="text-xs text-slate-500 font-medium">External Auditor Status</span>
+                <p className="text-xl font-bold text-slate-900 mt-1 font-mono">Pre-Certified</p>
+                <span className="text-[11px] text-emerald-700 font-semibold">SOC 1 / SOX Aligned</span>
               </div>
             </div>
 
-            <table className="w-full text-left text-xs text-slate-300">
+            <table className="w-full text-left text-xs text-slate-700">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[10px]">
-                  <th className="pb-3 font-semibold">Entry ID</th>
-                  <th className="pb-3 font-semibold">Account / Description</th>
-                  <th className="pb-3 font-semibold">Source ERP</th>
-                  <th className="pb-3 font-semibold text-right">Debit Balance</th>
-                  <th className="pb-3 font-semibold text-right">Credit Balance</th>
-                  <th className="pb-3 font-semibold">Governance Engine</th>
-                  <th className="pb-3 font-semibold text-right">Action</th>
+                <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider text-[10px] bg-slate-50/50">
+                  <th className="py-2.5 px-3 font-semibold">Entry ID</th>
+                  <th className="py-2.5 px-3 font-semibold">Account / Description</th>
+                  <th className="py-2.5 px-3 font-semibold">Source ERP</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Debit Balance</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Credit Balance</th>
+                  <th className="py-2.5 px-3 font-semibold">Governance Engine</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono">
+              <tbody className="divide-y divide-slate-100 font-mono">
                 {ledgerItems.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-900/40 transition-colors">
-                    <td className="py-3 text-blue-400 font-semibold">{row.id}</td>
-                    <td className="py-3 text-white font-sans font-medium">{row.account}</td>
-                    <td className="py-3 text-slate-400 font-sans">{row.erp}</td>
-                    <td className="py-3 text-right text-emerald-400">{row.debit}</td>
-                    <td className="py-3 text-right text-slate-200">{row.credit}</td>
-                    <td className="py-3">
-                      <span className="inline-block px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 text-[10px] font-sans">
+                  <tr key={row.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-3 px-3 text-blue-700 font-bold">{row.id}</td>
+                    <td className="py-3 px-3 text-slate-900 font-sans font-medium">{row.account}</td>
+                    <td className="py-3 px-3 text-slate-500 font-sans">{row.erp}</td>
+                    <td className="py-3 px-3 text-right text-emerald-700 font-bold">{row.debit}</td>
+                    <td className="py-3 px-3 text-right text-slate-800 font-bold">{row.credit}</td>
+                    <td className="py-3 px-3">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80 text-[10px] font-sans font-semibold">
                         {row.match}
                       </span>
                     </td>
-                    <td className="py-3 text-right">
-                      <button className="text-[11px] text-blue-400 hover:text-white font-sans transition-colors cursor-pointer">
+                    <td className="py-3 px-3 text-right">
+                      <button className="text-[11px] text-blue-600 hover:text-blue-800 font-sans font-semibold transition-colors cursor-pointer">
                         Audit Trail →
                       </button>
                     </td>
@@ -344,16 +354,16 @@ function FinancialLedgerMockup() {
         )}
 
         {activeTab === "ledger" && (
-          <div className="py-6 text-center text-slate-300 max-w-xl mx-auto space-y-3">
-            <h4 className="font-semibold text-white text-base">Governed Unified Ledger Architecture</h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans">
+          <div className="py-8 text-center text-slate-700 max-w-xl mx-auto space-y-3">
+            <h4 className="font-bold text-slate-900 text-base">Governed Unified Ledger Architecture</h4>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
               Sheshi sits between SAP S/4, Oracle NetSuite, and Workday, normalizing disparate charts of accounts into a single immutable ledger layer. Changes require cryptographic dual-signoff.
             </p>
             <div className="flex justify-center gap-3 pt-2">
-              <span className="text-[11px] bg-slate-800 text-slate-300 px-3 py-1 rounded-full font-mono">
+              <span className="text-[11px] bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 rounded-full font-mono">
                 Lineage: SHA-256 Provenance
               </span>
-              <span className="text-[11px] bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full font-mono">
+              <span className="text-[11px] bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full font-mono font-semibold">
                 SOX 404 Controls Active
               </span>
             </div>
@@ -361,13 +371,13 @@ function FinancialLedgerMockup() {
         )}
 
         {activeTab === "audit" && (
-          <div className="py-6 text-center text-slate-300 max-w-xl mx-auto space-y-3">
-            <h4 className="font-semibold text-white text-base">Continuous Independent Audit Trail</h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans">
+          <div className="py-8 text-center text-slate-700 max-w-xl mx-auto space-y-3">
+            <h4 className="font-bold text-slate-900 text-base">Continuous Independent Audit Trail</h4>
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
               Every journal entry, flux explanation, and controller signoff is watermarked with immutable timestamps and user identities. Big 4 auditors receive read-only federated portal access.
             </p>
             <div className="flex justify-center gap-3 pt-2">
-              <span className="text-[11px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1 rounded-full font-mono">
+              <span className="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-mono font-semibold">
                 Audit Status: 100% Traceable
               </span>
             </div>
@@ -376,13 +386,13 @@ function FinancialLedgerMockup() {
       </div>
 
       {/* Bottom Status Ribbon */}
-      <div className="bg-[#0b132b] px-6 py-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+      <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
         <span className="flex items-center gap-2">
           <span>🔒 End-to-End TLS 1.3 Encryption</span>
           <span>•</span>
-          <span>SOC 2 Type II Certified</span>
+          <span className="text-emerald-700 font-semibold">SOC 2 Type II Certified</span>
         </span>
-        <button className="text-blue-400 hover:text-blue-300 font-semibold cursor-pointer">
+        <button className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer">
           Generate Governed Board Report Pack →
         </button>
       </div>
@@ -404,33 +414,33 @@ function HeroCentered({
   navigate: (r: Route) => void;
 }) {
   return (
-    <div className="relative bg-[#090e17] text-white px-6 md:px-12 pt-24 pb-20 overflow-hidden border-b border-slate-800">
+    <div className="relative bg-gradient-to-b from-white via-blue-50/20 to-slate-50 text-slate-900 px-6 md:px-12 pt-20 pb-20 overflow-hidden border-b border-slate-200/80">
       {/* Subtle minimalist gradient aura */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20 pointer-events-none"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-30 pointer-events-none"
         style={{
-          background: "radial-gradient(circle at 50% 30%, #2563eb, transparent 70%)",
+          background: "radial-gradient(circle at 50% 30%, #bfdbfe, transparent 70%)",
         }}
       />
 
       <div className="max-w-5xl mx-auto text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-300 text-xs font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold mb-8">
+          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
           <span>{eyebrow ?? "The Financial Operating System"}</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight max-w-4xl mx-auto">
           {title ?? (
             <>
               Your ERP records the transactions. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600">
                 Everything after is where Sheshi lives.
               </span>
             </>
           )}
         </h1>
 
-        <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
+        <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
           {subtitle ??
             "The governed layer between your ERP and every financial output your organisation produces. Close, plan, consolidate, analyse, collaborate, and report with immutable trust."}
         </p>
@@ -438,28 +448,28 @@ function HeroCentered({
         <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
           <button
             onClick={() => navigate({ page: "contact" })}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-md shadow-blue-500/20 hover:shadow-lg transition-all cursor-pointer"
           >
-            Request a Conversation
+            Request Enterprise Demo
           </button>
           <button
             onClick={() => navigate({ page: "products", sub: "quanta" })}
-            className="bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-sm px-6 py-3.5 rounded-xl transition-all cursor-pointer"
+            className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold text-sm px-6 py-3.5 rounded-xl transition-all cursor-pointer shadow-xs"
           >
-            Explore Products
+            Explore Quanta Engine →
           </button>
           <button
             onClick={() => {
               const el = document.getElementById("sitemap-flowchart");
               el?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="border border-slate-700/80 text-slate-400 hover:text-white text-sm px-5 py-3.5 rounded-xl transition-all cursor-pointer"
+            className="border border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm px-5 py-3.5 rounded-xl transition-all cursor-pointer bg-white"
           >
             Interactive Site Map ↓
           </button>
         </div>
 
-        {/* Live Interactive Ledger Mockup */}
+        {/* Live Interactive Ledger Mockup in Light Theme */}
         <div className="mt-8">
           <FinancialLedgerMockup />
         </div>
@@ -512,26 +522,26 @@ function HeroSplit({
           </div>
         </div>
 
-        <div className="lg:col-span-5 bg-[#090e17] text-white p-6 rounded-2xl border border-slate-800 shadow-lg">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4 text-xs font-mono text-slate-400">
-            <span>GOVERNANCE ENGINE</span>
-            <span className="text-emerald-400">● ACTIVE</span>
+        <div className="lg:col-span-5 bg-slate-50 text-slate-900 p-6 rounded-2xl border border-slate-200/90 shadow-sm">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 text-xs font-mono text-slate-500">
+            <span className="font-semibold">GOVERNANCE ENGINE</span>
+            <span className="text-emerald-600 font-bold">● ACTIVE</span>
           </div>
           <div className="space-y-3 text-xs">
-            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">ERP INGESTION</span>
-              <span className="font-semibold text-white">SAP S/4HANA &amp; NetSuite Stream</span>
-              <span className="text-emerald-400 block text-[10px] mt-1">✓ 12ms Synchronization Latency</span>
+            <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-slate-500 block text-[10px] font-bold uppercase tracking-wider">ERP INGESTION</span>
+              <span className="font-semibold text-slate-900">SAP S/4HANA &amp; NetSuite Stream</span>
+              <span className="text-emerald-600 block text-[11px] font-semibold mt-1">✓ 12ms Synchronization Latency</span>
             </div>
-            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">AGENTIC RECONCILIATION</span>
-              <span className="font-semibold text-white">Flux &amp; Variance Analysis Agent</span>
-              <span className="text-blue-400 block text-[10px] mt-1">99.4% Automated Match Rate</span>
+            <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-slate-500 block text-[10px] font-bold uppercase tracking-wider">AGENTIC RECONCILIATION</span>
+              <span className="font-semibold text-slate-900">Flux &amp; Variance Analysis Agent</span>
+              <span className="text-blue-600 block text-[11px] font-semibold mt-1">99.4% Automated Match Rate</span>
             </div>
-            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">AUDIT PACK LINEAGE</span>
-              <span className="font-semibold text-white">Cryptographic Board Reporting</span>
-              <span className="text-slate-400 block text-[10px] mt-1">SHA-256 Provenance Ledger</span>
+            <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
+              <span className="text-slate-500 block text-[10px] font-bold uppercase tracking-wider">AUDIT PACK LINEAGE</span>
+              <span className="font-semibold text-slate-900">Cryptographic Board Reporting</span>
+              <span className="text-slate-600 block text-[11px] font-mono mt-1">SHA-256 Provenance Ledger</span>
             </div>
           </div>
         </div>
@@ -651,27 +661,27 @@ function ZigzagSection({ rows = 3 }: { rows?: number }) {
               </div>
 
               <div className={`lg:col-span-6 ${isOdd ? "lg:order-1" : "lg:order-2"}`}>
-                <div className="bg-[#090e17] text-white p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                    <span className="text-xs font-mono text-blue-400">COMPONENT // {item.tag.toUpperCase()}</span>
-                    <span className="text-[10px] bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded">
+                <div className="bg-white text-slate-800 p-6 rounded-2xl border border-slate-200 shadow-md">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                    <span className="text-xs font-mono text-blue-700 font-semibold">COMPONENT // {item.tag.toUpperCase()}</span>
+                    <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 font-semibold px-2 py-0.5 rounded">
                       Verified
                     </span>
                   </div>
                   <div className="space-y-2.5 text-xs font-mono">
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">Processing Node</span>
-                      <span className="text-white">Sheshi-FOS-v4.2</span>
+                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-500">Processing Node</span>
+                      <span className="text-slate-900 font-semibold">Sheshi-FOS-v4.2</span>
                     </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">Status</span>
-                      <span className="text-emerald-400">100% Governed</span>
+                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-500">Status</span>
+                      <span className="text-emerald-700 font-semibold">100% Governed</span>
                     </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">Security Guardrail</span>
-                      <span className="text-white">SOX 404 Cryptographic Log</span>
+                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                      <span className="text-slate-500">Security Guardrail</span>
+                      <span className="text-slate-900 font-semibold">SOX 404 Cryptographic Log</span>
                     </div>
-                    <div className="pt-2 text-[11px] text-slate-400 font-sans leading-relaxed">
+                    <div className="pt-2 text-[11px] text-slate-600 font-sans leading-relaxed">
                       All calculations execute in memory with real-time audit checkpoint validation.
                     </div>
                   </div>
@@ -799,19 +809,19 @@ function LogoStrip() {
 
 function TestimonialBlock() {
   return (
-    <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-b border-slate-800">
+    <div className="bg-gradient-to-br from-blue-50/60 via-white to-slate-50 text-slate-900 px-6 md:px-12 py-20 border-b border-blue-100/80">
       <div className="max-w-4xl mx-auto text-center">
-        <div className="text-blue-400 text-2xl mb-4 font-serif">“</div>
-        <blockquote className="text-xl md:text-2xl font-medium text-slate-100 leading-relaxed mb-6 font-sans">
+        <div className="text-blue-600 text-3xl mb-4 font-serif">“</div>
+        <blockquote className="text-xl md:text-2xl font-medium text-slate-800 leading-relaxed mb-6 font-sans">
           Most financial software is built by technologists who learned finance. Sheshi is built from inside finance by people who have actually run month-end close cycles, managed audits, and carried accountability for what the numbers say to the board.
         </blockquote>
         <div className="flex items-center justify-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-sm text-white">
+          <div className="w-11 h-11 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center shadow-md shadow-blue-500/20">
             CA
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-white">Founding Philosophy</p>
-            <p className="text-xs text-slate-400">Sheshi Financial Operating System • Practice-Led Architecture</p>
+            <p className="text-sm font-bold text-slate-900">Founding Philosophy</p>
+            <p className="text-xs text-slate-500">Sheshi Financial Operating System • Practice-Led Architecture</p>
           </div>
         </div>
       </div>
@@ -1119,6 +1129,1225 @@ function EventsFeaturedSection() {
   );
 }
 
+// ─── Bespoke Domain Components (Rich Variety Per Page) ─────────────────────────
+
+function FounderLetterSection() {
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-[#fcfdfd] border border-slate-200 rounded-3xl p-8 sm:p-14 shadow-sm relative overflow-hidden">
+          <div className="absolute top-6 right-8 opacity-10 pointer-events-none select-none text-right">
+            <span className="text-8xl font-serif font-black text-blue-900">CA</span>
+          </div>
+
+          <div className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-blue-700 bg-blue-50 border border-blue-200 px-3.5 py-1.5 rounded-full mb-8">
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            Founder&apos;s Perspective // 20 Years of Practice
+          </div>
+
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-8">
+            Why Enterprise Finance Breaks Between the ERP and the Board Room
+          </h2>
+
+          <div className="prose prose-slate max-w-none text-sm sm:text-base text-slate-700 leading-relaxed space-y-5 font-sans">
+            <p>
+              Twenty years ago, when I began my career as a Chartered Accountant leading statutory audits and corporate consolidations, I observed an uncomfortable reality that has only worsened with time:
+            </p>
+            <p className="font-medium text-slate-900 border-l-2 border-blue-600 pl-4 py-1 italic bg-blue-50/40 rounded-r-lg">
+              &ldquo;ERPs are transactional record-keepers. They were designed to ensure that if a debited invoice is created, a credited account exists. But an ERP is not a Financial Operating System.&rdquo;
+            </p>
+            <p>
+              The moment transactions leave SAP, Oracle NetSuite, or Workday, finance teams are forced into an invisible underworld of hundreds of linked spreadsheets. Every month-end close becomes a frantic race against the clock. Controllers work past midnight on Day 11 fixing broken VLOOKUP formulas, currency netting discrepancies, and intercompany imbalances across 40 subsidiaries.
+            </p>
+            <p>
+              By the time the CFO presents the board deck or files the 10-K, nobody can genuinely verify the digital provenance of the numbers. One untracked spreadsheet cell edit can alter EBITDA by millions.
+            </p>
+            <p>
+              We founded <strong>Sheshi</strong> to build the governed layer that should have existed all along. Sheshi sits directly above your ERPs. It operates with mathematical invariants &mdash; <em>zero hallucinations, deterministic matching, real-time multi-currency remeasurement, and an immutable SHA-256 audit trail</em>.
+            </p>
+            <p>
+              We did not build this from the outside looking in. We built it because we have lived through the pain of closing books at 3 AM. Sheshi is our answer to the future of financial truth.
+            </p>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div>
+              <p className="font-bold text-slate-900 text-base">Goutham Sheshi</p>
+              <p className="text-xs text-slate-500">Founder &amp; Chief Executive Officer • Chartered Accountant</p>
+              <p className="text-[11px] text-blue-600 font-mono mt-0.5">Sheshi Technologies Inc.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-mono border border-slate-200">
+                Lineage: Practice-Verified
+              </span>
+              <span className="text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg font-mono border border-emerald-200 font-semibold">
+                SOC 1/2 Governed
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LeadershipSection() {
+  const leaders = [
+    {
+      name: "Goutham Sheshi, FCA",
+      role: "Founder & Chief Executive Officer",
+      pedigree: "Former Big 4 Audit Lead • 20+ Years Practice Experience",
+      bio: "Advised Fortune 500 enterprises on statutory compliance, multi-entity IFRS/GAAP consolidations, and autonomous ledger design.",
+      avatar: "GS",
+    },
+    {
+      name: "Dr. Elena Rostova",
+      role: "Chief Technology Officer",
+      pedigree: "Ex-Staff Distributed Systems Architect at SAP & Oracle Labs",
+      bio: "Ph.D. in Computer Science from MIT. Architected high-throughput financial streaming engines processing 50,000 tx/sec.",
+      avatar: "ER",
+    },
+    {
+      name: "Marcus Vance, CPA",
+      role: "Head of Product & Financial Governance",
+      pedigree: "Former Corporate Controller at Salesforce & Workday",
+      bio: "Led financial transformation across 60 subsidiaries. Direct architect behind Sheshi Quanta continuous close workflows.",
+      avatar: "MV",
+    },
+    {
+      name: "Sophia Sterling",
+      role: "VP of Enterprise Solutions & Advisory",
+      pedigree: "Former Partner at Deloitte Financial Advisory Services",
+      bio: "Specializes in cross-border transfer pricing, sovereign regulatory filings, and CPA firm capacity modernization.",
+      avatar: "SS",
+    },
+    {
+      name: "Kavitha Narayanan",
+      role: "Head of AI & Formal Invariant Research",
+      pedigree: "Ex-Research Scientist at DeepMind • Stanford AI Labs",
+      bio: "Pioneered deterministic verification models that mathematically eliminate LLM hallucinations in ledger reconciliations.",
+      avatar: "KN",
+    },
+    {
+      name: "David Chen",
+      role: "Chief Information Security Officer",
+      pedigree: "Former CISO at Stripe Treasury & FinTech Guild",
+      bio: "Oversees SOC 1/2 Type II compliance, zero-knowledge encryption proofs, and FedRAMP governance certifications.",
+      avatar: "DC",
+    },
+  ];
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <SectionLabel text="Executive Leadership" />
+          <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Built by Practitioners Who Lived the Crisis
+          </h3>
+          <p className="text-sm text-slate-600 mt-2">
+            Our leadership combines Chartered Accountants with distributed systems engineers to bring mathematical rigor to financial operations.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {leaders.map((ldr) => (
+            <div
+              key={ldr.name}
+              className="bg-white border border-slate-200 rounded-2xl p-7 hover:border-blue-500/60 hover:shadow-md transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-sm">
+                    {ldr.avatar}
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-slate-900 leading-tight">{ldr.name}</h4>
+                    <p className="text-xs font-semibold text-blue-600 mt-0.5">{ldr.role}</p>
+                  </div>
+                </div>
+                <div className="text-[11px] font-mono text-slate-500 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/70 mb-3">
+                  {ldr.pedigree}
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">{ldr.bio}</p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span className="hover:text-blue-600 cursor-pointer font-medium">View Biography &amp; Publications</span>
+                <span className="text-blue-600">&rarr;</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8">
+          <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 font-mono text-center">
+            Senior Advisory Board &amp; Audit Fellows
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs text-slate-600">
+            <div>
+              <p className="font-bold text-slate-900 text-sm">Arthur Henderson</p>
+              <p className="text-slate-500">Former Senior Audit Partner, PwC US</p>
+            </div>
+            <div>
+              <p className="font-bold text-slate-900 text-sm">Prof. Claire DeWitt</p>
+              <p className="text-slate-500">Chair of Accounting, London Business School</p>
+            </div>
+            <div>
+              <p className="font-bold text-slate-900 text-sm">Vikram Singhania</p>
+              <p className="text-slate-500">Former Group CFO, Tata Enterprise Holdings</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CareersJobBoardSection() {
+  const [deptFilter, setDeptFilter] = useState("all");
+  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+  const [applied, setApplied] = useState(false);
+
+  const jobs = [
+    { id: "1", title: "Principal Distributed Systems Engineer", dept: "engineering", loc: "Remote (US/EU)", comp: "$210k - $270k + 0.3% Equity", type: "Full-Time" },
+    { id: "2", title: "Senior AI Research Scientist (Formal Methods)", dept: "ai", loc: "New York or Remote", comp: "$200k - $260k + 0.25% Equity", type: "Full-Time" },
+    { id: "3", title: "Enterprise Solutions Architect (CPA Required)", dept: "finance", loc: "London / Remote", comp: "£140k - £180k + Equity", type: "Full-Time" },
+    { id: "4", title: "Lead Frontend Engineer (Financial Canvas)", dept: "engineering", loc: "Remote Global", comp: "$170k - $220k + Equity", type: "Full-Time" },
+    { id: "5", title: "Director of Technical Accounting & GAAP Strategy", dept: "finance", loc: "San Francisco / Remote", comp: "$220k - $280k + Equity", type: "Full-Time" },
+    { id: "6", title: "Senior Product Designer (Complex Systems)", dept: "product", loc: "Remote (Americas/EMEA)", comp: "$160k - $210k + Equity", type: "Full-Time" },
+  ];
+
+  const filteredJobs = deptFilter === "all" ? jobs : jobs.filter((j) => j.dept === deptFilter);
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <SectionLabel text="Open Positions" />
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Build the Foundation of Global Financial Trust
+            </h3>
+            <p className="text-sm text-slate-600 mt-2 max-w-xl">
+              We offer top-of-market compensation, meaningful equity ownership, comprehensive healthcare, and true remote-first autonomy.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
+            {[
+              { id: "all", label: "All Roles" },
+              { id: "engineering", label: "Engineering" },
+              { id: "ai", label: "AI Research" },
+              { id: "finance", label: "Finance & Advisory" },
+              { id: "product", label: "Product & Design" },
+            ].map((d) => (
+              <button
+                key={d.id}
+                onClick={() => setDeptFilter(d.id)}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                  deptFilter === d.id ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {filteredJobs.map((j) => (
+            <div
+              key={j.id}
+              className="bg-white border border-slate-200 rounded-xl p-6 hover:border-blue-500/50 hover:shadow-sm transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-[10px] uppercase font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
+                    {j.dept}
+                  </span>
+                  <span className="text-xs text-slate-500">{j.loc}</span>
+                </div>
+                <h4 className="text-base font-bold text-slate-900">{j.title}</h4>
+                <p className="text-xs text-slate-500 mt-1 font-mono">{j.comp} • {j.type}</p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setSelectedJob(j.title);
+                  setApplied(false);
+                }}
+                className="bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 text-xs font-bold px-4 py-2.5 rounded-lg border border-blue-200 hover:border-blue-600 transition-all cursor-pointer shrink-0"
+              >
+                View Role &amp; Apply &rarr;
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {selectedJob && (
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl border border-slate-200 relative">
+              <button
+                onClick={() => setSelectedJob(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+              {applied ? (
+                <div className="text-center py-8">
+                  <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                    ✓
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 mb-2">Application Received!</h4>
+                  <p className="text-xs text-slate-600 mb-6">
+                    Our talent partner and hiring manager will review your submission and respond within 48 business hours.
+                  </p>
+                  <button
+                    onClick={() => setSelectedJob(null)}
+                    className="bg-slate-900 text-white text-xs font-semibold px-5 py-2.5 rounded-lg cursor-pointer"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-blue-600 font-mono">Job Application</span>
+                  <h3 className="text-xl font-bold text-slate-900 mb-1">{selectedJob}</h3>
+                  <p className="text-xs text-slate-500 mb-6">Sheshi Technologies • Global Remote Team</p>
+
+                  <div className="space-y-4 text-xs">
+                    <div>
+                      <label className="block text-slate-700 font-semibold mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        placeholder="Sarah Jenkins"
+                        className="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-semibold mb-1">Email Address</label>
+                      <input
+                        type="email"
+                        placeholder="sarah@example.com"
+                        className="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-semibold mb-1">LinkedIn Profile or Portfolio URL</label>
+                      <input
+                        type="text"
+                        placeholder="https://linkedin.com/in/..."
+                        className="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-700 font-semibold mb-1">Why Sheshi?</label>
+                      <textarea
+                        rows={3}
+                        placeholder="Briefly describe your interest in financial infrastructure..."
+                        className="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                    <button
+                      onClick={() => setApplied(true)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-xs transition-colors cursor-pointer mt-2"
+                    >
+                      Submit Confidential Application
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CloseTimelineSection() {
+  const [activeMode, setActiveMode] = useState<"traditional" | "sheshi">("sheshi");
+
+  const traditionalSteps = [
+    { day: "Day -5 to -1", title: "Cut-Off Notices & Manual Accruals", desc: "Staff accountants send frantic email chasers to departmental heads. Invoices trickle in through PDF attachments." },
+    { day: "Day 1 to 4", title: "Trial Balance Export & VLOOKUP Hell", desc: "Dumping raw GL lines into desktop Excel models. Multiple versions circulating via email attachments." },
+    { day: "Day 5 to 9", title: "Intercompany Dispute & FX Mismatches", desc: "London subsidiary ledger doesn't net with New York. 3 days lost in email reconciliation threads." },
+    { day: "Day 10 to 14", title: "Flux Scramble & Board Deck Editing", desc: "Late adjustments force controller to re-paste 80 charts into PowerPoint. High risk of transposition errors." },
+    { day: "Day 15+", title: "Audit Anxiety & Post-Close Discrepancies", desc: "Auditors discover undocumented manual spreadsheet formula alterations, requiring retrospective restatements." },
+  ];
+
+  const sheshiSteps = [
+    { day: "Continuous (T-0)", title: "Streaming Ingestion & Automated Accruals", desc: "ERP webhooks stream transaction journals in real-time. Accrual rules evaluate continuously every 24 hours." },
+    { day: "Day 1 (Morning)", title: "Deterministic Invariant Reconciliation", desc: "99.4% of subledgers auto-match with zero human intervention. Real-time bank feed verification." },
+    { day: "Day 1 (Afternoon)", title: "Algorithmic Intercompany Netting", desc: "Automated elimination entries posted according to ASC 810/IFRS 10 standards with continuous central bank FX rates." },
+    { day: "Day 2", title: "Autonomous Flux Analysis & Sign-Off", desc: "Anomaly detection flags material variances with suggested commentary and immutable dual-controller signoff." },
+    { day: "Day 3", title: "Instant Board Pack & Audit Lineage Lock", desc: "Cryptographic SHA-256 data pack published. External Big 4 auditors view federated read-only lineage." },
+  ];
+
+  const activeSteps = activeMode === "traditional" ? traditionalSteps : sheshiSteps;
+
+  return (
+    <div className="bg-slate-50 border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <SectionLabel text="Close Cycle Architecture" />
+          <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+            The 15-Day Batch Scramble vs. Continuous Close
+          </h3>
+          <p className="text-sm text-slate-600 mt-2">
+            Compare the operational reality of traditional spreadsheet-dependent finance with Sheshi&apos;s governed autonomous pipeline.
+          </p>
+
+          <div className="inline-flex items-center gap-2 bg-white border border-slate-300 p-1.5 rounded-xl shadow-xs mt-6">
+            <button
+              onClick={() => setActiveMode("traditional")}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                activeMode === "traditional" ? "bg-rose-100 text-rose-800 border border-rose-200" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              ⚠️ Traditional 15-Day Batch Close
+            </button>
+            <button
+              onClick={() => setActiveMode("sheshi")}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                activeMode === "sheshi" ? "bg-blue-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              ⚡ Sheshi 3-Day Continuous Close
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {activeSteps.map((step, idx) => (
+            <div
+              key={step.day}
+              className={`p-6 rounded-2xl border transition-all flex flex-col justify-between ${
+                activeMode === "traditional"
+                  ? "bg-white border-rose-200 hover:border-rose-400"
+                  : "bg-white border-blue-200 hover:border-blue-500 shadow-xs"
+              }`}
+            >
+              <div>
+                <span
+                  className={`text-[11px] font-bold font-mono px-2.5 py-1 rounded-full inline-block mb-3 ${
+                    activeMode === "traditional"
+                      ? "bg-rose-50 text-rose-700 border border-rose-200"
+                      : "bg-blue-50 text-blue-700 border border-blue-200"
+                  }`}
+                >
+                  {step.day}
+                </span>
+                <h4 className="text-sm font-bold text-slate-900 mb-2 leading-snug">
+                  {idx + 1}. {step.title}
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">{step.desc}</p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 text-[11px] font-semibold flex items-center justify-between">
+                <span className={activeMode === "traditional" ? "text-rose-600" : "text-blue-600"}>
+                  {activeMode === "traditional" ? "Status: High Friction" : "Status: Autonomous"}
+                </span>
+                <span>{activeMode === "traditional" ? "⏳" : "✓"}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StartupRunwayForecasterSection() {
+  const [cash, setCash] = useState(2400000);
+  const [burn, setBurn] = useState(160000);
+  const [growth, setGrowth] = useState(8);
+
+  const netBurn = Math.max(10000, Math.round(burn * (1 - growth / 100)));
+  const runwayMonths = (cash / netBurn).toFixed(1);
+  const isDefaultAlive = Number(runwayMonths) >= 18;
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <SectionLabel text="Interactive Tool // Sheshi Catalyx" />
+          <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Live Startup Runway &amp; Burn Forecaster
+          </h3>
+          <p className="text-sm text-slate-600 mt-2">
+            Drag the sliders below to evaluate capital runway, growth compounding, and board-pack readiness under different macro scenarios.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 bg-slate-50 border border-slate-200 rounded-3xl p-8 space-y-6">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Cash &amp; Liquid Equivalents
+                </label>
+                <span className="text-base font-extrabold text-blue-700 font-mono">
+                  ${(cash / 1000000).toFixed(2)}M
+                </span>
+              </div>
+              <input
+                type="range"
+                min={500000}
+                max={10000000}
+                step={100000}
+                value={cash}
+                onChange={(e) => setCash(Number(e.target.value))}
+                className="w-full accent-blue-600 cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                <span>$500K</span>
+                <span>$5.0M</span>
+                <span>$10.0M</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Gross Monthly Burn Rate
+                </label>
+                <span className="text-base font-extrabold text-rose-600 font-mono">
+                  ${(burn / 1000).toFixed(0)}k / mo
+                </span>
+              </div>
+              <input
+                type="range"
+                min={50000}
+                max={500000}
+                step={10000}
+                value={burn}
+                onChange={(e) => setBurn(Number(e.target.value))}
+                className="w-full accent-blue-600 cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                <span>$50k</span>
+                <span>$250k</span>
+                <span>$500k</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                  Monthly Net Revenue Growth %
+                </label>
+                <span className="text-base font-extrabold text-emerald-600 font-mono">
+                  +{growth}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={25}
+                step={1}
+                value={growth}
+                onChange={(e) => setGrowth(Number(e.target.value))}
+                className="w-full accent-blue-600 cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                <span>0% (Flat)</span>
+                <span>12%</span>
+                <span>25% (Hyper-growth)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white rounded-3xl p-8 border border-slate-800 shadow-xl">
+            <span className="text-xs font-mono uppercase tracking-widest text-blue-400 block mb-2 font-semibold">
+              CATALYX PROJECTION METRICS
+            </span>
+            <div className="mb-6">
+              <span className="text-5xl font-extrabold tracking-tight text-white font-mono">{runwayMonths}</span>
+              <span className="text-sm text-slate-400 ml-2">Months Runway</span>
+            </div>
+
+            <div className="space-y-3 border-t border-slate-800 pt-6 text-xs font-mono">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Effective Net Burn</span>
+                <span className="text-white font-bold">${(netBurn / 1000).toFixed(1)}k / mo</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Survival Status</span>
+                <span className={isDefaultAlive ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
+                  {isDefaultAlive ? "● Default Alive (Healthy)" : "▲ Fundraise Required (<18m)"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Board Pack Status</span>
+                <span className="text-blue-400 font-semibold">Audit-Ready 1-Click Export</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => alert("Simulating Catalyx Board Deck PDF generation...")}
+              className="w-full mt-8 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-3 rounded-xl shadow-lg transition-colors cursor-pointer"
+            >
+              Generate Catalyx Investor Deck &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdvisoryCockpitSection() {
+  const [clients, setClients] = useState([
+    { name: "Veritas Logistics LLC", erp: "NetSuite", period: "Sep 2026", progress: 95, exceptions: 0, status: "Ready for Signoff" },
+    { name: "Nordic Health Systems", erp: "SAP S/4", period: "Sep 2026", progress: 80, exceptions: 2, status: "Variance Review" },
+    { name: "Apex SaaS Technologies", erp: "QuickBooks Online", period: "Sep 2026", progress: 100, exceptions: 0, status: "Signed & Filed" },
+    { name: "Meridian Real Estate Fund", erp: "Yardi & NetSuite", period: "Sep 2026", progress: 65, exceptions: 5, status: "Intercompany Netting" },
+    { name: "Beacon Retail Corp", erp: "Microsoft Dynamics", period: "Sep 2026", progress: 88, exceptions: 1, status: "Tax Accrual Check" },
+  ]);
+
+  const [signedCount, setSignedCount] = useState(1);
+
+  const handleBatchSign = () => {
+    setClients((prev) =>
+      prev.map((c) =>
+        c.exceptions === 0 ? { ...c, progress: 100, status: "Signed & Filed" } : c
+      )
+    );
+    setSignedCount(2);
+  };
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <SectionLabel text="CPA &amp; Advisory Workbench // ConsultEase" />
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Multi-Client Practice Command Center
+            </h3>
+            <p className="text-sm text-slate-600 mt-2 max-w-xl">
+              Manage 50+ enterprise audit and advisory clients from a single governed pane of glass without logging in and out of different ERP instances.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleBatchSign}
+              className="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+            >
+              Batch Sign Cleared Workpapers ({signedCount} Signed)
+            </button>
+          </div>
+        </div>
+
+        <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 uppercase tracking-wider text-[10px]">
+                <tr>
+                  <th className="px-6 py-3.5">Client Organization</th>
+                  <th className="px-6 py-3.5">ERP Connection</th>
+                  <th className="px-6 py-3.5">Close Progress</th>
+                  <th className="px-6 py-3.5 text-center">Open Exceptions</th>
+                  <th className="px-6 py-3.5">Audit Posture</th>
+                  <th className="px-6 py-3.5 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {clients.map((c) => (
+                  <tr key={c.name} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-900">{c.name}</td>
+                    <td className="px-6 py-4 text-slate-600 font-mono">{c.erp}</td>
+                    <td className="px-6 py-4">
+                      <div className="w-36 bg-slate-100 rounded-full h-2 overflow-hidden inline-block mr-2 align-middle">
+                        <div
+                          className="bg-purple-600 h-2 rounded-full transition-all"
+                          style={{ width: `${c.progress}%` }}
+                        />
+                      </div>
+                      <span className="font-mono text-slate-600 font-semibold">{c.progress}%</span>
+                    </td>
+                    <td className="px-6 py-4 text-center font-mono font-bold">
+                      {c.exceptions === 0 ? (
+                        <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          0
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          {c.exceptions}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                          c.status === "Signed & Filed"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : c.status === "Ready for Signoff"
+                            ? "bg-purple-50 text-purple-700 border border-purple-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                        }`}
+                      >
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button className="text-purple-600 hover:text-purple-800 font-bold hover:underline cursor-pointer">
+                        Open Portal &rarr;
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RuleEngineSimulatorSection() {
+  const [isRunning, setIsRunning] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
+
+  const simulateRun = () => {
+    setIsRunning(true);
+    setTimeout(() => {
+      setIsRunning(false);
+      setHasRun(true);
+    }, 1200);
+  };
+
+  return (
+    <div className="bg-slate-50 border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <SectionLabel text="Core Engine // Sheshi Quanta" />
+          <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Deterministic Rule Engine &amp; Invariant Matcher
+          </h3>
+          <p className="text-sm text-slate-600 mt-2">
+            Experience how Sheshi validates transaction batches using zero-hallucination mathematical proofs rather than probabilistic guesses.
+          </p>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-100">
+            <div>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-wider block mb-1">
+                RULE SUITE // ASC 810 CONSOLIDATION &amp; NETTING
+              </span>
+              <h4 className="text-base font-bold text-slate-900">
+                Sample Live Ingestion: Intercompany Transactions (EUR &amp; USD)
+              </h4>
+            </div>
+            <button
+              onClick={simulateRun}
+              disabled={isRunning}
+              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                isRunning
+                  ? "bg-slate-200 text-slate-500"
+                  : "bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              }`}
+            >
+              {isRunning ? "Evaluating Math Invariants..." : "Run Deterministic Engine ▶"}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+              <span className="text-[10px] text-slate-500 font-mono uppercase block">Batch Ingestion</span>
+              <p className="text-lg font-bold text-slate-900 font-mono mt-1">42,810 Tx / sec</p>
+              <p className="text-[11px] text-emerald-600 font-medium mt-1">✓ Zero Drop Rate</p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+              <span className="text-[10px] text-slate-500 font-mono uppercase block">Model Integrity</span>
+              <p className="text-lg font-bold text-slate-900 font-mono mt-1">Deterministic Math</p>
+              <p className="text-[11px] text-blue-600 font-medium mt-1">0% LLM Hallucination Risk</p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+              <span className="text-[10px] text-slate-500 font-mono uppercase block">Audit Verification</span>
+              <p className="text-lg font-bold text-slate-900 font-mono mt-1">
+                {hasRun ? "SHA-256 Provenance" : "Awaiting Execution"}
+              </p>
+              <p className="text-[11px] text-slate-600 font-medium mt-1">
+                {hasRun ? "Hash: 9f82...c41a" : "Standard SOX Lock"}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-slate-900 text-white p-5 rounded-2xl font-mono text-xs overflow-x-auto">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-800 text-slate-400 text-[10px]">
+              <span>LEDGER EVENT STREAM</span>
+              <span>INVARIANT STATUS</span>
+            </div>
+            <div className="py-2 space-y-1.5 text-[11px]">
+              <div className="flex justify-between text-slate-300">
+                <span>[13:42:01.102] INGEST entity_us_subsidiary.journal_entry_#88412 ($1,420,000.00)</span>
+                <span className="text-emerald-400">PASSED</span>
+              </div>
+              <div className="flex justify-between text-slate-300">
+                <span>[13:42:01.118] INGEST entity_eu_subsidiary.journal_entry_#41092 (€1,314,814.81)</span>
+                <span className="text-emerald-400">PASSED</span>
+              </div>
+              <div className="flex justify-between text-slate-300">
+                <span>[13:42:01.144] REMEASURE fx_rate: ECB_DAILY_RATE(1.0800 USD/EUR)</span>
+                <span className="text-emerald-400">VERIFIED</span>
+              </div>
+              {hasRun && (
+                <div className="flex justify-between text-blue-300 bg-blue-950/70 p-1.5 rounded">
+                  <span>[13:42:01.210] AUTO_ELIMINATE Intercompany account balance netting &rarr; Delta: $0.00</span>
+                  <span className="text-emerald-300 font-bold">100% BALANCED</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FinancialStatementsViewerSection() {
+  const [showXBRL, setShowXBRL] = useState(false);
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <SectionLabel text="Disclosure Intelligence // Sheshi FR" />
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Audited Financial Statement &amp; XBRL Tag Inspector
+            </h3>
+            <p className="text-sm text-slate-600 mt-2 max-w-xl">
+              Examine live balance sheet lines with real-time XBRL taxonomy mappings and immutable ERP audit lineage.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setShowXBRL(!showXBRL)}
+              className={`text-xs font-bold px-3.5 py-2 rounded-xl border transition-all cursor-pointer ${
+                showXBRL
+                  ? "bg-amber-500 text-white border-amber-600"
+                  : "bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              {showXBRL ? "Hide XBRL Tags" : "Inspect XBRL Taxonomy"}
+            </button>
+          </div>
+        </div>
+
+        <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs bg-white">
+          <div className="p-6 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+            <div>
+              <h4 className="font-bold text-slate-900 text-base">Consolidated Balance Sheets (Unaudited)</h4>
+              <p className="text-xs text-slate-500">Period Ended September 30, 2026 (in thousands)</p>
+            </div>
+            <span className="text-xs font-mono bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 rounded-full font-semibold">
+              Live Invariant: Balance Check Delta = $0.00
+            </span>
+          </div>
+
+          <div className="divide-y divide-slate-100 text-xs font-mono">
+            <div className="px-6 py-2.5 bg-slate-100/60 font-bold text-slate-700 uppercase tracking-wider text-[10px]">
+              Assets // Current Assets
+            </div>
+
+            <div className="px-6 py-3.5 flex justify-between items-center hover:bg-slate-50">
+              <div>
+                <span className="font-sans font-medium text-slate-900 text-sm">Cash and cash equivalents</span>
+                {showXBRL && (
+                  <span className="block text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-1">
+                    us-gaap:CashAndCashEquivalentsAtCarryingValue
+                  </span>
+                )}
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-slate-900 text-sm">$482,910</span>
+                <span className="block text-[10px] text-emerald-600 font-sans">✓ Verified via JPMorgan API</span>
+              </div>
+            </div>
+
+            <div className="px-6 py-3.5 flex justify-between items-center hover:bg-slate-50">
+              <div>
+                <span className="font-sans font-medium text-slate-900 text-sm">Accounts receivable, net</span>
+                {showXBRL && (
+                  <span className="block text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-1">
+                    us-gaap:AccountsReceivableNetCurrent
+                  </span>
+                )}
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-slate-900 text-sm">$124,550</span>
+                <span className="block text-[10px] text-slate-500 font-sans">99.1% Current (&lt;30 days)</span>
+              </div>
+            </div>
+
+            <div className="px-6 py-3.5 flex justify-between items-center hover:bg-slate-50">
+              <div>
+                <span className="font-sans font-medium text-slate-900 text-sm">Prepaid expenses &amp; other</span>
+                {showXBRL && (
+                  <span className="block text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-1">
+                    us-gaap:PrepaidExpenseAndOtherAssetsCurrent
+                  </span>
+                )}
+              </div>
+              <div className="text-right">
+                <span className="font-bold text-slate-900 text-sm">$18,200</span>
+                <span className="block text-[10px] text-slate-500 font-sans">Amortized monthly</span>
+              </div>
+            </div>
+
+            <div className="px-6 py-3 bg-slate-100 font-bold text-slate-900 flex justify-between items-center text-sm">
+              <span className="font-sans">Total Current Assets</span>
+              <span>$625,660</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntegrationsCatalogSection() {
+  const [filter, setFilter] = useState("all");
+
+  const integrations = [
+    { name: "SAP S/4HANA", cat: "erp", latency: "12ms", desc: "Bi-directional streaming ledger sync via SAP OData and RFC connector.", logo: "SAP" },
+    { name: "Oracle NetSuite", cat: "erp", latency: "14ms", desc: "SuiteAnalytics SuiteTalk integration with multi-subsidiary automated journal writes.", logo: "NS" },
+    { name: "Workday Financials", cat: "erp", latency: "18ms", desc: "Enterprise interface connector for GL consolidation and workforce flux analysis.", logo: "WD" },
+    { name: "Microsoft Dynamics 365", cat: "erp", latency: "15ms", desc: "Native Azure data lake bridge for real-time ledger variance monitoring.", logo: "MSD" },
+    { name: "JPMorgan ACCESS", cat: "bank", latency: "5ms", desc: "Direct treasury cash concentration API with automated MT940 / BAI2 ingestion.", logo: "JPM" },
+    { name: "HSBC Net Direct", cat: "bank", latency: "8ms", desc: "Cross-border global treasury and multi-currency liquidity sync.", logo: "HSBC" },
+    { name: "Stripe Treasury & Billing", cat: "bank", latency: "2ms", desc: "Automated merchant payout reconciliations and dispute fee journalization.", logo: "STR" },
+    { name: "Snowflake Financial Data Cloud", cat: "bi", latency: "22ms", desc: "Zero-copy cloning of audit ledger tables for enterprise FP&A modeling.", logo: "SNOW" },
+  ];
+
+  const filtered = filter === "all" ? integrations : integrations.filter((i) => i.cat === filter);
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <SectionLabel text="Integrations &amp; Connectors" />
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Direct Ingestion for Every Financial System
+            </h3>
+            <p className="text-sm text-slate-600 mt-2 max-w-xl">
+              Connect in minutes without custom engineering. Sheshi standardizes disparate charts of accounts into a single governed schema.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
+            {[
+              { id: "all", label: "All Integrations" },
+              { id: "erp", label: "Core ERP" },
+              { id: "bank", label: "Treasury & Banking" },
+              { id: "bi", label: "BI & Data Warehouses" },
+            ].map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setFilter(c.id)}
+                className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
+                  filter === c.id ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {filtered.map((item) => (
+            <div
+              key={item.name}
+              className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-blue-500/50 hover:shadow-sm transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-extrabold text-xs text-blue-700 font-mono">
+                    {item.logo}
+                  </div>
+                  <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                    ⚡ {item.latency}
+                  </span>
+                </div>
+                <h4 className="text-base font-bold text-slate-900 mb-1">{item.name}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">{item.desc}</p>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-blue-600">
+                <span>View Schema Docs</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResearchStudySection() {
+  return (
+    <div className="bg-slate-50 border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 shadow-sm">
+          <SectionLabel text="Benchmark Research Study // The Numbers Story" />
+          <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+            The Unstudied Journey of Financial Numbers
+          </h3>
+          <p className="text-sm md:text-base text-slate-600 max-w-3xl leading-relaxed mb-8">
+            In Q1 2026, Sheshi surveyed 4,200 CFOs, Corporate Controllers, and Heads of Financial Reporting across the US, UK, and European Union to quantify the hidden labor between transaction capture and board presentation.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+            <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-2xl">
+              <span className="text-4xl font-extrabold text-blue-700 font-mono">78%</span>
+              <h4 className="font-bold text-slate-900 text-sm mt-2 mb-1">Night &amp; Weekend Overtime</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Of senior controllers work after 10 PM during month-end close to reconcile spreadsheet formulas.
+              </p>
+            </div>
+            <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-2xl">
+              <span className="text-4xl font-extrabold text-blue-700 font-mono">142</span>
+              <h4 className="font-bold text-slate-900 text-sm mt-2 mb-1">Linked Spreadsheets</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                The average mid-market enterprise maintains 142 separate Excel files outside their governed ERP.
+              </p>
+            </div>
+            <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-2xl">
+              <span className="text-4xl font-extrabold text-blue-700 font-mono">41%</span>
+              <h4 className="font-bold text-slate-900 text-sm mt-2 mb-1">Undetected Formula Errors</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Of board presentation packages contained at least one formula transposition caught only during external audit.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              onClick={() => alert("Downloading 'The Numbers Story (2026 Benchmark Report)'...")}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
+            >
+              Download Full 48-Page Research Report (PDF)
+            </button>
+            <span className="text-xs text-slate-500 font-mono">
+              Free • Peer-Reviewed Methodology • Includes Benchmark Calculator
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EventsScheduleSection() {
+  const [activeDay, setActiveDay] = useState<1 | 2 | 3>(1);
+  const [registered, setRegistered] = useState(false);
+
+  const schedule = {
+    1: [
+      { time: "09:00 AM", title: "Opening Keynote: The Death of the Batch Close", speaker: "Goutham Sheshi, CEO & Founder" },
+      { time: "11:00 AM", title: "Architecting Ledger Invariants vs LLM Hallucinations", speaker: "Dr. Elena Rostova, CTO" },
+      { time: "02:30 PM", title: "Continuous Intercompany Netting Under ASC 810", speaker: "Marcus Vance, CPA" },
+    ],
+    2: [
+      { time: "09:30 AM", title: "CFO Panel: Transitioning 45 Subsidiaries in 90 Days", speaker: "Enterprise CFO Roundtable" },
+      { time: "01:00 PM", title: "Big 4 Audit Transformation: Federated Lineage Rooms", speaker: "Former PwC Audit Partners" },
+      { time: "03:45 PM", title: "Hands-on Masterclass: Writing Custom Sheshi Quanta Rules", speaker: "Solutions Architecture Team" },
+    ],
+    3: [
+      { time: "10:00 AM", title: "Autonomous Disclosure Filing & XBRL Validation", speaker: "SEC & Statutory Reporting Experts" },
+      { time: "01:30 PM", title: "Product Roadmap 2027: Multi-Chain Treasury Settlement", speaker: "Head of Product" },
+      { time: "04:00 PM", title: "Closing Gala & Sheshi Innovation Awards", speaker: "Executive Committee" },
+    ],
+  };
+
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <SectionLabel text="Sheshi Flagship Summit" />
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Sheshi NEXUS 2026 Summit Agenda
+            </h3>
+            <p className="text-sm text-slate-600 mt-2 max-w-xl">
+              October 14–16, 2026 • San Francisco, CA &amp; Live Digital Streaming. 3 days of intensive financial engineering masterclasses.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs">
+            <button
+              onClick={() => setActiveDay(1)}
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                activeDay === 1 ? "bg-white text-slate-900 shadow-xs" : "text-slate-600"
+              }`}
+            >
+              Day 1 (Architecture)
+            </button>
+            <button
+              onClick={() => setActiveDay(2)}
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                activeDay === 2 ? "bg-white text-slate-900 shadow-xs" : "text-slate-600"
+              }`}
+            >
+              Day 2 (CFO Strategy)
+            </button>
+            <button
+              onClick={() => setActiveDay(3)}
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                activeDay === 3 ? "bg-white text-slate-900 shadow-xs" : "text-slate-600"
+              }`}
+            >
+              Day 3 (Future of FOS)
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-4 mb-10">
+          {schedule[activeDay].map((s) => (
+            <div
+              key={s.time + s.title}
+              className="bg-slate-50 border border-slate-200 rounded-xl p-5 hover:border-blue-500/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div className="flex items-center gap-4">
+                <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded">
+                  {s.time}
+                </span>
+                <div>
+                  <h4 className="font-bold text-slate-900 text-sm">{s.title}</h4>
+                  <p className="text-xs text-slate-500">{s.speaker}</p>
+                </div>
+              </div>
+              <span className="text-xs font-semibold text-blue-600">Track: Main Stage</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="font-bold text-slate-900 text-sm">Reserve Your In-Person or Digital Pass</p>
+            <p className="text-xs text-slate-600">Complimentary access for verified Corporate Controllers, CFOs, and Audit Partners.</p>
+          </div>
+          <button
+            onClick={() => setRegistered(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
+          >
+            {registered ? "✓ Registration Confirmed!" : "Register for Sheshi NEXUS 2026"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrustComplianceAuditSection() {
+  return (
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full mb-3">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Trust Center • System SLA: 99.994%
+            </div>
+            <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Enterprise Trust &amp; Independent Verification
+            </h3>
+            <p className="text-sm text-slate-600 mt-2 max-w-xl">
+              We operate under continuous audit scrutiny. Every compliance report is available to authorized enterprise controllers and external auditors.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => alert("Downloading Sheshi SOC 2 Type II Executive Summary...")}
+              className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+            >
+              Request SOC 2 Type II Pack
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-900">SOC 1 Type II (SSAE 18)</span>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                Verified
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              Rigorous annual evaluation of controls relevant to internal control over financial reporting (ICFR). Audited by Big 4 CPA firm.
+            </p>
+            <span className="text-[11px] font-mono text-slate-500">Period: Nov 2025 – Oct 2026</span>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-900">SOC 2 Type II</span>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                Continuous
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              Real-time programmatic evidence collection across all 5 Trust Services Criteria: Security, Availability, Confidentiality, Privacy, Processing Integrity.
+            </p>
+            <span className="text-[11px] font-mono text-slate-500">Automated Audit Sync</span>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-900">ISO/IEC 27001:2022</span>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                Certified
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed mb-4">
+              Global information security standard certification covering our cloud infrastructure, hardware security modules (HSMs), and software development lifecycle.
+            </p>
+            <span className="text-[11px] font-mono text-slate-500">Cert # ISMS-2026-9941</span>
+          </div>
+        </div>
+
+        <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+          <div className="p-5 bg-slate-50 border-b border-slate-200 font-bold text-slate-900 text-xs font-mono uppercase tracking-wider">
+            Approved Sub-Processors &amp; Infrastructure Providers
+          </div>
+          <div className="divide-y divide-slate-100 text-xs">
+            <div className="p-4 flex justify-between items-center hover:bg-slate-50">
+              <div>
+                <span className="font-bold text-slate-900">Amazon Web Services (AWS)</span>
+                <span className="block text-[11px] text-slate-500">us-east-1 &amp; eu-central-1 Isolated Dedicated VPCs</span>
+              </div>
+              <span className="text-[10px] font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                Core Cloud Infrastructure
+              </span>
+            </div>
+            <div className="p-4 flex justify-between items-center hover:bg-slate-50">
+              <div>
+                <span className="font-bold text-slate-900">Cloudflare Inc.</span>
+                <span className="block text-[11px] text-slate-500">Enterprise DDoS Mitigation &amp; TLS 1.3 Edge Termination</span>
+              </div>
+              <span className="text-[10px] font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                Edge Security
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CTABand({
   title = "Ready to transform your financial operating layer?",
   subtitle = "Talk to our team of Chartered Accountants and distributed systems engineers. We understand your month-end close because we've lived it.",
@@ -1129,17 +2358,17 @@ function CTABand({
   navigate?: (r: Route) => void;
 }) {
   return (
-    <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-t border-slate-800 text-center relative overflow-hidden">
+    <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white px-6 md:px-12 py-20 border-t border-blue-800 text-center relative overflow-hidden shadow-inner">
       <div className="max-w-3xl mx-auto relative z-10">
-        <span className="inline-block text-xs font-bold text-blue-400 uppercase tracking-widest mb-3 font-mono">
+        <span className="inline-block text-xs font-bold text-blue-200 uppercase tracking-widest mb-3 font-mono">
           GET STARTED WITH SHESHI
         </span>
         <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">{title}</h3>
-        <p className="text-sm md:text-base text-slate-400 mb-8 leading-relaxed max-w-2xl mx-auto">{subtitle}</p>
+        <p className="text-sm md:text-base text-blue-100 mb-8 leading-relaxed max-w-2xl mx-auto">{subtitle}</p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <button
             onClick={() => navigate && navigate({ page: "contact" })}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+            className="bg-white hover:bg-blue-50 text-blue-800 font-bold px-7 py-3 rounded-xl text-sm shadow-lg transition-all cursor-pointer"
           >
             Request an Executive Conversation
           </button>
@@ -1148,7 +2377,7 @@ function CTABand({
               const el = document.getElementById("sitemap-flowchart");
               el?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="border border-slate-700 text-slate-300 hover:text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800/80 transition-all cursor-pointer"
+            className="border border-white/40 text-white hover:bg-white/10 px-6 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer"
           >
             View Full System Map
           </button>
@@ -1169,6 +2398,18 @@ type SectionDef = {
 
 function renderSection(s: SectionDef, i: number, navigate?: (r: Route) => void) {
   switch (s.type) {
+    case "founderletter": return <FounderLetterSection key={i} />;
+    case "leadership": return <LeadershipSection key={i} />;
+    case "careers": return <CareersJobBoardSection key={i} />;
+    case "closetimeline": return <CloseTimelineSection key={i} />;
+    case "startupforecaster": return <StartupRunwayForecasterSection key={i} />;
+    case "advisorycockpit": return <AdvisoryCockpitSection key={i} />;
+    case "ruleengine": return <RuleEngineSimulatorSection key={i} />;
+    case "financialstatements": return <FinancialStatementsViewerSection key={i} />;
+    case "integrationscatalog": return <IntegrationsCatalogSection key={i} />;
+    case "researchstudy": return <ResearchStudySection key={i} />;
+    case "eventsschedule": return <EventsScheduleSection key={i} />;
+    case "trustaudit": return <TrustComplianceAuditSection key={i} />;
     case "trustbadges": return <TrustBadgesSection key={i} />;
     case "culturevalues": return <CultureValuesSection key={i} />;
     case "eventsfeatured": return <EventsFeaturedSection key={i} />;
@@ -1198,37 +2439,37 @@ const PAGE_DATA: Record<
       title: "About Sheshi",
       subtitle: "Built from inside finance. For the world outside it. The governed layer between your ERP and every financial output.",
       hero: "split",
-      sections: [{ type: "logostrip" }, { type: "metrics", count: 4 }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "founderletter" }, { type: "metrics", count: 4 }, { type: "casestudies" }, { type: "ctaband" }],
     },
     story: {
       title: "Our Story",
       subtitle: "How two decades in professional accounting practice revealed the hidden risks of un-governed financial spreadsheets.",
       hero: "split",
-      sections: [{ type: "zigzag", count: 3 }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "founderletter" }, { type: "closetimeline" }, { type: "testimonial" }, { type: "ctaband" }],
     },
     leadership: {
       title: "Executive Leadership",
       subtitle: "Chartered Accountants and distributed systems engineers uniting deep financial practice with modern infrastructure.",
       hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
+      sections: [{ type: "leadership" }, { type: "trustbadges" }, { type: "ctaband" }],
     },
     team: {
       title: "Our Global Team",
       subtitle: "28+ countries represented across financial engineering, distributed consensus, and client advisory.",
       hero: "split",
-      sections: [{ type: "culturevalues" }, { type: "capgrid", count: 9 }, { type: "ctaband" }],
+      sections: [{ type: "culturevalues" }, { type: "leadership" }, { type: "ctaband" }],
     },
     culture: {
       title: "People - and culture",
       subtitle: "Our core principles, radical transparency, global inclusion, and life inside Sheshi.",
       hero: "split",
-      sections: [{ type: "culturevalues" }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "culturevalues" }, { type: "careers" }, { type: "testimonial" }, { type: "ctaband" }],
     },
     careers: {
       title: "Careers at Sheshi",
       subtitle: "Build the future of governed financial intelligence. Competitive equity, remote-first autonomy, and deep impact.",
       hero: "split",
-      sections: [{ type: "culturevalues" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
+      sections: [{ type: "culturevalues" }, { type: "careers" }, { type: "faq" }, { type: "ctaband" }],
     },
   },
   solutions: {
@@ -1236,25 +2477,25 @@ const PAGE_DATA: Record<
       title: "Enterprise Finance",
       subtitle: "Complex multi-entity consolidation, SOX compliance, and continuous close for global organizations.",
       hero: "split",
-      sections: [{ type: "logostrip" }, { type: "metrics", count: 4 }, { type: "zigzag", count: 3 }, { type: "casestudies" }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "closetimeline" }, { type: "metrics", count: 4 }, { type: "ruleengine" }, { type: "casestudies" }, { type: "ctaband" }],
     },
     startup: {
       title: "Startup & Scaleup Finance",
       subtitle: "Burn oversight, investor runway predictability, and board pack automation for high-growth ventures.",
       hero: "split",
-      sections: [{ type: "metrics", count: 3 }, { type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
+      sections: [{ type: "startupforecaster" }, { type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
     },
     consulting: {
       title: "Consulting & Advisory Firms",
       subtitle: "Empower your advisory engagements with automated client reconciliation and white-label governance.",
       hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "advisorycockpit" }, { type: "capgrid", count: 6 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     professionals: {
       title: "Finance Professionals",
       subtitle: "Purpose-built workbench for CFOs, controllers, and FP&A analysts to eliminate manual re-keying.",
       hero: "split",
-      sections: [{ type: "featurecards", count: 4 }, { type: "faq" }, { type: "ctaband" }],
+      sections: [{ type: "closetimeline" }, { type: "financialstatements" }, { type: "faq" }, { type: "ctaband" }],
     },
   },
   technology: {
@@ -1262,31 +2503,31 @@ const PAGE_DATA: Record<
       title: "Financial Operating System",
       subtitle: "The authoritative infrastructure layer that sits between your transaction ERP and board outputs.",
       hero: "centered",
-      sections: [{ type: "capgrid", count: 9 }, { type: "zigzag", count: 2 }, { type: "ctaband" }],
+      sections: [{ type: "ruleengine" }, { type: "integrationscatalog" }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
     },
     ai: {
       title: "AI & Automation",
       subtitle: "Autonomous variance detection, flux analysis agents, and audit-ready machine learning workflows.",
       hero: "centered",
-      sections: [{ type: "metrics", count: 5 }, { type: "zigzag", count: 3 }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
+      sections: [{ type: "ruleengine" }, { type: "metrics", count: 5 }, { type: "faq" }, { type: "ctaband" }],
     },
     integrations: {
       title: "ERP & Data Integrations",
       subtitle: "Pre-built connectors for SAP, NetSuite, Workday, Microsoft Dynamics, QuickBooks, and Salesforce.",
       hero: "split",
-      sections: [{ type: "logostrip" }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
+      sections: [{ type: "integrationscatalog" }, { type: "ruleengine" }, { type: "ctaband" }],
     },
     security: {
       title: "Security & Compliance",
       subtitle: "Enterprise-grade AES-256 encryption, SOC 1/2 compliance, and immutable cryptographic audit trails.",
       hero: "split",
-      sections: [{ type: "metrics3" }, { type: "trustbadges" }, { type: "ctaband" }],
+      sections: [{ type: "trustaudit" }, { type: "trustbadges" }, { type: "ctaband" }],
     },
     trust: {
       title: "Trust Center",
       subtitle: "Real-time security posture, compliance certifications, sub-processors, and system status transparency.",
       hero: "centered",
-      sections: [{ type: "trustbadges" }, { type: "metrics3" }, { type: "featurecards", count: 3 }, { type: "faq" }, { type: "ctaband" }],
+      sections: [{ type: "trustaudit" }, { type: "trustbadges" }, { type: "faq" }, { type: "ctaband" }],
     },
   },
   resources: {
@@ -1294,13 +2535,13 @@ const PAGE_DATA: Record<
       title: "Sheshi Perspectives & Blog",
       subtitle: "Engineering insights, financial governance frameworks, and continuous close case studies.",
       hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
+      sections: [{ type: "casestudies" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
     },
     insights: {
       title: "Executive Insights",
       subtitle: "In-depth research on financial operations, multi-entity complexity, and autonomous close architecture.",
       hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "researchstudy" }, { type: "closetimeline" }, { type: "ctaband" }],
     },
     casestudies: {
       title: "Customer Case Studies",
@@ -1312,19 +2553,19 @@ const PAGE_DATA: Record<
       title: "The Numbers Story (Research)",
       subtitle: "Independent structured study with 150+ CFOs on the unstudied lifecycle of financial data between ERP and board.",
       hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "metrics", count: 4 }, { type: "testimonial" }, { type: "ctaband" }],
+      sections: [{ type: "researchstudy" }, { type: "metrics", count: 4 }, { type: "casestudies" }, { type: "ctaband" }],
     },
     events: {
       title: "Events & Summits",
       subtitle: "Join us at Sheshi NEXUS 2026, CFO leadership roundtables, and regional financial engineering symposiums.",
       hero: "split",
-      sections: [{ type: "eventsfeatured" }, { type: "videocards" }, { type: "ctaband" }],
+      sections: [{ type: "eventsschedule" }, { type: "eventsfeatured" }, { type: "ctaband" }],
     },
     webinars: {
       title: "Webinars & Masterclasses",
       subtitle: "Learn continuous close techniques, automated flux analysis, and ERP governance from practicing leaders.",
       hero: "split",
-      sections: [{ type: "videocards" }, { type: "faq" }, { type: "ctaband" }],
+      sections: [{ type: "videocards" }, { type: "eventsschedule" }, { type: "ctaband" }],
     },
     updates: {
       title: "Product Changelog & Updates",
@@ -1338,7 +2579,7 @@ const PAGE_DATA: Record<
       title: "Technology Partners",
       subtitle: "Cloud platforms, ERP ecosystems, and developer tooling integrated with Sheshi.",
       hero: "split",
-      sections: [{ type: "logostrip" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
+      sections: [{ type: "integrationscatalog" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
     },
     strategic: {
       title: "Strategic Advisory Partners",
@@ -1351,6 +2592,32 @@ const PAGE_DATA: Record<
       subtitle: "Join the Sheshi ecosystem. Co-sell incentives, certified partner portals, and technical enablement.",
       hero: "split",
       sections: [{ type: "featurecards", count: 3 }, { type: "faq" }, { type: "ctaband" }],
+    },
+  },
+  topics: {
+    "financial-consolidation": {
+      title: "Financial Consolidation Software",
+      subtitle: "Multi-entity accounting, automated currency netting, and GAAP / IFRS statutory reporting in a single governed ledger.",
+      hero: "centered",
+      sections: [{ type: "ruleengine" }, { type: "financialstatements" }, { type: "faq" }, { type: "ctaband" }],
+    },
+    "continuous-close": {
+      title: "Continuous Financial Close",
+      subtitle: "Shift from high-stress 15-day batch closes to continuous streaming ledger verification with zero day-end chaos.",
+      hero: "centered",
+      sections: [{ type: "closetimeline" }, { type: "metrics", count: 4 }, { type: "faq" }, { type: "ctaband" }],
+    },
+    "account-reconciliation": {
+      title: "Autonomous Account Reconciliation",
+      subtitle: "Deterministic algorithmic matching across ERPs, bank statements, and payment gateways with 99.4% match rates.",
+      hero: "centered",
+      sections: [{ type: "ruleengine" }, { type: "advisorycockpit" }, { type: "faq" }, { type: "ctaband" }],
+    },
+    "intercompany-accounting": {
+      title: "Intercompany Accounting & Eliminations",
+      subtitle: "Eliminate cross-border transfer pricing discrepancies, dispute emails, and manual journal writebacks.",
+      hero: "centered",
+      sections: [{ type: "ruleengine" }, { type: "financialstatements" }, { type: "faq" }, { type: "ctaband" }],
     },
   },
 };
@@ -1589,16 +2856,16 @@ function ProductSubsite({
 
       {/* Product Content */}
       <main className="flex-1">
-        <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-b border-slate-800 text-center">
+        <div className="bg-gradient-to-b from-white via-blue-50/25 to-slate-50 text-slate-900 px-6 md:px-12 py-20 border-b border-slate-200 text-center">
           <div className="max-w-4xl mx-auto">
             <span
-              className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border mb-4 inline-block"
-              style={{ color: product.accent, borderColor: product.accent + "50" }}
+              className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border mb-4 inline-block font-semibold"
+              style={{ color: product.accent, borderColor: product.accent + "40", backgroundColor: product.accent + "12" }}
             >
               Independent Sheshi Product • {product.label}
             </span>
-            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4">{product.tagline}</h1>
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">{product.tagline}</h1>
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
               {product.description}
             </p>
             <div className="flex justify-center gap-3">
@@ -1611,7 +2878,7 @@ function ProductSubsite({
               </button>
               <button
                 onClick={() => navigate({ page: "home" })}
-                className="text-xs font-semibold text-slate-300 border border-slate-700 hover:text-white px-5 py-2.5 rounded-lg cursor-pointer"
+                className="text-xs font-semibold text-slate-700 border border-slate-300 hover:bg-slate-50 px-5 py-2.5 rounded-lg cursor-pointer bg-white"
               >
                 Explore Overall Platform
               </button>
@@ -1619,21 +2886,26 @@ function ProductSubsite({
           </div>
         </div>
 
-        <CapabilityGrid count={6} />
+        {/* Bespoke Domain Tool per Product */}
+        {productId === "quanta" && <RuleEngineSimulatorSection />}
+        {productId === "catalyx" && <StartupRunwayForecasterSection />}
+        {productId === "consultease" && <AdvisoryCockpitSection />}
+        {productId === "sheshifr" && <FinancialStatementsViewerSection />}
+
         <MetricsRow count={3} />
         <ZigzagSection rows={2} />
         <CTABand navigate={navigate} />
       </main>
 
       {/* Product Subsite Footer */}
-      <footer className="bg-[#0b132b] text-white border-t border-slate-800 px-6 md:px-12 py-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 px-6 md:px-12 py-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div>
-            <span className="font-bold text-white mr-2">{product.label}</span>
+            <span className="font-bold text-slate-900 mr-2">{product.label}</span>
             <span>A Sheshi Financial Operating System Product</span>
           </div>
-          <button onClick={() => navigate({ page: "home" })} className="text-blue-400 hover:text-white cursor-pointer">
-            Return to Sheshi Corporate Home →
+          <button onClick={() => navigate({ page: "home" })} className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">
+            Return to Sheshi Corporate Home &rarr;
           </button>
         </div>
       </footer>
@@ -1798,6 +3070,20 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
             { id: "sheshifr-contact", label: "Contact Us", route: { page: "products", sub: "sheshifr", productPage: "contact" } },
           ],
         },
+      ],
+    },
+    {
+      id: "topics",
+      title: "Topics & Guides",
+      icon: "📖",
+      color: "#2563eb",
+      tagline: "Searchable Technical Accounting Guides",
+      route: { page: "topics" },
+      leaves: [
+        { id: "topic-consolidation", label: "Financial Consolidation Software", route: { page: "topics", sub: "financial-consolidation" }, tagline: "Multi-entity accounting & currency netting" },
+        { id: "topic-close", label: "Continuous Financial Close", route: { page: "topics", sub: "continuous-close" }, tagline: "Shift from 15-day batch close to real-time" },
+        { id: "topic-rec", label: "Autonomous Account Reconciliation", route: { page: "topics", sub: "account-reconciliation" }, tagline: "Algorithmic matching & ERP auto-sync" },
+        { id: "topic-intercompany", label: "Intercompany Accounting", route: { page: "topics", sub: "intercompany-accounting" }, tagline: "Automated eliminations & transfer pricing" },
       ],
     },
     {
@@ -2570,15 +3856,15 @@ function Navbar({ navigate, currentPage }: { navigate: (r: Route) => void; curre
 
 function Footer({ navigate }: { navigate: (r: Route) => void }) {
   return (
-    <footer className="bg-[#090e17] text-white border-t border-slate-800">
+    <footer className="bg-slate-50 text-slate-600 border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid grid-cols-2 md:grid-cols-5 gap-8">
         <div className="col-span-2">
-          <div className="flex items-center gap-2 font-bold text-xl mb-3 tracking-tight">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+          <div className="flex items-center gap-2 font-bold text-xl mb-3 tracking-tight text-slate-900">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
             <span>SHESHI</span>
           </div>
-          <p className="text-slate-400 text-xs max-w-sm leading-relaxed mb-4">
-            The Financial Operating System — the governed layer between your ERP and every financial output your organisation produces.
+          <p className="text-slate-600 text-xs max-w-sm leading-relaxed mb-4">
+            The Financial Operating System &mdash; the governed layer between your ERP and every financial output your organisation produces.
           </p>
           <p className="text-[11px] text-slate-500 font-mono">
             Close, plan, consolidate, analyse, collaborate, report.
@@ -2586,13 +3872,13 @@ function Footer({ navigate }: { navigate: (r: Route) => void }) {
         </div>
 
         <div>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Products</p>
-          <ul className="space-y-2.5 text-xs text-slate-400">
+          <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 font-mono">Products</p>
+          <ul className="space-y-2.5 text-xs text-slate-600">
             {PRODUCTS.map((p) => (
               <li key={p.id}>
                 <button
                   onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
-                  className="hover:text-white transition-colors cursor-pointer text-left"
+                  className="hover:text-blue-600 transition-colors cursor-pointer text-left"
                 >
                   {p.label}
                 </button>
@@ -2602,37 +3888,37 @@ function Footer({ navigate }: { navigate: (r: Route) => void }) {
         </div>
 
         <div>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Company</p>
-          <ul className="space-y-2.5 text-xs text-slate-400">
-            <li><button onClick={() => navigate({ page: "company", sub: "about" })} className="hover:text-white transition-colors cursor-pointer">About Sheshi</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "story" })} className="hover:text-white transition-colors cursor-pointer">Our Story</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "leadership" })} className="hover:text-white transition-colors cursor-pointer">Leadership</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "culture" })} className="hover:text-white transition-colors cursor-pointer">People &amp; Culture</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "careers" })} className="hover:text-white transition-colors cursor-pointer">Careers</button></li>
-            <li><button onClick={() => navigate({ page: "resources", sub: "events" })} className="hover:text-white transition-colors cursor-pointer">Events</button></li>
-            <li><button onClick={() => navigate({ page: "contact" })} className="hover:text-white transition-colors cursor-pointer">Contact Us</button></li>
+          <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 font-mono">Company</p>
+          <ul className="space-y-2.5 text-xs text-slate-600">
+            <li><button onClick={() => navigate({ page: "company", sub: "about" })} className="hover:text-blue-600 transition-colors cursor-pointer">About Sheshi</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "story" })} className="hover:text-blue-600 transition-colors cursor-pointer">Our Story</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "leadership" })} className="hover:text-blue-600 transition-colors cursor-pointer">Leadership</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "culture" })} className="hover:text-blue-600 transition-colors cursor-pointer">People &amp; Culture</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "careers" })} className="hover:text-blue-600 transition-colors cursor-pointer">Careers</button></li>
+            <li><button onClick={() => navigate({ page: "resources", sub: "events" })} className="hover:text-blue-600 transition-colors cursor-pointer">Events</button></li>
+            <li><button onClick={() => navigate({ page: "contact" })} className="hover:text-blue-600 transition-colors cursor-pointer">Contact Us</button></li>
           </ul>
         </div>
 
         <div>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Governance &amp; Trust</p>
-          <ul className="space-y-2.5 text-xs text-slate-400">
-            <li><button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-white transition-colors cursor-pointer text-blue-400">Trust Center (99.99%)</button></li>
-            <li><button onClick={() => navigate({ page: "technology", sub: "security" })} className="hover:text-white transition-colors cursor-pointer">Security Disclosure</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "privacy" })} className="hover:text-white transition-colors cursor-pointer">Privacy Policy</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "terms" })} className="hover:text-white transition-colors cursor-pointer">Terms of Service</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "cookies" })} className="hover:text-white transition-colors cursor-pointer">Cookie Policy</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "sitemap" })} className="hover:text-white transition-colors cursor-pointer">System Sitemap</button></li>
+          <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 font-mono">Governance &amp; Trust</p>
+          <ul className="space-y-2.5 text-xs text-slate-600">
+            <li><button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-blue-600 transition-colors cursor-pointer text-blue-600 font-semibold">Trust Center (99.99%)</button></li>
+            <li><button onClick={() => navigate({ page: "technology", sub: "security" })} className="hover:text-blue-600 transition-colors cursor-pointer">Security Disclosure</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "privacy" })} className="hover:text-blue-600 transition-colors cursor-pointer">Privacy Policy</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "terms" })} className="hover:text-blue-600 transition-colors cursor-pointer">Terms of Service</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "cookies" })} className="hover:text-blue-600 transition-colors cursor-pointer">Cookie Policy</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "sitemap" })} className="hover:text-blue-600 transition-colors cursor-pointer">System Sitemap</button></li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-slate-800/80 px-6 md:px-12 py-5 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <p>© 2026 Sheshi Technologies Inc. Built from inside finance for the world outside it.</p>
+      <div className="border-t border-slate-200 px-6 md:px-12 py-5 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <p>&copy; 2026 Sheshi Technologies Inc. Built from inside finance for the world outside it.</p>
         <div className="flex gap-4">
-          <span className="hover:text-white cursor-pointer">LinkedIn</span>
-          <span className="hover:text-white cursor-pointer">Twitter / X</span>
-          <span className="hover:text-white cursor-pointer">SOC 2 Verified</span>
+          <span className="hover:text-blue-600 cursor-pointer">LinkedIn</span>
+          <span className="hover:text-blue-600 cursor-pointer">Twitter / X</span>
+          <span className="hover:text-emerald-700 font-semibold cursor-pointer">SOC 2 Type II Verified</span>
         </div>
       </div>
     </footer>
@@ -2685,6 +3971,66 @@ function resolvePageComponent(route: Route, navigate: (r: Route) => void) {
     );
   }
 
+  if (route.page === "topics" && !route.sub) {
+    return (
+      <div>
+        <PageHero
+          title="Searchable Financial Topics &amp; Practice Guides"
+          subtitle="Authoritative guides on multi-entity consolidation, continuous close architecture, autonomous reconciliation, and intercompany accounting."
+          breadcrumb={["Home", "Topics & Guides"]}
+        />
+        <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              {
+                id: "financial-consolidation",
+                title: "Financial Consolidation Software",
+                desc: "How enterprises automate multi-tier subsidiary consolidation, currency remeasurement, and equity netting under ASC 810 and IFRS 10.",
+                tag: "Consolidation Guide",
+              },
+              {
+                id: "continuous-close",
+                title: "Continuous Financial Close",
+                desc: "Shift from high-stress 15-day batch closes to continuous streaming ledger verification with zero day-end chaos.",
+                tag: "Close Cycle Guide",
+              },
+              {
+                id: "account-reconciliation",
+                title: "Autonomous Account Reconciliation",
+                desc: "Deterministic algorithmic matching across ERPs, bank statements, and payment gateways with 99.4% match rates.",
+                tag: "Reconciliation Guide",
+              },
+              {
+                id: "intercompany-accounting",
+                title: "Intercompany Accounting & Eliminations",
+                desc: "Eliminate cross-border transfer pricing discrepancies, dispute emails, and manual journal writebacks.",
+                tag: "Intercompany Guide",
+              },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => navigate({ page: "topics", sub: t.id })}
+                className="text-left bg-white border border-slate-200 rounded-2xl p-8 hover:border-blue-500 hover:shadow-lg transition-all group cursor-pointer"
+              >
+                <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
+                  {t.tag}
+                </span>
+                <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
+                  {t.title}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed mb-6">{t.desc}</p>
+                <span className="text-xs font-semibold text-blue-600 group-hover:underline">
+                  Read complete practice guide &rarr;
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <CTABand navigate={navigate} />
+      </div>
+    );
+  }
+
   const pageData = PAGE_DATA[route.page]?.[route.sub ?? ""];
   if (pageData) {
     return (
@@ -2711,13 +4057,38 @@ function resolvePageComponent(route: Route, navigate: (r: Route) => void) {
 export default function App() {
   const [route, setRoute] = useState<Route>({ page: "home" });
 
+  useEffect(() => {
+    function handleHash() {
+      const hash = window.location.hash.replace(/^#\/?/, "");
+      if (!hash) return;
+      const parts = hash.split("/");
+      if (parts[0] === "products" && parts[1]) {
+        setRoute({ page: "products", sub: parts[1], productPage: parts[2] || "home" });
+      } else if (parts[0]) {
+        setRoute({ page: parts[0], sub: parts[1] });
+      }
+    }
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   function navigate(r: Route) {
     setRoute(r);
+    let hash = "#/" + r.page;
+    if (r.sub) hash += "/" + r.sub;
+    if (r.productPage) hash += "/" + r.productPage;
+    window.location.hash = hash;
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function setProductPage(p: string) {
-    setRoute((prev) => ({ ...prev, productPage: p }));
+    setRoute((prev) => {
+      const updated = { ...prev, productPage: p };
+      let hash = "#/products/" + (prev.sub || "quanta") + "/" + p;
+      window.location.hash = hash;
+      return updated;
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 

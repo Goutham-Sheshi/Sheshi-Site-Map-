@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://goutham-sheshi.github.io/Sheshi-Site-Map-/sitemap.xml
