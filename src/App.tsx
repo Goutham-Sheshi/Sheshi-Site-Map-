@@ -3,6 +3,12 @@ import QuantaSubsite from "./components/products/QuantaSubsite";
 import CatalyxSubsite from "./components/products/CatalyxSubsite";
 import ConsultEaseSubsite from "./components/products/ConsultEaseSubsite";
 import SheshiFRSubsite from "./components/products/SheshiFRSubsite";
+import CompanyPages from "./components/pages/CompanyPages";
+import SolutionsPages from "./components/pages/SolutionsPages";
+import TechnologyPages from "./components/pages/TechnologyPages";
+import ResourcesPages from "./components/pages/ResourcesPages";
+import TopicsPages from "./components/pages/TopicsPages";
+import PartnersPages from "./components/pages/PartnersPages";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -3868,6 +3874,12 @@ function Footer({ navigate }: { navigate: (r: Route) => void }) {
 
 function resolvePageComponent(route: Route, navigate: (r: Route) => void) {
   if (route.page === "home") return <HomePage navigate={navigate} />;
+  if (route.page === "company") return <CompanyPages sub={route.sub} navigate={navigate} />;
+  if (route.page === "solutions") return <SolutionsPages sub={route.sub} navigate={navigate} />;
+  if (route.page === "technology") return <TechnologyPages sub={route.sub} navigate={navigate} />;
+  if (route.page === "resources") return <ResourcesPages sub={route.sub} navigate={navigate} />;
+  if (route.page === "partners") return <PartnersPages sub={route.sub} navigate={navigate} />;
+  if (route.page === "topics" && route.sub) return <TopicsPages sub={route.sub} navigate={navigate} />;
   if (route.page === "contact") return <ContactPage />;
   if (route.page === "legal") return <LegalPage doc={route.sub ?? "privacy"} />;
 
