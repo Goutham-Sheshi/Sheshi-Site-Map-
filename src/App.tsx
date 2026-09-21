@@ -1,2418 +1,901 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Route = {
+export type Route = {
   page: string;
   sub?: string;
   product?: string;
   productPage?: string;
+  topic?: string;
 };
 
-// ─── Navigation Data ──────────────────────────────────────────────────────────
+// ─── Navigation Registry ──────────────────────────────────────────────────────
 
 const NAV = [
   { label: "Home", page: "home" },
   {
-    label: "Company",
-    page: "company",
-    children: [
-      { label: "About Sheshi", sub: "about" },
-      { label: "Our Story", sub: "story" },
-      { label: "Leadership", sub: "leadership" },
-      { label: "Our Team", sub: "team" },
-      { label: "People - and culture", sub: "culture" },
-      { label: "Careers", sub: "careers" },
-      { label: "Contact Us", sub: "contact" },
-    ],
-  },
-  {
     label: "Products",
     page: "products",
     children: [
-      { label: "Quanta (Enterprise)", sub: "quanta" },
-      { label: "Catalyx (Startups)", sub: "catalyx" },
-      { label: "ConsultEase (Advisory)", sub: "consultease" },
-      { label: "Sheshi FR (Reporting)", sub: "sheshifr" },
+      { label: "Sheshi Quanta", sub: "quanta", tagline: "Autonomous Ledger & Consolidation Engine" },
+      { label: "Sheshi Catalyx", sub: "catalyx", tagline: "Startup Finance & Runway Accelerator" },
+      { label: "Sheshi ConsultEase", sub: "consultease", tagline: "CPA & Advisory Multi-Client Portal" },
+      { label: "Sheshi FR", sub: "sheshifr", tagline: "10-K, GAAP & Disclosure Reporting Suite" },
+    ],
+  },
+  {
+    label: "Topics & Guides",
+    page: "topics",
+    children: [
+      { label: "Financial Consolidation Software", sub: "financial-consolidation", tagline: "Multi-entity accounting & currency netting" },
+      { label: "Continuous Financial Close", sub: "continuous-close", tagline: "Shift from 15-day batch close to real-time" },
+      { label: "Autonomous Account Reconciliation", sub: "account-reconciliation", tagline: "Algorithmic matching & ERP auto-sync" },
+      { label: "Intercompany Accounting", sub: "intercompany-accounting", tagline: "Automated eliminations & transfer pricing" },
     ],
   },
   {
     label: "Solutions",
     page: "solutions",
     children: [
-      { label: "Enterprise Finance", sub: "enterprise" },
-      { label: "Startup Finance", sub: "startup" },
-      { label: "Consulting & Advisory", sub: "consulting" },
-      { label: "Finance Professionals", sub: "professionals" },
+      { label: "Enterprise Finance", sub: "enterprise", tagline: "High-volume multi-entity SOX compliance" },
+      { label: "Startup & Scaleup", sub: "startup", tagline: "Runway forecasting & investor board packs" },
+      { label: "Consulting & CPA Firms", sub: "consulting", tagline: "Expand advisory capacity 3x without burnout" },
+      { label: "Finance Professionals", sub: "professionals", tagline: "Built for Controllers, VPs & modern CFOs" },
     ],
   },
   {
     label: "Technology",
     page: "technology",
     children: [
-      { label: "Financial Operating System", sub: "fos" },
-      { label: "AI & Automation", sub: "ai" },
-      { label: "Integrations", sub: "integrations" },
-      { label: "Security & Compliance", sub: "security" },
-      { label: "Trust Center", sub: "trust" },
+      { label: "Financial OS Architecture", sub: "fos", tagline: "High-throughput streaming ledger engine" },
+      { label: "Zero-Hallucination AI", sub: "ai", tagline: "Deterministic math ledger invariants" },
+      { label: "ERP & Bank Integrations", sub: "integrations", tagline: "Bi-directional connectors for SAP, NetSuite, Workday" },
+      { label: "Trust Center & Compliance", sub: "trust", tagline: "SOC 1 & 2 Type II, ISO 27001, GDPR, 99.99% SLA" },
+    ],
+  },
+  {
+    label: "Company",
+    page: "company",
+    children: [
+      { label: "About Sheshi", sub: "about", tagline: "Built from inside finance for the world outside" },
+      { label: "Our Story", sub: "story", tagline: "Founder's 20-year accounting practice narrative" },
+      { label: "People - and culture", sub: "culture", tagline: "Core principles, diversity & life inside Sheshi" },
+      { label: "Leadership & Advisory", sub: "leadership", tagline: "Executives and former Big 4 audit partners" },
+      { label: "Careers", sub: "careers", tagline: "Open roles across engineering, product & finance" },
     ],
   },
   {
     label: "Resources",
     page: "resources",
     children: [
-      { label: "Blog", sub: "blog" },
-      { label: "Insights", sub: "insights" },
-      { label: "Case Studies", sub: "casestudies" },
-      { label: "Research (Numbers Story)", sub: "research" },
-      { label: "Events", sub: "events" },
-      { label: "Webinars", sub: "webinars" },
-      { label: "Product Updates", sub: "updates" },
-    ],
-  },
-  {
-    label: "Partners",
-    page: "partners",
-    children: [
-      { label: "Technology Partners", sub: "tech" },
-      { label: "Strategic Partners", sub: "strategic" },
-      { label: "Become a Partner", sub: "join" },
+      { label: "Events & Summits", sub: "events", tagline: "Sheshi NEXUS 2026 & CFO masterclasses" },
+      { label: "The Numbers Story (Research)", sub: "research", tagline: "Benchmark study of 4,200 CFOs & Controllers" },
+      { label: "Insights & Guides", sub: "blog", tagline: "Technical accounting whitepapers & articles" },
+      { label: "Case Studies", sub: "casestudies", tagline: "Quantified ROI from Fortune 500 enterprises" },
     ],
   },
   { label: "Contact", page: "contact" },
 ];
 
-const PRODUCTS = [
+const PRODUCTS_LIST = [
   {
     id: "quanta",
-    label: "Quanta",
-    tagline: "Enterprise Governance & Intelligence Platform",
-    description: "The governed financial lifecycle for CFOs and finance leaders — close, plan, consolidate, analyse, collaborate, and report in one platform.",
-    accent: "#1d4ed8",
-    pages: [
-      { id: "home", label: "Overview" },
-      { id: "platform", label: "Platform" },
-      { id: "solutions", label: "Solutions" },
-      { id: "capabilities", label: "Capabilities" },
-      { id: "enterprise", label: "Enterprise" },
-      { id: "resources", label: "Resources" },
-      { id: "contact", label: "Contact Sales" },
-    ],
+    name: "Sheshi Quanta",
+    eyebrow: "Enterprise Consolidation",
+    tagline: "Autonomous General Ledger & Multi-Entity Consolidation Engine",
+    description: "Eliminate manual Excel workbooks. Quanta continuously ingests millions of transactions from SAP, NetSuite, and Oracle, performing automated multi-currency conversion, intercompany netting, and rule-based eliminations in real time.",
+    color: "#2563eb",
+    topicSlug: "financial-consolidation",
   },
   {
     id: "catalyx",
-    label: "Catalyx",
-    tagline: "Startup Finance Command Center",
-    description: "Built for speed, burn oversight, runway predictability, and effortless investor board pack generation.",
-    accent: "#059669",
-    pages: [
-      { id: "home", label: "Overview" },
-      { id: "solutions", label: "Solutions" },
-      { id: "features", label: "Features" },
-      { id: "startups", label: "For Startups" },
-      { id: "resources", label: "Resources" },
-      { id: "contact", label: "Get Started" },
-    ],
+    name: "Sheshi Catalyx",
+    eyebrow: "High-Growth Ventures",
+    tagline: "Startup Financial Intelligence & Continuous Runway Forecaster",
+    description: "Connect Stripe, Brex, Ramp, Gusto, and QuickBooks in 5 minutes. Catalyx monitors burn rate velocity, automatically compiles monthly investor packs, and models cash scenarios so founders never face sudden runway cliffs.",
+    color: "#0d9488",
+    topicSlug: "continuous-close",
   },
   {
     id: "consultease",
-    label: "ConsultEase",
-    tagline: "Advisory & Client Engagement Suite",
-    description: "Power your client engagements with multi-entity financial oversight, automated reconciliation, and white-label advisory dashboards.",
-    accent: "#7c3aed",
-    pages: [
-      { id: "home", label: "Overview" },
-      { id: "solutions", label: "Solutions" },
-      { id: "features", label: "Features" },
-      { id: "firms", label: "For Advisory Firms" },
-      { id: "resources", label: "Resources" },
-      { id: "contact", label: "Partner With Us" },
-    ],
+    name: "Sheshi ConsultEase",
+    eyebrow: "Advisory & CPA Practice",
+    tagline: "Multi-Client Advisory Practice Portal & Workpaper Orchestration",
+    description: "Standardize engagement workpapers across every client entity. ConsultEase provides senior reviewers and audit partners with a unified multi-client health dashboard, automated PBC collection, and sign-off workflows.",
+    color: "#7c3aed",
+    topicSlug: "account-reconciliation",
   },
   {
     id: "sheshifr",
-    label: "Sheshi FR",
-    tagline: "Autonomous Financial Reporting Suite",
-    description: "Automated statement generation, XBRL tag alignment, and audit-ready schedules designed by Chartered Accountants.",
-    accent: "#d97706",
-    pages: [
-      { id: "home", label: "Overview" },
-      { id: "features", label: "Features" },
-      { id: "workflows", label: "Workflows" },
-      { id: "professionals", label: "For Controllers" },
-      { id: "resources", label: "Resources" },
-      { id: "contact", label: "Request Demo" },
-    ],
+    name: "Sheshi FR",
+    eyebrow: "Statutory & SEC Reporting",
+    tagline: "Autonomous Financial Statements & Regulatory Disclosure Suite",
+    description: "From trial balance directly to audit-ready 10-K, 10-Q, and IFRS disclosures. Sheshi FR verifies all footnote cross-references, validates arithmetic ties, and auto-tags XBRL taxonomies with zero human copy-paste errors.",
+    color: "#ea580c",
+    topicSlug: "intercompany-accounting",
   },
 ];
 
-const ACCENT_COLORS: Record<string, string> = {
-  quanta: "#1d4ed8",
-  catalyx: "#059669",
-  consultease: "#7c3aed",
-  sheshifr: "#d97706",
-};
+// ─── Header Navigation (Luminous Light Theme) ─────────────────────────────────
 
-// ─── Minimalist Design Primitives & Live Mockups ─────────────────────────────
-
-function SectionLabel({ text, light = false }: { text: string; light?: boolean }) {
-  return (
-    <div className="inline-flex items-center gap-2 mb-3">
-      <span className={`w-1.5 h-1.5 rounded-full ${light ? "bg-blue-400" : "bg-blue-600"}`} />
-      <span className={`text-xs font-semibold tracking-wider uppercase ${light ? "text-blue-300" : "text-blue-600"}`}>
-        {text}
-      </span>
-    </div>
-  );
-}
-
-function PageHero({
-  title,
-  subtitle,
-  breadcrumb,
-  badge,
+function HeaderNav({
+  route,
+  navigate,
+  onOpenDemo,
 }: {
-  title: string;
-  subtitle?: string;
-  breadcrumb?: string[];
-  badge?: string;
+  route: Route;
+  navigate: (r: Route) => void;
+  onOpenDemo: () => void;
 }) {
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="border-b border-slate-200/80 bg-white px-6 md:px-12 py-14">
-      <div className="max-w-6xl mx-auto">
-        {breadcrumb && (
-          <div className="flex items-center gap-2 text-xs text-slate-500 mb-4 font-medium">
-            {breadcrumb.map((item, idx) => (
-              <span key={item} className="flex items-center gap-2">
-                {idx > 0 && <span className="text-slate-300">/</span>}
-                <span className={idx === breadcrumb.length - 1 ? "text-blue-600 font-semibold" : ""}>{item}</span>
-              </span>
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+        {/* Brand Logo */}
+        <button
+          onClick={() => navigate({ page: "home" })}
+          className="flex items-center gap-2.5 cursor-pointer group text-left"
+          title="Sheshi AI - Autonomous Financial Operating System"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <span className="font-mono font-bold text-lg tracking-wider">S</span>
+          </div>
+          <div>
+            <span className="font-extrabold text-xl tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+              sheshi<span className="text-blue-600">.ai</span>
+            </span>
+            <span className="hidden sm:block text-[10px] font-semibold text-slate-400 tracking-wider uppercase -mt-1">
+              Financial OS
+            </span>
+          </div>
+        </button>
+
+        {/* Desktop Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          {NAV.map((item) => {
+            const isActive =
+              route.page === item.page ||
+              (item.children &&
+                item.children.some((c) => route.page === item.page && route.sub === c.sub));
+
+            if (!item.children) {
+              return (
+                <button
+                  key={item.page}
+                  onClick={() => navigate({ page: item.page })}
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                    isActive
+                      ? "text-blue-600 bg-blue-50/80 font-semibold"
+                      : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/70"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            }
+
+            const isOpen = openDropdown === item.page;
+
+            return (
+              <div
+                key={item.page}
+                className="relative"
+                onMouseEnter={() => setOpenDropdown(item.page)}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
+                <button
+                  onClick={() => navigate({ page: item.page, sub: item.children[0].sub })}
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
+                    isActive
+                      ? "text-blue-600 bg-blue-50/80 font-semibold"
+                      : "text-slate-600 hover:text-slate-950 hover:bg-slate-100/70"
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    className={`w-3.5 h-3.5 transition-transform text-slate-400 ${
+                      isOpen ? "rotate-180 text-blue-600" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {isOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-slate-200/90 rounded-2xl shadow-xl shadow-slate-900/10 p-2.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="space-y-1">
+                      {item.children.map((child) => (
+                        <button
+                          key={child.sub}
+                          onClick={() => {
+                            setOpenDropdown(null);
+                            navigate({ page: item.page, sub: child.sub });
+                          }}
+                          className="w-full text-left p-2.5 rounded-xl hover:bg-blue-50/70 transition-colors cursor-pointer group flex flex-col"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                              {child.label}
+                            </span>
+                            <span className="text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold">
+                              →
+                            </span>
+                          </div>
+                          {child.tagline && (
+                            <span className="text-xs text-slate-500 mt-0.5 line-clamp-1 leading-normal">
+                              {child.tagline}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Right CTAs */}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => {
+              const el = document.getElementById("sitemap-section");
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth" });
+              } else {
+                navigate({ page: "home" });
+                setTimeout(() => {
+                  document.getElementById("sitemap-section")?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              }
+            }}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+            title="View complete 72-node architectural sitemap"
+          >
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <span>Site Map (72 Nodes)</span>
+          </button>
+
+          <button
+            onClick={() => navigate({ page: "technology", sub: "trust" })}
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-lg hover:bg-emerald-100/70 transition-colors cursor-pointer"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>99.99% Uptime / SOC 2</span>
+          </button>
+
+          <button
+            onClick={onOpenDemo}
+            className="px-4 py-2.5 text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm shadow-blue-500/20 hover:shadow-md hover:shadow-blue-500/30 transition-all cursor-pointer"
+          >
+            Request Enterprise Pilot
+          </button>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 cursor-pointer"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile navigation drawer */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-6 space-y-4 max-h-[85vh] overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2 pb-4 border-b border-slate-100">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate({ page: "home" });
+              }}
+              className="p-2.5 text-left text-sm font-semibold rounded-lg bg-blue-50 text-blue-700"
+            >
+              Home
+            </button>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate({ page: "technology", sub: "trust" });
+              }}
+              className="p-2.5 text-left text-sm font-semibold rounded-lg bg-slate-50 text-slate-800"
+            >
+              Trust Center
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {NAV.filter((n) => n.children).map((section) => (
+              <div key={section.page} className="space-y-1.5">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+                  {section.label}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                  {section.children?.map((child) => (
+                    <button
+                      key={child.sub}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        navigate({ page: section.page, sub: child.sub });
+                      }}
+                      className="text-left p-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100 font-medium"
+                    >
+                      {child.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        )}
-        {badge && (
-          <span className="inline-block text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200/60 px-3 py-1 rounded-full mb-3">
-            {badge}
-          </span>
-        )}
-        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight mb-4 max-w-3xl leading-tight">
-          {title}
-        </h1>
-        {subtitle && <p className="text-base md:text-lg text-slate-600 max-w-2xl leading-relaxed">{subtitle}</p>}
-      </div>
-    </div>
+        </div>
+      )}
+    </header>
   );
 }
 
-// ─── Real Financial Software UI Mockup (NO Skeletons) ─────────────────────────
+// ─── Educational Topic Internal Link Ribbon ───────────────────────────────────
 
-function FinancialLedgerMockup() {
-  const [activeTab, setActiveTab] = useState<"close" | "ledger" | "audit">("close");
-
-  const ledgerItems = [
-    { id: "JE-9042", account: "1010 • Cash & Operating Accounts", erp: "NetSuite", debit: "$14,820,450.00", credit: "—", match: "100% Matched", status: "Verified" },
-    { id: "JE-9043", account: "1200 • Accounts Receivable Trade", erp: "SAP S/4HANA", debit: "$8,412,900.00", credit: "—", match: "AI Auto-Match", status: "Verified" },
-    { id: "JE-9044", account: "2150 • Intercompany Elimination", erp: "Workday", debit: "—", credit: "$3,150,000.00", match: "Auto-Balanced", status: "Governed" },
-    { id: "JE-9045", account: "2400 • Deferred SaaS Revenue", erp: "Stripe / ERP", debit: "—", credit: "$19,650,200.00", match: "Rule ASC 606", status: "Verified" },
-    { id: "JE-9046", account: "6010 • Cloud Infrastructure Accruals", erp: "AWS / NetSuite", debit: "$485,320.00", credit: "—", match: "Flux Checked", status: "Pending Review" },
+function TopicInternalRibbon({
+  currentTopic,
+  navigate,
+}: {
+  currentTopic?: string;
+  navigate: (r: Route) => void;
+}) {
+  const topics = [
+    { id: "financial-consolidation", title: "Financial Consolidation", target: { page: "topics", sub: "financial-consolidation" } },
+    { id: "continuous-close", title: "Continuous Financial Close", target: { page: "topics", sub: "continuous-close" } },
+    { id: "account-reconciliation", title: "Autonomous Reconciliation", target: { page: "topics", sub: "account-reconciliation" } },
+    { id: "intercompany-accounting", title: "Intercompany Netting", target: { page: "topics", sub: "intercompany-accounting" } },
+    { id: "trust", title: "Security & SOC 2 Center", target: { page: "technology", sub: "trust" } },
   ];
 
   return (
-    <div className="bg-[#090e17] text-white rounded-2xl border border-slate-800 shadow-2xl overflow-hidden text-left max-w-5xl mx-auto">
-      {/* Top Application Bar */}
-      <div className="bg-[#0f172a] px-5 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-            <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-            <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-          </div>
-          <span className="text-xs font-mono text-slate-400 pl-2 border-l border-slate-700">
-            Sheshi Financial OS • Session ID: #SH-2026-LIVE
-          </span>
+    <div className="bg-blue-50/60 border-y border-blue-100/80 px-4 py-2.5">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-2 text-slate-500 font-medium">
+          <span className="font-semibold text-blue-800">Knowledge & Topics:</span>
+          <span>Explore related accounting frameworks:</span>
         </div>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-emerald-400 font-medium">99.99% Live Sync</span>
-          <span className="text-slate-600">•</span>
-          <span className="text-slate-400 font-mono">Entity: Sheshi Global Holdings Inc.</span>
-        </div>
-      </div>
-
-      {/* Control Strip */}
-      <div className="bg-[#0b132b]/80 px-6 py-4 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2 bg-slate-900/90 p-1 rounded-lg border border-slate-800">
-          <button
-            onClick={() => setActiveTab("close")}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              activeTab === "close" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Financial Close Progress
-          </button>
-          <button
-            onClick={() => setActiveTab("ledger")}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              activeTab === "ledger" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Governed General Ledger
-          </button>
-          <button
-            onClick={() => setActiveTab("audit")}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-              activeTab === "audit" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Audit Trail &amp; Lineage
-          </button>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs">
-          <div>
-            <span className="text-slate-400">Close Phase: </span>
-            <span className="font-semibold text-white">Day 3 of Close (89% Complete)</span>
-          </div>
-          <div className="w-28 h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div className="w-[89%] h-full bg-blue-500 rounded-full" />
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {topics.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => navigate(t.target)}
+              className={`px-2.5 py-1 rounded-md text-xs transition-colors cursor-pointer ${
+                currentTopic === t.id
+                  ? "bg-blue-600 text-white font-semibold"
+                  : "bg-white text-slate-700 border border-slate-200/80 hover:border-blue-300 hover:text-blue-600"
+              }`}
+            >
+              {t.title} →
+            </button>
+          ))}
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Table Content */}
-      <div className="p-6 overflow-x-auto">
-        {activeTab === "close" && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">Total Journal Entries</span>
-                <p className="text-xl font-bold text-white mt-1">42,890</p>
-                <span className="text-[11px] text-emerald-400 font-medium">↑ 99.4% Auto-Verified</span>
-              </div>
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">Unreconciled Variances</span>
-                <p className="text-xl font-bold text-emerald-400 mt-1">$0.00</p>
-                <span className="text-[11px] text-slate-400">Zero variance tolerance</span>
-              </div>
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">Multi-Entity Consolidations</span>
-                <p className="text-xl font-bold text-white mt-1">14 Subsidiaries</p>
-                <span className="text-[11px] text-blue-400">FX Remeasured (USD)</span>
-              </div>
-              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <span className="text-xs text-slate-400">External Auditor Status</span>
-                <p className="text-xl font-bold text-white mt-1">Pre-Certified</p>
-                <span className="text-[11px] text-emerald-400">SOC 1 / SOX Aligned</span>
-              </div>
-            </div>
+// ─── Shared Luminous Page Hero ────────────────────────────────────────────────
 
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[10px]">
-                  <th className="pb-3 font-semibold">Entry ID</th>
-                  <th className="pb-3 font-semibold">Account / Description</th>
-                  <th className="pb-3 font-semibold">Source ERP</th>
-                  <th className="pb-3 font-semibold text-right">Debit Balance</th>
-                  <th className="pb-3 font-semibold text-right">Credit Balance</th>
-                  <th className="pb-3 font-semibold">Governance Engine</th>
-                  <th className="pb-3 font-semibold text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono">
-                {ledgerItems.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-900/40 transition-colors">
-                    <td className="py-3 text-blue-400 font-semibold">{row.id}</td>
-                    <td className="py-3 text-white font-sans font-medium">{row.account}</td>
-                    <td className="py-3 text-slate-400 font-sans">{row.erp}</td>
-                    <td className="py-3 text-right text-emerald-400">{row.debit}</td>
-                    <td className="py-3 text-right text-slate-200">{row.credit}</td>
-                    <td className="py-3">
-                      <span className="inline-block px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 text-[10px] font-sans">
-                        {row.match}
-                      </span>
-                    </td>
-                    <td className="py-3 text-right">
-                      <button className="text-[11px] text-blue-400 hover:text-white font-sans transition-colors cursor-pointer">
-                        Audit Trail →
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+function LightPageHero({
+  eyebrow,
+  title,
+  subtitle,
+  breadcrumb,
+  primaryAction,
+  secondaryAction,
+}: {
+  eyebrow?: string;
+  title: string;
+  subtitle: string;
+  breadcrumb?: string[];
+  primaryAction?: { label: string; onClick: () => void };
+  secondaryAction?: { label: string; onClick: () => void };
+}) {
+  return (
+    <section className="bg-gradient-to-b from-white via-blue-50/20 to-slate-50 border-b border-slate-200/80 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto text-center">
+        {breadcrumb && (
+          <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-2 text-xs text-slate-400 mb-4 font-medium">
+            {breadcrumb.map((b, i) => (
+              <span key={i} className="flex items-center gap-2">
+                <span className={i === breadcrumb.length - 1 ? "text-slate-800 font-semibold" : ""}>{b}</span>
+                {i < breadcrumb.length - 1 && <span>/</span>}
+              </span>
+            ))}
+          </nav>
+        )}
+
+        {eyebrow && (
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold uppercase tracking-wider mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+            <span>{eyebrow}</span>
           </div>
         )}
 
+        {/* Proper H1 for search engines and accessibility */}
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-5 leading-tight">
+          {title}
+        </h1>
+
+        <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed mb-8">
+          {subtitle}
+        </p>
+
+        {(primaryAction || secondaryAction) && (
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {primaryAction && (
+              <button
+                onClick={primaryAction.onClick}
+                className="px-6 py-3 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/20 hover:shadow-md transition-all cursor-pointer"
+              >
+                {primaryAction.label}
+              </button>
+            )}
+            {secondaryAction && (
+              <button
+                onClick={secondaryAction.onClick}
+                className="px-6 py-3 rounded-xl font-bold text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 shadow-xs transition-all cursor-pointer"
+              >
+                {secondaryAction.label}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ─── Single Dark Contrast Slot: Global Impact Metrics Band ────────────────────
+
+function DarkImpactSlot() {
+  const stats = [
+    { value: "99.4%", label: "Autonomous Reconciliation Match Rate", desc: "Across multi-currency bank feeds and subledgers" },
+    { value: "14 Days → 4h", label: "Month-End Close Compression", desc: "From chaotic spreadsheet sprints to continuous zero-day close" },
+    { value: "0", label: "SOX 404 Audit Deficiencies", desc: "Every balance change secured with cryptographic invariant proofs" },
+    { value: "$2.4M", label: "Average Enterprise Annual Savings", desc: "Saved in outsourced manual audit fees and reconciler fatigue" },
+  ];
+
+  return (
+    <section className="bg-[#0b132b] text-white py-16 px-4 sm:px-6 lg:px-8 border-y border-slate-800">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <p className="text-xs font-mono tracking-widest text-blue-400 uppercase font-semibold mb-2">
+            Verified Enterprise Proof
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            Transforming Finance from Cost Center to Governed Autonomous Engine
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((s, i) => (
+            <div
+              key={i}
+              className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl relative overflow-hidden"
+            >
+              <div className="text-3xl sm:text-4xl font-extrabold text-blue-400 mb-2 font-mono">
+                {s.value}
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1.5">{s.label}</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── ERP Integrations Ribbon ──────────────────────────────────────────────────
+
+function ERPIntegrationRibbon() {
+  const erps = [
+    { name: "SAP S/4HANA", category: "Tier-1 Enterprise ERP", status: "Bi-directional certified connector" },
+    { name: "Oracle NetSuite", category: "Global Cloud ERP", status: "Real-time SuiteTalk REST sync" },
+    { name: "Workday Financials", category: "Core HCM & Finance", status: "Automated journal ingestion" },
+    { name: "Microsoft Dynamics 365", category: "Enterprise Accounting", status: "OData v4 continuous feed" },
+    { name: "QuickBooks Online", category: "Growth Ledger", status: "Automated bank reconciliation" },
+    { name: "Salesforce Revenue Cloud", category: "Billing & CPQ", status: "ASC 606 revenue schedule tie" },
+  ];
+
+  return (
+    <section className="bg-white py-12 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <p className="text-xs font-bold tracking-widest text-blue-600 uppercase mb-1">
+            Seamless ERP Ingestion Ecosystem
+          </p>
+          <p className="text-sm text-slate-500">
+            Your ERP records transactions. Sheshi governs everything after with native bi-directional sync.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {erps.map((erp, i) => (
+            <div
+              key={i}
+              className="bg-slate-50/80 hover:bg-blue-50/40 border border-slate-200/80 hover:border-blue-300 p-4 rounded-xl text-center transition-all group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-blue-100/80 text-blue-700 flex items-center justify-center font-bold text-xs mx-auto mb-2 group-hover:scale-110 transition-transform">
+                {erp.name.charAt(0)}
+              </div>
+              <p className="text-xs font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                {erp.name}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{erp.category}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Interactive Financial Ledger Simulator (Light Theme) ─────────────────────
+
+function InteractiveFinancialLedgerSimulator() {
+  const [activeTab, setActiveTab] = useState<"ledger" | "reconcile" | "anomalies" | "audit">("ledger");
+  const [reconcileStatus, setReconcileStatus] = useState<"idle" | "running" | "matched">("idle");
+
+  const ledgerData = [
+    { code: "1010-00", name: "Operating Cash (JPMorgan USD)", debit: "$24,510,892.40", credit: "-", source: "JPM Direct API", status: "Live Feed", flag: "Verified" },
+    { code: "1200-10", name: "Accounts Receivable - Enterprise", debit: "$8,940,210.00", credit: "-", source: "Stripe Billing", status: "Continuous", flag: "Verified" },
+    { code: "2150-00", name: "Intercompany Netting (US -> EMEA)", debit: "-", credit: "$3,410,200.00", source: "SAP NetSuite Bridge", status: "Auto-Matched", flag: "Net zero" },
+    { code: "2400-00", name: "Deferred Revenue (ASC 606)", debit: "-", credit: "$18,200,450.00", source: "Salesforce RevCloud", status: "Schedule Tied", flag: "Verified" },
+    { code: "6010-20", name: "Cloud Infrastructure Accruals (AWS)", debit: "$420,110.00", credit: "-", source: "AWS Cost Explorer", status: "Variance OK", flag: "Within 0.5%" },
+  ];
+
+  const handleRunReconcile = () => {
+    setReconcileStatus("running");
+    setTimeout(() => {
+      setReconcileStatus("matched");
+    }, 900);
+  };
+
+  return (
+    <div className="bg-white border border-slate-200/90 rounded-2xl shadow-lg shadow-slate-900/5 overflow-hidden">
+      {/* Cockpit Window Header */}
+      <div className="bg-slate-50 border-b border-slate-200/80 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-rose-400" />
+            <span className="w-3 h-3 rounded-full bg-amber-400" />
+            <span className="w-3 h-3 rounded-full bg-emerald-400" />
+          </div>
+          <div className="h-4 w-px bg-slate-300" />
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-mono font-semibold text-slate-800">
+              SHESHI CONTINUOUS CLOSE COCKPIT
+            </span>
+            <span className="text-[11px] font-mono text-slate-400">
+              (Live Multi-Entity Ledger v4.2)
+            </span>
+          </div>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex gap-1 bg-slate-200/60 p-1 rounded-lg">
+          <button
+            onClick={() => setActiveTab("ledger")}
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+              activeTab === "ledger" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Governed Ledger
+          </button>
+          <button
+            onClick={() => setActiveTab("reconcile")}
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+              activeTab === "reconcile" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Auto-Matching (Live)
+          </button>
+          <button
+            onClick={() => setActiveTab("anomalies")}
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+              activeTab === "anomalies" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            AI Anomaly Guard
+          </button>
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+              activeTab === "audit" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            SOX Audit Vault
+          </button>
+        </div>
+      </div>
+
+      {/* Cockpit Body */}
+      <div className="p-5">
         {activeTab === "ledger" && (
-          <div className="py-6 text-center text-slate-300 max-w-xl mx-auto space-y-3">
-            <h4 className="font-semibold text-white text-base">Governed Unified Ledger Architecture</h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans">
-              Sheshi sits between SAP S/4, Oracle NetSuite, and Workday, normalizing disparate charts of accounts into a single immutable ledger layer. Changes require cryptographic dual-signoff.
-            </p>
-            <div className="flex justify-center gap-3 pt-2">
-              <span className="text-[11px] bg-slate-800 text-slate-300 px-3 py-1 rounded-full font-mono">
-                Lineage: SHA-256 Provenance
-              </span>
-              <span className="text-[11px] bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full font-mono">
-                SOX 404 Controls Active
-              </span>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-blue-50/60 border border-blue-100 p-3 rounded-xl text-blue-900">
+              <div className="flex items-center gap-2">
+                <span className="font-bold">Continuous Ledger Balance:</span>
+                <span className="font-mono font-semibold">$33,871,212.40 USD</span>
+                <span className="text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded text-[11px] font-bold">
+                  ✓ Debits == Credits (Mathematical Invariant Held)
+                </span>
+              </div>
+              <div className="text-slate-500 text-[11px]">
+                Last Ingested: 2 seconds ago from SAP S/4HANA Production
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                    <th className="pb-2.5">Account</th>
+                    <th className="pb-2.5">Description</th>
+                    <th className="pb-2.5 text-right">Debit Balance</th>
+                    <th className="pb-2.5 text-right">Credit Balance</th>
+                    <th className="pb-2.5">Connector</th>
+                    <th className="pb-2.5">Verification</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-mono text-slate-700">
+                  {ledgerData.map((row, i) => (
+                    <tr key={i} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="py-2.5 font-bold text-blue-700">{row.code}</td>
+                      <td className="py-2.5 font-sans font-medium text-slate-800">{row.name}</td>
+                      <td className="py-2.5 text-right text-slate-900">{row.debit}</td>
+                      <td className="py-2.5 text-right text-slate-900">{row.credit}</td>
+                      <td className="py-2.5 font-sans text-slate-500">{row.source}</td>
+                      <td className="py-2.5 font-sans">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          {row.flag}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "reconcile" && (
+          <div className="space-y-4">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h4 className="text-sm font-bold text-slate-900">
+                  Autonomous Multi-Way Transaction Matching
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Matching 14,892 bank statement rows against General Ledger journals and invoice subledgers.
+                </p>
+              </div>
+
+              <button
+                onClick={handleRunReconcile}
+                disabled={reconcileStatus === "running"}
+                className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                {reconcileStatus === "running"
+                  ? "Running 1:1 & Many:1 Rules Engine..."
+                  : reconcileStatus === "matched"
+                  ? "✓ 14,892 Transactions Matched (100%)"
+                  : "Execute Autonomous Matching Test"}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl border border-blue-200 bg-blue-50/50">
+                <span className="text-slate-500 text-[11px] font-semibold block">Auto-Match Velocity</span>
+                <span className="text-xl font-bold font-mono text-blue-700">18,500 tx/sec</span>
+                <span className="text-[11px] text-blue-600 block mt-1">Rule Engine + Fuzzy AI Text</span>
+              </div>
+              <div className="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/50">
+                <span className="text-slate-500 text-[11px] font-semibold block">Unreconciled Variances</span>
+                <span className="text-xl font-bold font-mono text-emerald-700">$0.00</span>
+                <span className="text-[11px] text-emerald-600 block mt-1">Zero pending exception items</span>
+              </div>
+              <div className="p-3.5 rounded-xl border border-purple-200 bg-purple-50/50">
+                <span className="text-slate-500 text-[11px] font-semibold block">FX & Currency Netting</span>
+                <span className="text-xl font-bold font-mono text-purple-700">12 Currencies</span>
+                <span className="text-[11px] text-purple-600 block mt-1">ECB Daily Spot Rate applied</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "anomalies" && (
+          <div className="space-y-3">
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
+              <span className="text-base">⚠️</span>
+              <div>
+                <span className="font-bold">Real-time Anomaly Prevented:</span>
+                <p className="text-slate-700 text-xs mt-0.5">
+                  Vendor invoice <code>#INV-2026-8812</code> from ACME Corp was submitted with a duplicate bank wire reference. Sheshi flagged the transaction prior to ERP journal posting, preventing a $48,200 redundant payment.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 border border-slate-200 rounded-xl text-xs space-y-2">
+              <span className="font-bold text-slate-900 block">Anomaly Detection Model Invariants:</span>
+              <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
+                <li>Double payment detection across disparate subledgers and subsidiary entities.</li>
+                <li>Off-balance sheet accrual deviation warnings based on historical 36-month run rates.</li>
+                <li>Unusual weekend or off-hour manual journal entry alerts directly to the Corporate Controller.</li>
+              </ul>
             </div>
           </div>
         )}
 
         {activeTab === "audit" && (
-          <div className="py-6 text-center text-slate-300 max-w-xl mx-auto space-y-3">
-            <h4 className="font-semibold text-white text-base">Continuous Independent Audit Trail</h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-sans">
-              Every journal entry, flux explanation, and controller signoff is watermarked with immutable timestamps and user identities. Big 4 auditors receive read-only federated portal access.
-            </p>
-            <div className="flex justify-center gap-3 pt-2">
-              <span className="text-[11px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1 rounded-full font-mono">
-                Audit Status: 100% Traceable
-              </span>
+          <div className="space-y-3 font-mono text-xs">
+            <div className="p-3 bg-slate-900 text-slate-200 rounded-xl space-y-1.5 text-[11px]">
+              <div className="text-blue-400 font-bold">IMMUTABLE CRYPTOGRAPHIC AUDIT LOG ENTRY #98421</div>
+              <div>TIMESTAMP: 2026-09-21T11:42:09.112Z [UTC]</div>
+              <div>EVENT: Automatic Intercompany Balance Settlement (Entity 100 US &rarr; Entity 200 UK)</div>
+              <div>HASH: 0x9f4a8b23c10d7e62a39f110bc892305a417df0e129ba</div>
+              <div>SOX 404 CONTROL: PCOAB-AC-14 Verified (Zero manual override permitted)</div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Bottom Status Ribbon */}
-      <div className="bg-[#0b132b] px-6 py-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-        <span className="flex items-center gap-2">
-          <span>🔒 End-to-End TLS 1.3 Encryption</span>
-          <span>•</span>
-          <span>SOC 2 Type II Certified</span>
-        </span>
-        <button className="text-blue-400 hover:text-blue-300 font-semibold cursor-pointer">
-          Generate Governed Board Report Pack →
-        </button>
-      </div>
     </div>
   );
 }
 
-// ─── Hero Components ─────────────────────────────────────────────────────────
+// ─── Products Showcase Section (Home) ─────────────────────────────────────────
 
-function HeroCentered({
-  eyebrow,
-  title,
-  subtitle,
-  navigate,
-}: {
-  eyebrow?: string;
-  title?: string;
-  subtitle?: string;
-  navigate: (r: Route) => void;
-}) {
+function ProductsShowcaseSection({ navigate }: { navigate: (r: Route) => void }) {
   return (
-    <div className="relative bg-[#090e17] text-white px-6 md:px-12 pt-24 pb-20 overflow-hidden border-b border-slate-800">
-      {/* Subtle minimalist gradient aura */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20 pointer-events-none"
-        style={{
-          background: "radial-gradient(circle at 50% 30%, #2563eb, transparent 70%)",
-        }}
-      />
-
-      <div className="max-w-5xl mx-auto text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-300 text-xs font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-          <span>{eyebrow ?? "The Financial Operating System"}</span>
-        </div>
-
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
-          {title ?? (
-            <>
-              Your ERP records the transactions. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
-                Everything after is where Sheshi lives.
-              </span>
-            </>
-          )}
-        </h1>
-
-        <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
-          {subtitle ??
-            "The governed layer between your ERP and every financial output your organisation produces. Close, plan, consolidate, analyse, collaborate, and report with immutable trust."}
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
-          <button
-            onClick={() => navigate({ page: "contact" })}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
-          >
-            Request a Conversation
-          </button>
-          <button
-            onClick={() => navigate({ page: "products", sub: "quanta" })}
-            className="bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-sm px-6 py-3.5 rounded-xl transition-all cursor-pointer"
-          >
-            Explore Products
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById("sitemap-flowchart");
-              el?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="border border-slate-700/80 text-slate-400 hover:text-white text-sm px-5 py-3.5 rounded-xl transition-all cursor-pointer"
-          >
-            Interactive Site Map ↓
-          </button>
-        </div>
-
-        {/* Live Interactive Ledger Mockup */}
-        <div className="mt-8">
-          <FinancialLedgerMockup />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HeroSplit({
-  eyebrow,
-  title,
-  subtitle,
-  navigate,
-}: {
-  eyebrow: string;
-  title?: string;
-  subtitle?: string;
-  navigate?: (r: Route) => void;
-}) {
-  return (
-    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-7">
-          <SectionLabel text={eyebrow} />
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-4 leading-tight">
-            {title ?? eyebrow}
-          </h2>
-          <p className="text-base text-slate-600 leading-relaxed mb-8 max-w-xl">
-            {subtitle ??
-              "Sheshi provides the governed architectural layer between raw transaction systems and verified executive outputs."}
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            {navigate && (
-              <button
-                onClick={() => navigate({ page: "contact" })}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
-              >
-                Request Consultation
-              </button>
-            )}
-            <button
-              onClick={() => {
-                const el = document.getElementById("sitemap-flowchart");
-                el?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
-            >
-              Explore Architecture
-            </button>
-          </div>
-        </div>
-
-        <div className="lg:col-span-5 bg-[#090e17] text-white p-6 rounded-2xl border border-slate-800 shadow-lg">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4 text-xs font-mono text-slate-400">
-            <span>GOVERNANCE ENGINE</span>
-            <span className="text-emerald-400">● ACTIVE</span>
-          </div>
-          <div className="space-y-3 text-xs">
-            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">ERP INGESTION</span>
-              <span className="font-semibold text-white">SAP S/4HANA &amp; NetSuite Stream</span>
-              <span className="text-emerald-400 block text-[10px] mt-1">✓ 12ms Synchronization Latency</span>
-            </div>
-            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">AGENTIC RECONCILIATION</span>
-              <span className="font-semibold text-white">Flux &amp; Variance Analysis Agent</span>
-              <span className="text-blue-400 block text-[10px] mt-1">99.4% Automated Match Rate</span>
-            </div>
-            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-              <span className="text-slate-400 block text-[10px]">AUDIT PACK LINEAGE</span>
-              <span className="font-semibold text-white">Cryptographic Board Reporting</span>
-              <span className="text-slate-400 block text-[10px] mt-1">SHA-256 Provenance Ledger</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Real Metrics & Impact Section ───────────────────────────────────────────
-
-function MetricsRow({ count = 5 }: { count?: number }) {
-  const metrics = [
-    { stat: "99.4%", label: "Automated Reconciliation Rate", desc: "Matched across complex multi-entity journals" },
-    { stat: "68%", label: "Reduction in Close Cycle Duration", desc: "From 14-day month-end closes down to 3 days" },
-    { stat: "100%", label: "Governed Audit Lineage", desc: "Zero untracked spreadsheet formulas or hidden edits" },
-    { stat: "12ms", label: "Real-Time ERP Sync Latency", desc: "Continuous ledger streaming for SAP, NetSuite & Workday" },
-    { stat: "$4.2M", label: "Average Annual Operational Savings", desc: "Eliminating manual re-keying & audit penalty risk" },
-  ].slice(0, count);
-
-  return (
-    <div className="bg-[#0b132b] text-white px-6 md:px-12 py-16 border-b border-slate-800">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <SectionLabel text="Quantifiable Financial Impact" light />
-          <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            Real Results from Global Finance Transformations
-          </h3>
-          <p className="text-sm text-slate-300 mt-2">
-            Independent proof of what happens when financial governance is built directly into the operating system.
-          </p>
-        </div>
-
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${count} gap-6`}>
-          {metrics.map((m) => (
-            <div key={m.label} className="bg-slate-900/60 border border-slate-800 p-6 rounded-xl text-center">
-              <p className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">{m.stat}</p>
-              <p className="text-xs font-semibold text-blue-400 mb-1">{m.label}</p>
-              <p className="text-xs text-slate-300 leading-relaxed">{m.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Real Feature Breakdown & Alternating Sections ───────────────────────────
-
-function ZigzagSection({ rows = 3 }: { rows?: number }) {
-  const items = [
-    {
-      label: "Autonomous Multi-Entity Consolidation",
-      title: "Consolidate 50+ Subsidiaries with Zero Spreadsheet Vulnerability",
-      desc: "Between the transaction recorded in an ERP and the result presented to the board, something consequential and largely invisible occurs. Sheshi automates currency remeasurement, eliminations, and complex equity adjustments in a governed, auditable pipeline.",
-      points: [
-        "Automated intercompany balance elimination and dispute flagging",
-        "Real-time FX remeasurement with continuous central bank rate feeds",
-        "Configurable multi-tier GAAP and IFRS parallel reporting",
-      ],
-      tag: "Consolidation Engine",
-    },
-    {
-      label: "Continuous Close without Month-End Chaos",
-      title: "Transform the 15-Day Month-End Crisis into a Daily Automated Routine",
-      desc: "Stop waiting for month-end to discover discrepancies. Sheshi runs automated transaction matching, accrual validation, and variance detection agents continuously every 24 hours.",
-      points: [
-        "Pre-close anomaly detection before ledger locks occur",
-        "Automated journal entry postings with segregation-of-duties rules",
-        "Real-time visibility into close readiness across global business units",
-      ],
-      tag: "Continuous Close",
-    },
-    {
-      label: "Governed Board Reporting & Audit Readiness",
-      title: "Board Packs with Cryptographic Data Provenance",
-      desc: "Every number in your board presentation links back to its exact ERP source line item. External auditors receive a federated, read-only room that cuts audit preparation time by over 70%.",
-      points: [
-        "Immutable SHA-256 digital watermark for every published figure",
-        "Role-based controller sign-offs and timestamped approval hierarchies",
-        "One-click XBRL and statutory filing compliance exports",
-      ],
-      tag: "Governance & Audit",
-    },
-  ].slice(0, rows);
-
-  return (
-    <div className="bg-white">
-      {items.map((item, idx) => {
-        const isOdd = idx % 2 !== 0;
-        return (
-          <div key={item.label} className={`px-6 md:px-12 py-20 border-b border-slate-200/80 ${isOdd ? "bg-[#f8fafc]" : "bg-white"}`}>
-            <div className={`max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center ${isOdd ? "lg:flex-row-reverse" : ""}`}>
-              <div className={`lg:col-span-6 ${isOdd ? "lg:order-2" : "lg:order-1"}`}>
-                <span className="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-2 font-mono">
-                  0{idx + 1} // {item.tag}
-                </span>
-                <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 leading-tight">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                  {item.desc}
-                </p>
-                <ul className="space-y-3 mb-8">
-                  {item.points.map((pt) => (
-                    <li key={pt} className="flex items-start gap-3 text-xs text-slate-700">
-                      <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
-                        ✓
-                      </span>
-                      <span>{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
-                  <span>Learn how this architecture works</span>
-                  <span>→</span>
-                </div>
-              </div>
-
-              <div className={`lg:col-span-6 ${isOdd ? "lg:order-1" : "lg:order-2"}`}>
-                <div className="bg-[#090e17] text-white p-6 rounded-2xl border border-slate-800 shadow-xl">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                    <span className="text-xs font-mono text-blue-400">COMPONENT // {item.tag.toUpperCase()}</span>
-                    <span className="text-[10px] bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded">
-                      Verified
-                    </span>
-                  </div>
-                  <div className="space-y-2.5 text-xs font-mono">
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">Processing Node</span>
-                      <span className="text-white">Sheshi-FOS-v4.2</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">Status</span>
-                      <span className="text-emerald-400">100% Governed</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">Security Guardrail</span>
-                      <span className="text-white">SOX 404 Cryptographic Log</span>
-                    </div>
-                    <div className="pt-2 text-[11px] text-slate-400 font-sans leading-relaxed">
-                      All calculations execute in memory with real-time audit checkpoint validation.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Capability & Feature Grids ──────────────────────────────────────────────
-
-function CapabilityGrid({ count = 9 }: { count?: number }) {
-  const caps = [
-    { title: "Autonomous Transaction Matching", desc: "Rule-based and probabilistic machine learning algorithms match millions of ledger records daily.", icon: "⚡" },
-    { title: "Multi-Currency & FX Remeasurement", desc: "Real-time automated conversion with historical rate locks and translation adjustment reserves.", icon: "🌐" },
-    { title: "Variance & Flux Analysis Agents", desc: "AI agents explain balance sheet fluctuations and flag unexpected spikes before month-end close.", icon: "📊" },
-    { title: "Governed Board Reporting Packs", desc: "Automated creation of board-ready executive summaries with drill-down audit capabilities.", icon: "📋" },
-    { title: "Intercompany Elimination", desc: "Bilateral reconciliation engine identifies unmatched transactions across global entities.", icon: "🔄" },
-    { title: "Continuous Audit Readiness", desc: "Permanent digital trail with immutable record-keeping ensures effortless Big 4 review cycles.", icon: "🛡️" },
-    { title: "Automated Journal Entry Postings", desc: "Validates and automatically posts recurring adjustments directly back to core ERPs.", icon: "✍️" },
-    { title: "Role-Based Segregation of Duties", desc: "Enforces enterprise financial controls so no single individual can author and approve entries.", icon: "🔐" },
-    { title: "Dispute & Deduction Management", desc: "Tracks deduction trends and accelerates invoice dispute resolution across accounts receivable.", icon: "📑" },
-  ].slice(0, count);
-
-  return (
-    <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <SectionLabel text="Core Platform Capabilities" />
-          <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
-            The Governed Infrastructure Your ERP Was Never Built to Be
-          </h3>
-          <p className="text-sm text-slate-600 mt-3">
-            Modular financial operating capabilities designed to eliminate manual spreadsheet chaos and governance risk.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {caps.map((c) => (
-            <div
-              key={c.title}
-              className="bg-white border border-slate-200/90 rounded-xl p-6 hover:border-blue-500/50 hover:shadow-md transition-all group"
-            >
-              <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg mb-4 group-hover:scale-110 transition-transform">
-                {c.icon}
-              </div>
-              <h4 className="font-bold text-slate-900 text-base mb-2 group-hover:text-blue-600 transition-colors">
-                {c.title}
-              </h4>
-              <p className="text-xs text-slate-600 leading-relaxed">{c.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FeatureCards({ count = 3, cols = 3 }: { count?: number; cols?: number }) {
-  const feats = [
-    { title: "Financial Close Orchestration", desc: "Coordinate task checklists, reconciliation assignments, and dependency blockers in one live command console.", badge: "Automation" },
-    { title: "Agentic Flux Explanations", desc: "Generative financial agents analyze general ledger variances and write executive explanations automatically.", badge: "Agentic AI" },
-    { title: "Multi-ERP Unified Lineage", desc: "Harmonize SAP, NetSuite, and Workday ledger feeds into a single coherent financial hierarchy.", badge: "Integration" },
-    { title: "Regulatory XBRL & SEC Filing", desc: "One-click export into compliant XBRL tags, audited statutory formats, and investor pack PDFs.", badge: "Compliance" },
-  ].slice(0, count);
-
-  return (
-    <div className="bg-[#f8fafc] px-6 md:px-12 py-16 border-b border-slate-200/80">
-      <div className="max-w-6xl mx-auto">
-        <div className={`grid grid-cols-1 md:grid-cols-${cols} gap-6`}>
-          {feats.map((f) => (
-            <div key={f.title} className="bg-white border border-slate-200 rounded-xl p-7 hover:border-blue-500/40 transition-all shadow-xs">
-              <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-full mb-3 inline-block">
-                {f.badge}
-              </span>
-              <h4 className="font-bold text-slate-900 text-lg mb-2">{f.title}</h4>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">{f.desc}</p>
-              <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
-                View platform specs →
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Real Enterprise Logo & Integration Strip ────────────────────────────────
-
-function LogoStrip() {
-  const logos = [
-    { name: "SAP S/4HANA", tag: "Certified ERP Connector" },
-    { name: "Oracle NetSuite", tag: "Native SuiteApp Partner" },
-    { name: "Workday Financials", tag: "Cloud Integration" },
-    { name: "Microsoft Dynamics 365", tag: "Direct API Bridge" },
-    { name: "QuickBooks Enterprise", tag: "Mid-Market Sync" },
-    { name: "Xero", tag: "SaaS Accounting" },
-  ];
-
-  return (
-    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-12">
-      <div className="max-w-6xl mx-auto">
-        <p className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest mb-8 font-mono">
-          Engineered for seamless integration with tier-1 financial systems
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {logos.map((l) => (
-            <div key={l.name} className="border border-slate-200/80 rounded-xl p-4 text-center hover:border-blue-500/40 transition-colors bg-[#f8fafc]">
-              <p className="text-xs font-bold text-slate-800">{l.name}</p>
-              <p className="text-[10px] text-slate-600 mt-1 font-mono">{l.tag}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Real Testimonials & Case Studies ────────────────────────────────────────
-
-function TestimonialBlock() {
-  return (
-    <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-b border-slate-800">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="text-blue-400 text-2xl mb-4 font-serif">“</div>
-        <blockquote className="text-xl md:text-2xl font-medium text-slate-100 leading-relaxed mb-6 font-sans">
-          Most financial software is built by technologists who learned finance. Sheshi is built from inside finance by people who have actually run month-end close cycles, managed audits, and carried accountability for what the numbers say to the board.
-        </blockquote>
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-sm text-white">
-            CA
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-bold text-white">Founding Philosophy</p>
-            <p className="text-xs text-slate-400">Sheshi Financial Operating System • Practice-Led Architecture</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CaseStudyCards() {
-  const studies = [
-    {
-      company: "Global FinTech Holdings",
-      metric: "-72% Close Duration",
-      desc: "Consolidated 18 entities across North America and Europe, moving from a 14-day close down to 3.5 days with zero spreadsheet reliance.",
-      erp: "NetSuite & SAP Integration",
-    },
-    {
-      company: "Apex Healthcare Network",
-      metric: "100% Audit Compliance",
-      desc: "Eliminated $800k in annual audit fees by giving Big 4 auditors direct read-only access to Sheshi's immutable audit lineage room.",
-      erp: "Workday Financials",
-    },
-    {
-      company: "Hyper-Growth Cloud Scaleup",
-      metric: "$3.2M Annual Savings",
-      desc: "Automated 2.8 million recurring monthly transaction matches and eliminated 15 manual reconciliation spreadsheets.",
-      erp: "Oracle Cloud ERP",
-    },
-  ];
-
-  return (
-    <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <SectionLabel text="Enterprise Transformations" />
-          <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
-            How Leading CFOs Scale Without Operational Risk
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {studies.map((s) => (
-            <div key={s.company} className="bg-white border border-slate-200 rounded-xl p-7 hover:border-blue-500/50 hover:shadow-md transition-all">
-              <span className="text-xs font-mono text-slate-400 block mb-2">{s.erp}</span>
-              <h4 className="text-lg font-bold text-slate-900 mb-1">{s.company}</h4>
-              <p className="text-2xl font-bold text-blue-600 mb-4">{s.metric}</p>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">{s.desc}</p>
-              <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
-                Read full case study →
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── FAQ & Video Components ──────────────────────────────────────────────────
-
-function FAQSection() {
-  const faqs = [
-    {
-      q: "Does Sheshi replace our existing ERP?",
-      a: "No. Your ERP continues to record transactions. Sheshi is the governed operational layer that lives between your ERP and your published financial outputs—automating close, planning, consolidation, flux analysis, and reporting.",
-    },
-    {
-      q: "How does Sheshi ensure SOC 1 and SOX compliance?",
-      a: "Every transaction, calculation, and adjustment inside Sheshi is watermarked with immutable cryptographic timestamps and user identities, creating complete segregation of duties that external auditors can independently verify.",
-    },
-    {
-      q: "What is the typical enterprise implementation timeline?",
-      a: "Because Sheshi connects via pre-built API adapters to SAP, NetSuite, and Workday without requiring schema changes, standard enterprise deployment averages 4 to 6 weeks.",
-    },
-    {
-      q: "Can Sheshi handle complex multi-currency consolidations?",
-      a: "Yes. Sheshi natively supports unlimited legal entities, multi-tier consolidation hierarchies, automated intercompany eliminations, and historical FX remeasurement.",
-    },
-  ];
-
-  return (
-    <div className="bg-[#f8fafc] px-6 md:px-12 py-20 border-b border-slate-200/80">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <SectionLabel text="Frequently Asked Questions" />
-          <h3 className="text-3xl font-bold text-slate-900">Governance &amp; Architectural Architecture</h3>
-        </div>
-        <div className="space-y-4">
-          {faqs.map((f) => (
-            <div key={f.q} className="bg-white border border-slate-200 rounded-xl p-6">
-              <h4 className="font-bold text-slate-900 text-sm mb-2">{f.q}</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">{f.a}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function VideoCards() {
-  const videos = [
-    { title: "Continuous Close in Action: Live System Walkthrough", duration: "18 mins", speaker: "CFO & Head of Architecture", views: "3.4k views" },
-    { title: "Automating 10,000 Journal Matches with Zero Spreadsheet Macros", duration: "24 mins", speaker: "Lead Financial Engineer", views: "2.1k views" },
-    { title: "Designing Board Packs with Cryptographic Data Provenance", duration: "15 mins", speaker: "VP of Product", views: "1.8k views" },
-  ];
-
-  return (
-    <div className="bg-white px-6 md:px-12 py-16 border-b border-slate-200/80">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <SectionLabel text="Masterclasses &amp; Demos" />
-          <h3 className="text-2xl font-bold text-slate-900">Watch the Financial Operating System in Practice</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {videos.map((v) => (
-            <div key={v.title} className="border border-slate-200 rounded-xl overflow-hidden hover:border-blue-500/40 transition-colors bg-[#f8fafc]">
-              <div className="bg-[#090e17] h-40 flex items-center justify-center text-white relative">
-                <div className="w-12 h-12 rounded-full bg-blue-600/90 flex items-center justify-center text-sm shadow-md cursor-pointer hover:scale-105 transition-transform">
-                  ▶
-                </div>
-                <span className="absolute bottom-3 right-3 text-[10px] bg-black/70 px-2 py-0.5 rounded text-white font-mono">
-                  {v.duration}
-                </span>
-              </div>
-              <div className="p-5">
-                <h4 className="font-bold text-slate-900 text-sm mb-1">{v.title}</h4>
-                <p className="text-xs text-slate-500 font-medium mb-2">{v.speaker}</p>
-                <span className="text-[11px] text-blue-600 font-semibold cursor-pointer">Watch on-demand session →</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Trust Center, Culture, and Events Wireframe Sections ─────────────────────
-
-function TrustBadgesSection() {
-  const certs = [
-    { name: "SOC 1 Type II", status: "Certified", org: "AICPA / SSAE 18", desc: "Internal controls over financial reporting audited annually by independent Big 4 CPA firms." },
-    { name: "SOC 2 Type II", status: "Certified", org: "AICPA Trust Services", desc: "Continuous monitoring for security, availability, confidentiality, and processing integrity." },
-    { name: "ISO/IEC 27001", status: "Certified", org: "Global Standards Org", desc: "International best practices in information security management systems (ISMS)." },
-    { name: "GDPR & CCPA", status: "Compliant", org: "EU & US Privacy Frameworks", desc: "Strict end-to-end user privacy, consent architecture, data residency, and right to be forgotten." },
-    { name: "HIPAA Compliant", status: "Compliant", org: "Healthcare Security Standard", desc: "Enterprise administrative, physical, and technical data transmission safeguards." },
-    { name: "PCI DSS Level 1", status: "Compliant", org: "Payment Card Council", desc: "Highest tier financial transaction security, tokenization, and cryptographic standards." },
-  ];
-  return (
-    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 mb-10 border-b border-slate-200">
-          <div>
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full mb-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              All Systems Operational • 99.99% Uptime (Past 90 Days)
-            </div>
-            <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Enterprise Compliance &amp; Security Certifications</h3>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="text-xs font-semibold bg-[#0b132b] text-white px-4 py-2.5 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer">
-              Download Security Whitepaper
-            </button>
-            <button className="text-xs font-semibold border border-slate-300 text-slate-700 px-4 py-2.5 rounded-lg hover:border-blue-600 hover:text-blue-600 transition-colors cursor-pointer">
-              Request SOC 2 Report
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certs.map((c) => (
-            <div key={c.name} className="border border-slate-200 rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-sm bg-white">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-base text-slate-900 border border-slate-200">
-                  🛡️
-                </div>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                  {c.status}
-                </span>
-              </div>
-              <h4 className="text-base font-bold text-slate-900 mb-1">{c.name}</h4>
-              <p className="text-xs font-semibold text-slate-500 mb-2">{c.org}</p>
-              <p className="text-xs text-slate-600 leading-relaxed mb-4">{c.desc}</p>
-              <span className="text-xs font-medium text-blue-600 hover:underline cursor-pointer">View audit overview →</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CultureValuesSection() {
-  const values = [
-    { title: "Radical Transparency & Trust", desc: "We default to open sharing of financial metrics, product roadmaps, and decision-making frameworks across all teams." },
-    { title: "Relentless Craft & Mastery", desc: "We hold ourselves to rigorous standards in engineering, financial algorithms, and intuitive product experience." },
-    { title: "Empowered Autonomy", desc: "Every Sheshi builder is trusted with ownership, decision speed, and psychological safety to innovate boldly." },
-    { title: "Global Inclusion & Belonging", desc: "Our diverse perspectives shape empathy, deep cross-border financial insights, and a supportive team culture." },
-  ];
-  return (
-    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <SectionLabel text="Our Cultural Blueprint" />
-          <h3 className="text-3xl font-bold text-slate-900 mb-3">The Principles that Guide How We Build &amp; Grow</h3>
-          <p className="text-sm text-slate-600 max-w-2xl mx-auto">
-            We are a team of financial technologists, researchers, and operators united by a mission to create the world&apos;s leading financial operating system.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {values.map((v, i) => (
-            <div key={v.title} className="bg-[#f8fafc] border border-slate-200 rounded-xl p-6 flex flex-col justify-between hover:border-blue-500/50 transition-colors">
-              <div>
-                <span className="text-xs font-bold text-blue-600 font-mono mb-3 block">0{i + 1} / PRINCIPLE</span>
-                <h4 className="font-bold text-slate-900 text-base mb-2">{v.title}</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">{v.desc}</p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Sheshi Way</span>
-                <span className="text-blue-600 font-bold">✦</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-[#0b132b] text-white rounded-2xl p-8 md:p-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center border border-slate-800">
-          <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">45%</div>
-            <div className="text-xs text-slate-400">Executive &amp; Tech Diversity</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">28+</div>
-            <div className="text-xs text-slate-400">Countries Represented</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">4.9 / 5</div>
-            <div className="text-xs text-slate-400">Glassdoor Workplace Rating</div>
-          </div>
-          <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">100%</div>
-            <div className="text-xs text-slate-400">Remote-First Flexibility</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function EventsFeaturedSection() {
-  const events = [
-    { tag: "Flagship Annual Summit", title: "Sheshi NEXUS 2026: Global Financial Operating Summit", date: "Oct 14–16, 2026", loc: "San Francisco, CA & Digital Livestream", desc: "Join 2,500+ CFOs, controllers, and finance innovators exploring agentic AI, continuous financial close, and operating system transformations." },
-    { tag: "Executive Roundtable", title: "CFO Leadership Forum: Navigating Autonomous ERPs", date: "Nov 5, 2026", loc: "London, UK (Chatham House Rule)", desc: "An exclusive invite-only gathering of 35 European enterprise finance executives discussing AI governance and multi-entity consolidation." },
-    { tag: "Virtual Masterclass", title: "Continuous Close in Action: 75% Reduction in Audit Cycles", date: "Nov 19, 2026", loc: "Interactive Global Broadcast", desc: "Deep technical session on transaction matching algorithms, variance analysis agents, and audit-ready data lineage." },
-  ];
-  return (
-    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 mb-8 border-b border-slate-200">
-          <div>
-            <SectionLabel text="Conferences &amp; Gatherings" />
-            <h3 className="text-3xl font-bold text-slate-900">Upcoming Sheshi Events Worldwide</h3>
-            <p className="text-sm text-slate-600 mt-1 max-w-xl">
-              Connect with finance innovators, industry analysts, and the Sheshi leadership team in-person and virtually.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
-            <span className="px-3 py-1 bg-white rounded-md text-xs font-semibold text-slate-900 shadow-xs">All Events</span>
-            <span className="px-3 py-1 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer">In-Person</span>
-            <span className="px-3 py-1 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer">Virtual</span>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {events.map((ev) => (
-            <div key={ev.title} className="border border-slate-200 rounded-xl p-6 md:p-8 hover:border-blue-500/50 transition-all hover:shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white">
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                    {ev.tag}
-                  </span>
-                  <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                    📅 {ev.date}
-                  </span>
-                  <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
-                    📍 {ev.loc}
-                  </span>
-                </div>
-                <h4 className="text-xl font-bold text-slate-900 mb-2">{ev.title}</h4>
-                <p className="text-xs md:text-sm text-slate-600 leading-relaxed max-w-3xl">{ev.desc}</p>
-              </div>
-              <div className="flex flex-row lg:flex-col gap-3 shrink-0">
-                <button className="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-blue-500 transition-colors cursor-pointer text-center">
-                  Register Now
-                </button>
-                <button className="border border-slate-300 text-slate-700 px-5 py-2.5 rounded-lg text-xs font-semibold hover:border-blue-600 transition-colors cursor-pointer text-center">
-                  View Agenda
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CTABand({
-  title = "Ready to transform your financial operating layer?",
-  subtitle = "Talk to our team of Chartered Accountants and distributed systems engineers. We understand your month-end close because we've lived it.",
-  navigate,
-}: {
-  title?: string;
-  subtitle?: string;
-  navigate?: (r: Route) => void;
-}) {
-  return (
-    <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-t border-slate-800 text-center relative overflow-hidden">
-      <div className="max-w-3xl mx-auto relative z-10">
-        <span className="inline-block text-xs font-bold text-blue-400 uppercase tracking-widest mb-3 font-mono">
-          GET STARTED WITH SHESHI
-        </span>
-        <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">{title}</h3>
-        <p className="text-sm md:text-base text-slate-400 mb-8 leading-relaxed max-w-2xl mx-auto">{subtitle}</p>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <button
-            onClick={() => navigate && navigate({ page: "contact" })}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
-          >
-            Request an Executive Conversation
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById("sitemap-flowchart");
-              el?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="border border-slate-700 text-slate-300 hover:text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800/80 transition-all cursor-pointer"
-          >
-            View Full System Map
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Section Definition & Dispatcher ──────────────────────────────────────────
-
-type SectionDef = {
-  type: string;
-  count?: number;
-  cols?: number;
-  accent?: string;
-};
-
-function renderSection(s: SectionDef, i: number, navigate?: (r: Route) => void) {
-  switch (s.type) {
-    case "trustbadges": return <TrustBadgesSection key={i} />;
-    case "culturevalues": return <CultureValuesSection key={i} />;
-    case "eventsfeatured": return <EventsFeaturedSection key={i} />;
-    case "metrics": return <MetricsRow key={i} count={s.count ?? 5} />;
-    case "metrics3": return <MetricsRow key={i} count={3} />;
-    case "zigzag": return <ZigzagSection key={i} rows={s.count ?? 3} />;
-    case "capgrid": return <CapabilityGrid key={i} count={s.count ?? 9} />;
-    case "featurecards": return <FeatureCards key={i} count={s.count ?? 3} cols={s.cols ?? 3} />;
-    case "logostrip": return <LogoStrip key={i} />;
-    case "testimonial": return <TestimonialBlock key={i} />;
-    case "ctaband": return <CTABand key={i} navigate={navigate} />;
-    case "faq": return <FAQSection key={i} />;
-    case "videocards": return <VideoCards key={i} />;
-    case "casestudies": return <CaseStudyCards key={i} />;
-    default: return null;
-  }
-}
-
-// ─── Complete Content Registry (NO Skeletons) ────────────────────────────────
-
-const PAGE_DATA: Record<
-  string,
-  Record<string, { title: string; subtitle: string; hero?: "split" | "centered"; sections: SectionDef[] }>
-> = {
-  company: {
-    about: {
-      title: "About Sheshi",
-      subtitle: "Built from inside finance. For the world outside it. The governed layer between your ERP and every financial output.",
-      hero: "split",
-      sections: [{ type: "logostrip" }, { type: "metrics", count: 4 }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    story: {
-      title: "Our Story",
-      subtitle: "How two decades in professional accounting practice revealed the hidden risks of un-governed financial spreadsheets.",
-      hero: "split",
-      sections: [{ type: "zigzag", count: 3 }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    leadership: {
-      title: "Executive Leadership",
-      subtitle: "Chartered Accountants and distributed systems engineers uniting deep financial practice with modern infrastructure.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
-    },
-    team: {
-      title: "Our Global Team",
-      subtitle: "28+ countries represented across financial engineering, distributed consensus, and client advisory.",
-      hero: "split",
-      sections: [{ type: "culturevalues" }, { type: "capgrid", count: 9 }, { type: "ctaband" }],
-    },
-    culture: {
-      title: "People - and culture",
-      subtitle: "Our core principles, radical transparency, global inclusion, and life inside Sheshi.",
-      hero: "split",
-      sections: [{ type: "culturevalues" }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    careers: {
-      title: "Careers at Sheshi",
-      subtitle: "Build the future of governed financial intelligence. Competitive equity, remote-first autonomy, and deep impact.",
-      hero: "split",
-      sections: [{ type: "culturevalues" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
-    },
-  },
-  solutions: {
-    enterprise: {
-      title: "Enterprise Finance",
-      subtitle: "Complex multi-entity consolidation, SOX compliance, and continuous close for global organizations.",
-      hero: "split",
-      sections: [{ type: "logostrip" }, { type: "metrics", count: 4 }, { type: "zigzag", count: 3 }, { type: "casestudies" }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    startup: {
-      title: "Startup & Scaleup Finance",
-      subtitle: "Burn oversight, investor runway predictability, and board pack automation for high-growth ventures.",
-      hero: "split",
-      sections: [{ type: "metrics", count: 3 }, { type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
-    },
-    consulting: {
-      title: "Consulting & Advisory Firms",
-      subtitle: "Empower your advisory engagements with automated client reconciliation and white-label governance.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    professionals: {
-      title: "Finance Professionals",
-      subtitle: "Purpose-built workbench for CFOs, controllers, and FP&A analysts to eliminate manual re-keying.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 4 }, { type: "faq" }, { type: "ctaband" }],
-    },
-  },
-  technology: {
-    fos: {
-      title: "Financial Operating System",
-      subtitle: "The authoritative infrastructure layer that sits between your transaction ERP and board outputs.",
-      hero: "centered",
-      sections: [{ type: "capgrid", count: 9 }, { type: "zigzag", count: 2 }, { type: "ctaband" }],
-    },
-    ai: {
-      title: "AI & Automation",
-      subtitle: "Autonomous variance detection, flux analysis agents, and audit-ready machine learning workflows.",
-      hero: "centered",
-      sections: [{ type: "metrics", count: 5 }, { type: "zigzag", count: 3 }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
-    },
-    integrations: {
-      title: "ERP & Data Integrations",
-      subtitle: "Pre-built connectors for SAP, NetSuite, Workday, Microsoft Dynamics, QuickBooks, and Salesforce.",
-      hero: "split",
-      sections: [{ type: "logostrip" }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
-    },
-    security: {
-      title: "Security & Compliance",
-      subtitle: "Enterprise-grade AES-256 encryption, SOC 1/2 compliance, and immutable cryptographic audit trails.",
-      hero: "split",
-      sections: [{ type: "metrics3" }, { type: "trustbadges" }, { type: "ctaband" }],
-    },
-    trust: {
-      title: "Trust Center",
-      subtitle: "Real-time security posture, compliance certifications, sub-processors, and system status transparency.",
-      hero: "centered",
-      sections: [{ type: "trustbadges" }, { type: "metrics3" }, { type: "featurecards", count: 3 }, { type: "faq" }, { type: "ctaband" }],
-    },
-  },
-  resources: {
-    blog: {
-      title: "Sheshi Perspectives & Blog",
-      subtitle: "Engineering insights, financial governance frameworks, and continuous close case studies.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
-    },
-    insights: {
-      title: "Executive Insights",
-      subtitle: "In-depth research on financial operations, multi-entity complexity, and autonomous close architecture.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    casestudies: {
-      title: "Customer Case Studies",
-      subtitle: "Quantified results and ROI metrics from enterprise finance transformations across the globe.",
-      hero: "split",
-      sections: [{ type: "casestudies" }, { type: "testimonial" }, { type: "metrics", count: 4 }, { type: "ctaband" }],
-    },
-    research: {
-      title: "The Numbers Story (Research)",
-      subtitle: "Independent structured study with 150+ CFOs on the unstudied lifecycle of financial data between ERP and board.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "metrics", count: 4 }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    events: {
-      title: "Events & Summits",
-      subtitle: "Join us at Sheshi NEXUS 2026, CFO leadership roundtables, and regional financial engineering symposiums.",
-      hero: "split",
-      sections: [{ type: "eventsfeatured" }, { type: "videocards" }, { type: "ctaband" }],
-    },
-    webinars: {
-      title: "Webinars & Masterclasses",
-      subtitle: "Learn continuous close techniques, automated flux analysis, and ERP governance from practicing leaders.",
-      hero: "split",
-      sections: [{ type: "videocards" }, { type: "faq" }, { type: "ctaband" }],
-    },
-    updates: {
-      title: "Product Changelog & Updates",
-      subtitle: "What's new in the Sheshi Financial Operating System platform release cycle.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
-    },
-  },
-  partners: {
-    tech: {
-      title: "Technology Partners",
-      subtitle: "Cloud platforms, ERP ecosystems, and developer tooling integrated with Sheshi.",
-      hero: "split",
-      sections: [{ type: "logostrip" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
-    },
-    strategic: {
-      title: "Strategic Advisory Partners",
-      subtitle: "Big 4 accounting alliances, regional advisory firms, and management consultancies.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "testimonial" }, { type: "ctaband" }],
-    },
-    join: {
-      title: "Become a Partner",
-      subtitle: "Join the Sheshi ecosystem. Co-sell incentives, certified partner portals, and technical enablement.",
-      hero: "split",
-      sections: [{ type: "featurecards", count: 3 }, { type: "faq" }, { type: "ctaband" }],
-    },
-  },
-};
-
-// ─── Contact Page Component ───────────────────────────────────────────────────
-
-function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const cats = [
-    { label: "Enterprise Sales", desc: "Speak with our financial engineering team about Quanta deployment and ERP integrations." },
-    { label: "Partnership & Alliances", desc: "Explore technology integration and strategic advisory partner programs." },
-    { label: "Research & Media", desc: "Access data from The Numbers Story study or connect with our leadership." },
-    { label: "General & Support", desc: "Direct inquiries for existing platform accounts and security assessments." },
-  ];
-
-  return (
-    <div>
-      <PageHero
-        title="Connect with Sheshi"
-        subtitle="We respond immediately. The conversation starts with understanding your finance function and systems."
-        breadcrumb={["Home", "Contact"]}
-      />
-      <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {cats.map((c) => (
-              <div key={c.label} className="border border-slate-200 rounded-xl p-6 hover:border-blue-500/40 transition-colors bg-[#f8fafc]">
-                <h4 className="font-bold text-slate-900 text-sm mb-2">{c.label}</h4>
-                <p className="text-xs text-slate-600 leading-relaxed mb-4">{c.desc}</p>
-                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
-                  Inquire directly →
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-[#f8fafc] border border-slate-200 rounded-2xl p-8 md:p-12 max-w-3xl mx-auto">
-            <SectionLabel text="Inquiry Submission" />
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Schedule an Executive Consultation</h3>
-            <p className="text-xs text-slate-600 mb-8">
-              Tell us about your current ERP stack and close cycle challenges. Our team includes Chartered Accountants and systems engineers.
-            </p>
-
-            {submitted ? (
-              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-6 rounded-xl text-center">
-                <div className="text-2xl mb-2">✓</div>
-                <h4 className="font-bold text-base mb-1">Inquiry Received</h4>
-                <p className="text-xs text-emerald-700">A senior financial systems architect will respond within 2 business hours.</p>
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSubmitted(true);
-                }}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name</label>
-                    <input
-                      required
-                      placeholder="e.g. Sarah Jenkins"
-                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Work Email</label>
-                    <input
-                      required
-                      type="email"
-                      placeholder="sarah@enterprise.com"
-                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Company Name</label>
-                    <input
-                      required
-                      placeholder="e.g. Global Tech Corp"
-                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Current Primary ERP</label>
-                    <select className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600">
-                      <option>SAP S/4HANA / ECC</option>
-                      <option>Oracle NetSuite</option>
-                      <option>Workday Financials</option>
-                      <option>Microsoft Dynamics 365</option>
-                      <option>Multiple Disparate ERPs</option>
-                      <option>Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">How can we assist?</label>
-                  <textarea
-                    rows={4}
-                    required
-                    placeholder="Describe your current month-end close duration, entity count, or audit requirements..."
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg text-xs transition-colors cursor-pointer"
-                >
-                  Submit Executive Consultation Request
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      </div>
-      <CTABand />
-    </div>
-  );
-}
-
-// ─── Legal Policy Page Component ──────────────────────────────────────────────
-
-function LegalPage({ doc }: { doc: string }) {
-  const titles: Record<string, string> = {
-    privacy: "Privacy Policy",
-    terms: "Terms of Service",
-    cookies: "Cookie Policy",
-    security: "Security Disclosure & Vulnerability Handling",
-    sitemap: "Platform Sitemap & System Index",
-  };
-
-  const title = titles[doc] ?? "Legal Governance Document";
-
-  return (
-    <div>
-      <PageHero title={title} breadcrumb={["Legal", title]} />
-      <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 text-slate-700 text-xs md:text-sm leading-relaxed space-y-8">
-        <section className="border-b border-slate-200 pb-6">
-          <h3 className="text-base font-bold text-slate-900 mb-2">1. Governing Framework &amp; Scope</h3>
-          <p>
-            Sheshi Technologies (&quot;Sheshi&quot;, &quot;we&quot;, &quot;us&quot;) operates the Financial Operating System software platform. This document governs all data transmissions, cryptographic record verification, and service tier agreements executed between Sheshi and customer organizations.
-          </p>
-        </section>
-
-        <section className="border-b border-slate-200 pb-6">
-          <h3 className="text-base font-bold text-slate-900 mb-2">2. Financial Data Isolation &amp; Zero-Knowledge Tenancy</h3>
-          <p>
-            Customer financial records ingested from ERP systems (including SAP, NetSuite, and Workday) are encrypted in transit using TLS 1.3 and at rest using AES-256. Multi-tenant logical isolation ensures that no customer financial data is ever co-mingled or utilized for external foundation model training without explicit written enterprise consent.
-          </p>
-        </section>
-
-        <section className="border-b border-slate-200 pb-6">
-          <h3 className="text-base font-bold text-slate-900 mb-2">3. Audit Trails &amp; Regulatory Disclosures</h3>
-          <p>
-            In compliance with AICPA SOC 1 Type II and SOC 2 Type II criteria, Sheshi maintains immutable transaction lineage logs for all calculations, eliminations, and adjustments. These logs remain accessible to authorized customer controllers and external Big 4 auditors for a minimum statutory retention period of 7 years.
-          </p>
-        </section>
-
-        <section>
-          <h3 className="text-base font-bold text-slate-900 mb-2">4. Incident Reporting &amp; DPO Inquiries</h3>
-          <p>
-            Security disclosures and compliance inquiries may be submitted directly to our Data Protection Officer at <code>security@sheshi.ai</code>. All verified vulnerability disclosures are triaged within 2 hours under our responsible disclosure program.
-          </p>
-        </section>
-      </div>
-    </div>
-  );
-}
-
-// ─── Autonomous Product Subsite ───────────────────────────────────────────────
-
-function ProductSubsite({
-  productId,
-  productPage,
-  setProductPage,
-  navigate,
-}: {
-  productId: string;
-  productPage: string;
-  setProductPage: (p: string) => void;
-  navigate: (r: Route) => void;
-}) {
-  const product = PRODUCTS.find((p) => p.id === productId);
-  if (!product) return null;
-
-  return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      {/* Product Top Sub-Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center h-14 justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => setProductPage("home")}
-              className="font-bold text-base tracking-tight text-slate-900 hover:text-blue-600 transition-colors cursor-pointer flex items-center gap-2"
-            >
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: product.accent }} />
-              <span>{product.label.toUpperCase()}</span>
-            </button>
-            <div className="hidden md:flex items-center gap-1">
-              {product.pages.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setProductPage(p.id)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                    productPage === p.id ? "bg-slate-100 text-blue-600 font-semibold" : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate({ page: "products" })}
-              className="text-xs text-slate-500 hover:text-slate-900 font-medium cursor-pointer"
-            >
-              ← Back to Sheshi Ecosystem
-            </button>
-            <button
-              onClick={() => navigate({ page: "contact" })}
-              className="text-xs text-white font-semibold px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-              style={{ backgroundColor: product.accent }}
-            >
-              Request Access
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Product Content */}
-      <main className="flex-1">
-        <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-b border-slate-800 text-center">
-          <div className="max-w-4xl mx-auto">
-            <span
-              className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border mb-4 inline-block"
-              style={{ color: product.accent, borderColor: product.accent + "50" }}
-            >
-              Independent Sheshi Product • {product.label}
-            </span>
-            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4">{product.tagline}</h1>
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-              {product.description}
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => navigate({ page: "contact" })}
-                className="text-xs font-semibold text-white px-5 py-2.5 rounded-lg shadow-sm cursor-pointer"
-                style={{ backgroundColor: product.accent }}
-              >
-                Schedule Architecture Demo
-              </button>
-              <button
-                onClick={() => navigate({ page: "home" })}
-                className="text-xs font-semibold text-slate-300 border border-slate-700 hover:text-white px-5 py-2.5 rounded-lg cursor-pointer"
-              >
-                Explore Overall Platform
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <CapabilityGrid count={6} />
-        <MetricsRow count={3} />
-        <ZigzagSection rows={2} />
-        <CTABand navigate={navigate} />
-      </main>
-
-      {/* Product Subsite Footer */}
-      <footer className="bg-[#0b132b] text-white border-t border-slate-800 px-6 md:px-12 py-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div>
-            <span className="font-bold text-white mr-2">{product.label}</span>
-            <span>A Sheshi Financial Operating System Product</span>
-          </div>
-          <button onClick={() => navigate({ page: "home" })} className="text-blue-400 hover:text-white cursor-pointer">
-            Return to Sheshi Corporate Home →
-          </button>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-// ─── Interactive Flowchart Site Map Section ───────────────────────────────────
-
-interface FlowLeaf {
-  id: string;
-  label: string;
-  route: Route;
-  tagline?: string;
-}
-
-interface FlowProduct {
-  id: string;
-  label: string;
-  icon: string;
-  color: string;
-  tagline: string;
-  subsiteLabel: string;
-  pages: FlowLeaf[];
-}
-
-interface FlowPillar {
-  id: string;
-  title: string;
-  icon: string;
-  color: string;
-  tagline: string;
-  route: Route;
-  leaves?: FlowLeaf[];
-  products?: FlowProduct[];
-}
-
-function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<"tree" | "horizontal" | "ascii">("tree");
-  const [collapsedBranches, setCollapsedBranches] = useState<Record<string, boolean>>({});
-  const [copiedAscii, setCopiedAscii] = useState(false);
-
-  const toggleBranch = (id: string) => {
-    setCollapsedBranches((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const expandAll = () => setCollapsedBranches({});
-  const collapseAll = () => {
-    setCollapsedBranches({
-      company: true,
-      products: true,
-      quanta: true,
-      catalyx: true,
-      consultease: true,
-      sheshifr: true,
-      solutions: true,
-      technology: true,
-      resources: true,
-      partners: true,
-      contact: true,
-      legal: true,
-    });
-  };
-
-  const pillars: FlowPillar[] = [
-    {
-      id: "home",
-      title: "Home",
-      icon: "🏠",
-      color: "#0f172a",
-      tagline: "Corporate Overview & Financial OS Entryway",
-      route: { page: "home" },
-    },
-    {
-      id: "company",
-      title: "Company",
-      icon: "🏢",
-      color: "#2563eb",
-      tagline: "Corporate Identity, Team & Leadership",
-      route: { page: "company", sub: "about" },
-      leaves: [
-        { id: "about", label: "About Sheshi", route: { page: "company", sub: "about" }, tagline: "Mission, vision and corporate values" },
-        { id: "story", label: "Our Story", route: { page: "company", sub: "story" }, tagline: "How Sheshi was created and scaled" },
-        { id: "leadership", label: "Leadership", route: { page: "company", sub: "leadership" }, tagline: "Executive management and board" },
-        { id: "team", label: "Our Team", route: { page: "company", sub: "team" }, tagline: "Engineers, analysts & advisors" },
-        { id: "culture", label: "People - and culture", route: { page: "company", sub: "culture" }, tagline: "Workplace values, culture, DEI & community" },
-        { id: "careers", label: "Careers", route: { page: "company", sub: "careers" }, tagline: "Open positions and culture" },
-        { id: "contact-us", label: "Contact Us", route: { page: "contact" }, tagline: "Reach our global corporate office" },
-      ],
-    },
-    {
-      id: "products",
-      title: "Products",
-      icon: "📦",
-      color: "#0d9488",
-      tagline: "Autonomous Product Ecosystem",
-      route: { page: "products" },
-      products: [
-        {
-          id: "quanta",
-          label: "Quanta",
-          icon: "🔹",
-          color: "#1d4ed8",
-          tagline: "Enterprise Governance Platform",
-          subsiteLabel: "Independent Product Website",
-          pages: [
-            { id: "quanta-home", label: "Overview", route: { page: "products", sub: "quanta", productPage: "home" } },
-            { id: "quanta-platform", label: "Platform", route: { page: "products", sub: "quanta", productPage: "platform" } },
-            { id: "quanta-solutions", label: "Solutions", route: { page: "products", sub: "quanta", productPage: "solutions" } },
-            { id: "quanta-capabilities", label: "Capabilities", route: { page: "products", sub: "quanta", productPage: "capabilities" } },
-            { id: "quanta-enterprise", label: "Enterprise", route: { page: "products", sub: "quanta", productPage: "enterprise" } },
-            { id: "quanta-resources", label: "Resources", route: { page: "products", sub: "quanta", productPage: "resources" } },
-            { id: "quanta-contact", label: "Contact Us", route: { page: "products", sub: "quanta", productPage: "contact" } },
-          ],
-        },
-        {
-          id: "catalyx",
-          label: "Catalyx",
-          icon: "🚀",
-          color: "#059669",
-          tagline: "Startup Finance Command Center",
-          subsiteLabel: "Independent Product Website",
-          pages: [
-            { id: "catalyx-home", label: "Overview", route: { page: "products", sub: "catalyx", productPage: "home" } },
-            { id: "catalyx-solutions", label: "Solutions", route: { page: "products", sub: "catalyx", productPage: "solutions" } },
-            { id: "catalyx-features", label: "Features", route: { page: "products", sub: "catalyx", productPage: "features" } },
-            { id: "catalyx-startups", label: "For Startups", route: { page: "products", sub: "catalyx", productPage: "startups" } },
-            { id: "catalyx-resources", label: "Resources", route: { page: "products", sub: "catalyx", productPage: "resources" } },
-            { id: "catalyx-contact", label: "Get Started", route: { page: "products", sub: "catalyx", productPage: "contact" } },
-          ],
-        },
-        {
-          id: "consultease",
-          label: "ConsultEase",
-          icon: "📊",
-          color: "#7c3aed",
-          tagline: "Advisory & Client Suite",
-          subsiteLabel: "Independent Product Website",
-          pages: [
-            { id: "consultease-home", label: "Overview", route: { page: "products", sub: "consultease", productPage: "home" } },
-            { id: "consultease-solutions", label: "Solutions", route: { page: "products", sub: "consultease", productPage: "solutions" } },
-            { id: "consultease-features", label: "Features", route: { page: "products", sub: "consultease", productPage: "features" } },
-            { id: "consultease-firms", label: "For Firms", route: { page: "products", sub: "consultease", productPage: "firms" } },
-            { id: "consultease-resources", label: "Resources", route: { page: "products", sub: "consultease", productPage: "resources" } },
-            { id: "consultease-contact", label: "Contact Us", route: { page: "products", sub: "consultease", productPage: "contact" } },
-          ],
-        },
-        {
-          id: "sheshifr",
-          label: "Sheshi FR",
-          icon: "📈",
-          color: "#d97706",
-          tagline: "Autonomous Reporting Suite",
-          subsiteLabel: "Independent Product Website",
-          pages: [
-            { id: "sheshifr-home", label: "Overview", route: { page: "products", sub: "sheshifr", productPage: "home" } },
-            { id: "sheshifr-features", label: "Features", route: { page: "products", sub: "sheshifr", productPage: "features" } },
-            { id: "sheshifr-workflows", label: "Workflows", route: { page: "products", sub: "sheshifr", productPage: "workflows" } },
-            { id: "sheshifr-professionals", label: "For Controllers", route: { page: "products", sub: "sheshifr", productPage: "professionals" } },
-            { id: "sheshifr-resources", label: "Resources", route: { page: "products", sub: "sheshifr", productPage: "resources" } },
-            { id: "sheshifr-contact", label: "Contact Us", route: { page: "products", sub: "sheshifr", productPage: "contact" } },
-          ],
-        },
-      ],
-    },
-    {
-      id: "solutions",
-      title: "Solutions",
-      icon: "💼",
-      color: "#0891b2",
-      tagline: "Tailored Architecture by Segment",
-      route: { page: "solutions", sub: "enterprise" },
-      leaves: [
-        { id: "sol-enterprise", label: "Enterprise Finance", route: { page: "solutions", sub: "enterprise" } },
-        { id: "sol-startup", label: "Startup Finance", route: { page: "solutions", sub: "startup" } },
-        { id: "sol-consulting", label: "Consulting and Advisory Firms", route: { page: "solutions", sub: "consulting" } },
-        { id: "sol-professionals", label: "Finance Professionals", route: { page: "solutions", sub: "professionals" } },
-      ],
-    },
-    {
-      id: "technology",
-      title: "Technology",
-      icon: "⚡",
-      color: "#4f46e5",
-      tagline: "Financial Operating System & Intelligence",
-      route: { page: "technology", sub: "fos" },
-      leaves: [
-        { id: "tech-fos", label: "Financial Operating System", route: { page: "technology", sub: "fos" } },
-        { id: "tech-ai", label: "AI and Automation", route: { page: "technology", sub: "ai" } },
-        { id: "tech-integrations", label: "Integrations", route: { page: "technology", sub: "integrations" } },
-        { id: "tech-security", label: "Security and Compliance", route: { page: "technology", sub: "security" } },
-        { id: "tech-trust", label: "Trust Center", route: { page: "technology", sub: "trust" }, tagline: "Compliance certifications, security audit & live status" },
-      ],
-    },
-    {
-      id: "resources",
-      title: "Resources",
-      icon: "📚",
-      color: "#059669",
-      tagline: "Knowledge Base, Research & Media",
-      route: { page: "resources", sub: "blog" },
-      leaves: [
-        { id: "res-blog", label: "Blog", route: { page: "resources", sub: "blog" } },
-        { id: "res-insights", label: "Insights", route: { page: "resources", sub: "insights" } },
-        { id: "res-casestudies", label: "Case Studies", route: { page: "resources", sub: "casestudies" } },
-        { id: "res-research", label: "Research (Numbers Story)", route: { page: "resources", sub: "research" } },
-        { id: "res-events", label: "Events", route: { page: "resources", sub: "events" }, tagline: "Global conferences, summits, and executive roundtables" },
-        { id: "res-webinars", label: "Webinars", route: { page: "resources", sub: "webinars" }, tagline: "Virtual workshops, masterclasses & on-demand demos" },
-        { id: "res-updates", label: "Product Updates", route: { page: "resources", sub: "updates" } },
-      ],
-    },
-    {
-      id: "partners",
-      title: "Partners",
-      icon: "🤝",
-      color: "#d97706",
-      tagline: "Technology & Strategic Ecosystem",
-      route: { page: "partners", sub: "tech" },
-      leaves: [
-        { id: "part-tech", label: "Technology Partners", route: { page: "partners", sub: "tech" } },
-        { id: "part-strategic", label: "Strategic Partners", route: { page: "partners", sub: "strategic" } },
-        { id: "part-join", label: "Become a Partner", route: { page: "partners", sub: "join" } },
-      ],
-    },
-    {
-      id: "contact",
-      title: "Contact",
-      icon: "✉️",
-      color: "#0284c7",
-      tagline: "Dedicated Inquiries & Inbound Channels",
-      route: { page: "contact" },
-      leaves: [
-        { id: "con-sales", label: "Sales Enquiries", route: { page: "contact" } },
-        { id: "con-partnerships", label: "Partnership Enquiries", route: { page: "contact" } },
-        { id: "con-media", label: "Media Enquiries", route: { page: "contact" } },
-        { id: "con-general", label: "General Enquiries", route: { page: "contact" } },
-      ],
-    },
-    {
-      id: "legal",
-      title: "Legal",
-      icon: "⚖️",
-      color: "#475569",
-      tagline: "Compliance, Privacy & Terms of Governance",
-      route: { page: "legal", sub: "privacy" },
-      leaves: [
-        { id: "leg-privacy", label: "Privacy Policy", route: { page: "legal", sub: "privacy" } },
-        { id: "leg-terms", label: "Terms of Use", route: { page: "legal", sub: "terms" } },
-        { id: "leg-cookies", label: "Cookie Policy", route: { page: "legal", sub: "cookies" } },
-        { id: "leg-security", label: "Security Disclosure", route: { page: "legal", sub: "security" } },
-        { id: "leg-trust", label: "Trust Center", route: { page: "technology", sub: "trust" } },
-        { id: "leg-sitemap", label: "Sitemap", route: { page: "legal", sub: "sitemap" } },
-      ],
-    },
-  ];
-
-  const term = searchTerm.toLowerCase().trim();
-
-  const asciiTree = `SHESHI FINANCIAL OPERATING SYSTEM
-│
-├── Home (/)
-│
-├── Company (/company)
-│   ├── About Sheshi (/company/about)
-│   ├── Our Story (/company/story)
-│   ├── Leadership (/company/leadership)
-│   ├── Our Team (/company/team)
-│   ├── People - and culture (/company/culture)
-│   ├── Careers (/company/careers)
-│   └── Contact Us (/contact)
-│
-├── Products (/products)
-│   │
-│   ├── Quanta (/products/quanta)
-│   │   └── Independent Product Website
-│   │       ├── Overview
-│   │       ├── Platform
-│   │       ├── Solutions
-│   │       ├── Capabilities
-│   │       ├── Enterprise
-│   │       ├── Resources
-│   │       └── Contact Sales
-│   │
-│   ├── Catalyx (/products/catalyx)
-│   │   └── Independent Product Website
-│   │       ├── Overview
-│   │       ├── Solutions
-│   │       ├── Features
-│   │       ├── For Startups
-│   │       ├── Resources
-│   │       └── Get Started
-│   │
-│   ├── ConsultEase (/products/consultease)
-│   │   └── Independent Product Website
-│   │       ├── Overview
-│   │       ├── Solutions
-│   │       ├── Features
-│   │       ├── For Advisory Firms
-│   │       ├── Resources
-│   │       └── Contact Us
-│   │
-│   └── Sheshi FR (/products/sheshifr)
-│       └── Independent Product Website
-│           ├── Overview
-│           ├── Features
-│           ├── Workflows
-│           ├── For Controllers
-│           ├── Resources
-│           └── Contact Us
-│
-├── Solutions (/solutions)
-│   ├── Enterprise Finance
-│   ├── Startup Finance
-│   ├── Consulting and Advisory Firms
-│   └── Finance Professionals
-│
-├── Technology (/technology)
-│   ├── Financial Operating System
-│   ├── AI and Automation
-│   ├── Integrations
-│   ├── Security and Compliance
-│   └── Trust Center
-│
-├── Resources (/resources)
-│   ├── Blog
-│   ├── Insights
-│   ├── Case Studies
-│   ├── Research (The Numbers Story)
-│   ├── Events
-│   ├── Webinars
-│   └── Product Updates
-│
-├── Partners (/partners)
-│   ├── Technology Partners
-│   ├── Strategic Partners
-│   └── Become a Partner
-│
-├── Contact (/contact)
-│   ├── Sales Enquiries
-│   ├── Partnership Enquiries
-│   ├── Media Enquiries
-│   └── General Enquiries
-│
-└── Legal (/legal)
-    ├── Privacy Policy
-    ├── Terms of Use
-    ├── Cookie Policy
-    ├── Security Disclosure
-    ├── Trust Center
-    └── Sitemap`;
-
-  const copyAscii = () => {
-    navigator.clipboard.writeText(asciiTree);
-    setCopiedAscii(true);
-    setTimeout(() => setCopiedAscii(false), 2000);
-  };
-
-  return (
-    <section id="sitemap-flowchart" className="bg-[#f8fafc] border-t border-b border-slate-200 py-20 px-6 md:px-12 relative overflow-hidden">
+    <section className="bg-slate-50 py-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
       <div className="max-w-7xl mx-auto">
-        {/* Header & Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
-          <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full mb-3">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-              Platform Architecture Graph
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-              Sheshi Platform Tree Flowchart
-            </h2>
-            <p className="text-sm md:text-base text-slate-600 max-w-2xl mt-2">
-              System routing tree rendered as an interconnected graph with branch spines, intermediate subsite gateways, and interactive page nodes.
-            </p>
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4">
+            Platform Product Suites
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {/* View Mode Toggle */}
-            <div className="bg-white border border-slate-200 p-1 rounded-lg flex items-center shadow-xs">
-              <button
-                onClick={() => setViewMode("tree")}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "tree" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                🌳 Tree Flowchart
-              </button>
-              <button
-                onClick={() => setViewMode("horizontal")}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "horizontal" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                🔀 Horizontal Graph
-              </button>
-              <button
-                onClick={() => setViewMode("ascii")}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "ascii" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                📋 Raw Diagram
-              </button>
-            </div>
-
-            {/* Expand / Collapse All */}
-            {viewMode !== "ascii" && (
-              <div className="flex items-center gap-1.5 bg-white border border-slate-200 p-1 rounded-lg shadow-xs">
-                <button
-                  onClick={expandAll}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 rounded transition-colors cursor-pointer"
-                >
-                  Expand All
-                </button>
-                <span className="text-slate-200">|</span>
-                <button
-                  onClick={collapseAll}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 rounded transition-colors cursor-pointer"
-                >
-                  Collapse All
-                </button>
-              </div>
-            )}
-
-            {/* Quick Search */}
-            <div className="relative w-full sm:w-60">
-              <input
-                type="text"
-                placeholder="Search platform node..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 shadow-xs"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm("")}
-                  className="absolute right-2.5 top-2 text-xs text-slate-400 hover:text-slate-900 cursor-pointer"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+            Dedicated Solutions Engineered for Modern Accounting Teams
+          </h2>
+          <p className="text-base text-slate-600 leading-relaxed">
+            Every product in the Sheshi ecosystem addresses a specific failure point in the traditional financial close lifecycle.
+          </p>
         </div>
 
-        {/* ─── FLOWCHART CANVAS ─── */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm overflow-x-auto">
-          {viewMode === "ascii" ? (
-            <div className="relative">
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Full Platform Structure (Hierarchy Diagram)
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {PRODUCTS_LIST.map((prod) => (
+            <div
+              key={prod.id}
+              className="bg-white border border-slate-200/90 hover:border-blue-300 rounded-2xl p-8 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all flex flex-col justify-between group"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span
+                    className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border"
+                    style={{
+                      color: prod.color,
+                      borderColor: prod.color + "40",
+                      backgroundColor: prod.color + "0f",
+                    }}
+                  >
+                    {prod.eyebrow}
+                  </span>
+                  <span className="text-xs font-mono font-semibold text-slate-400">
+                    Standalone or Unified OS
                   </span>
                 </div>
+
+                <h3 className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2">
+                  {prod.name}
+                </h3>
+
+                <p className="text-sm font-semibold text-slate-700 mb-3">
+                  {prod.tagline}
+                </p>
+
+                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mb-6">
+                  {prod.description}
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                 <button
-                  onClick={copyAscii}
-                  className="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-blue-600 transition-colors cursor-pointer flex items-center gap-1.5"
+                  onClick={() => navigate({ page: "products", sub: prod.id })}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 cursor-pointer"
                 >
-                  {copiedAscii ? "✓ Copied!" : "📋 Copy ASCII Diagram"}
+                  <span>Explore {prod.name} Features</span>
+                  <span>→</span>
+                </button>
+
+                <button
+                  onClick={() => navigate({ page: "topics", sub: prod.topicSlug })}
+                  className="text-[11px] font-semibold text-slate-400 hover:text-slate-700 cursor-pointer"
+                >
+                  Read Topic Guide & FAQs ↗
                 </button>
               </div>
-              <pre className="font-mono text-xs md:text-sm text-slate-800 bg-[#f8fafc] p-6 rounded-xl border border-slate-200 leading-relaxed overflow-x-auto">
-                {asciiTree}
-              </pre>
             </div>
-          ) : viewMode === "tree" ? (
-            <div className="flex flex-col items-start min-w-[760px] pl-2">
-              {/* ROOT NODE: SHESHI */}
-              <div className="flex items-center gap-3">
-                <div
-                  onClick={() => navigate({ page: "home" })}
-                  className="group relative bg-[#090e17] text-white px-6 py-3.5 rounded-xl shadow-md border-2 border-blue-500/40 hover:border-blue-500 transition-all cursor-pointer flex items-center gap-3.5 hover:scale-102"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-blue-600/20 flex items-center justify-center font-bold text-base text-blue-400 border border-blue-500/30">
-                    🌐
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold tracking-widest text-blue-400">SHESHI</span>
-                      <span className="text-[10px] bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-full">
-                        Root System Gateway
-                      </span>
-                    </div>
-                    <div className="text-xs text-slate-300">Global Financial Operating System &amp; Intelligence Hub</div>
-                  </div>
-                  <div className="ml-3 text-[11px] bg-blue-600 text-white px-2.5 py-1 rounded font-medium">
-                    / (Home) →
-                  </div>
-                </div>
-              </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-              {/* VERTICAL SPINAL TRUNK WITH BRANCH ARMS */}
-              <div className="relative pl-6 sm:pl-8 ml-6 sm:ml-8 border-l-2 border-slate-300 mt-2 space-y-6">
-                {pillars.map((pil) => {
-                  const isCollapsed = !!collapsedBranches[pil.id];
-                  const hasLeaves = !!(pil.leaves && pil.leaves.length > 0);
-                  const hasProducts = !!(pil.products && pil.products.length > 0);
-                  const isBranchMatch =
-                    !term ||
-                    pil.title.toLowerCase().includes(term) ||
-                    (pil.leaves && pil.leaves.some((l) => l.label.toLowerCase().includes(term))) ||
-                    (pil.products &&
-                      pil.products.some(
-                        (p) =>
-                          p.label.toLowerCase().includes(term) ||
-                          p.pages.some((pg) => pg.label.toLowerCase().includes(term))
-                      ));
+// ─── Research & The Numbers Story Callout ──────────────────────────────────────
 
-                  return (
-                    <div key={pil.id} className="relative pt-2">
-                      {/* Connector Arm */}
-                      <div className="absolute -left-6 sm:-left-8 top-6 w-6 sm:w-8 h-0.5 bg-slate-300 flex items-center">
-                        <div className="w-2 h-2 -ml-1 rounded-full bg-slate-900 border border-white" />
-                      </div>
-
-                      {/* Pillar Node */}
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all ${
-                            isBranchMatch && term
-                              ? "bg-white border-blue-600 ring-2 ring-blue-500/20 shadow-md"
-                              : "bg-white border-slate-200 hover:border-blue-500 shadow-xs"
-                          }`}
-                        >
-                          {(hasLeaves || hasProducts) ? (
-                            <button
-                              onClick={() => toggleBranch(pil.id)}
-                              className="w-5 h-5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
-                            >
-                              {isCollapsed ? "+" : "−"}
-                            </button>
-                          ) : (
-                            <span className="w-2 h-2 rounded-full bg-slate-400" />
-                          )}
-
-                          <span className="text-base">{pil.icon}</span>
-
-                          <button
-                            onClick={() => navigate(pil.route)}
-                            className="font-bold text-sm text-slate-900 hover:text-blue-600 transition-colors cursor-pointer text-left"
-                          >
-                            {pil.title}
-                          </button>
-
-                          {hasLeaves && (
-                            <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full font-mono">
-                              {pil.leaves!.length} Pages
-                            </span>
-                          )}
-                          {hasProducts && (
-                            <span className="text-[10px] font-semibold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full font-mono">
-                              4 Subsites • 25 Pages
-                            </span>
-                          )}
-
-                          <button
-                            onClick={() => navigate(pil.route)}
-                            className="text-[11px] font-medium text-blue-600 hover:underline cursor-pointer ml-1"
-                          >
-                            Jump →
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Leaves */}
-                      {!isCollapsed && hasLeaves && (
-                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-slate-200 mt-3 space-y-2.5">
-                          {pil.leaves!.map((leaf) => {
-                            const isMatch =
-                              !term ||
-                              leaf.label.toLowerCase().includes(term) ||
-                              pil.title.toLowerCase().includes(term);
-
-                            return (
-                              <div key={leaf.id} className="relative flex items-center gap-2">
-                                <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-slate-200 flex items-center">
-                                  <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-slate-400" />
-                                </div>
-
-                                <button
-                                  onClick={() => navigate(leaf.route)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer flex items-center gap-2 ${
-                                    isMatch && term
-                                      ? "bg-blue-600 text-white border-blue-600 shadow-xs font-semibold"
-                                      : "bg-[#f8fafc] hover:bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:shadow-xs"
-                                  }`}
-                                >
-                                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: pil.color }} />
-                                  <span>{leaf.label}</span>
-                                  <span className="text-[10px] opacity-40">→</span>
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Products Ecosystem */}
-                      {!isCollapsed && hasProducts && (
-                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-slate-200 mt-4 space-y-6">
-                          {pil.products!.map((prod) => {
-                            const isProdCollapsed = !!collapsedBranches[prod.id];
-                            return (
-                              <div key={prod.id} className="relative">
-                                <div className="absolute -left-6 sm:-left-8 top-5 w-6 sm:w-8 h-0.5 bg-slate-200 flex items-center">
-                                  <div className="w-2 h-2 -ml-1 rounded-full bg-teal-600" />
-                                </div>
-
-                                <div className="flex flex-wrap items-center gap-3">
-                                  <div
-                                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-xs"
-                                    style={{ backgroundColor: prod.color }}
-                                  >
-                                    <button
-                                      onClick={() => toggleBranch(prod.id)}
-                                      className="w-4 h-4 rounded bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-[10px] font-bold cursor-pointer"
-                                    >
-                                      {isProdCollapsed ? "+" : "−"}
-                                    </button>
-                                    <span>{prod.icon}</span>
-                                    <span>{prod.label}</span>
-                                  </div>
-
-                                  <div className="hidden sm:flex items-center gap-1 text-slate-400">
-                                    <div className="w-4 h-0.5 bg-slate-300" />
-                                    <span className="text-xs font-bold">➔</span>
-                                  </div>
-
-                                  <button
-                                    onClick={() =>
-                                      navigate({
-                                        page: "products",
-                                        sub: prod.id,
-                                        productPage: "home",
-                                      })
-                                    }
-                                    className="bg-white border-2 border-dashed border-teal-500/40 hover:border-teal-600 text-slate-800 hover:text-teal-700 px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
-                                  >
-                                    <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse" />
-                                    <span>Independent Product Website</span>
-                                    <span className="text-[10px] bg-teal-50 text-teal-700 px-1.5 py-0.5 rounded font-mono">
-                                      {prod.pages.length} Pages ↗
-                                    </span>
-                                  </button>
-                                </div>
-
-                                {!isProdCollapsed && (
-                                  <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-slate-200 mt-3 space-y-2">
-                                    {prod.pages.map((pg) => (
-                                      <div key={pg.id} className="relative flex items-center gap-2">
-                                        <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-slate-200 flex items-center">
-                                          <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-teal-600" />
-                                        </div>
-
-                                        <button
-                                          onClick={() => navigate(pg.route)}
-                                          className="px-3 py-1.5 rounded-lg text-xs font-medium border bg-white hover:bg-teal-50/50 text-slate-700 border-slate-200 hover:border-teal-600 transition-colors cursor-pointer flex items-center gap-2"
-                                        >
-                                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.color }} />
-                                          <span>{pg.label}</span>
-                                          <span className="text-[10px] opacity-40">→</span>
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            /* Horizontal Graph */
-            <div className="min-w-[960px] py-4">
-              <div className="flex items-start gap-8">
-                <div className="w-52 shrink-0 pt-20">
-                  <div
-                    onClick={() => navigate({ page: "home" })}
-                    className="bg-[#090e17] text-white p-5 rounded-xl border-2 border-blue-500 shadow-md cursor-pointer hover:scale-102 transition-transform"
-                  >
-                    <div className="text-[10px] font-bold tracking-widest text-blue-400 uppercase mb-1">
-                      System Root
-                    </div>
-                    <div className="font-bold text-base flex items-center gap-2">
-                      <span>🌐</span> SHESHI
-                    </div>
-                    <div className="text-xs text-slate-400 mt-1">/ (Home Gateway)</div>
-                    <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-300">
-                      <span>72 Platform Nodes</span>
-                      <span className="text-blue-400">➔</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="shrink-0 pt-32 flex flex-col items-center">
-                  <div className="w-8 h-0.5 bg-slate-300" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                </div>
-
-                <div className="flex-1 space-y-4">
-                  {pillars.map((pil) => (
-                    <div
-                      key={pil.id}
-                      className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:border-blue-500 transition-colors"
-                    >
-                      <button
-                        onClick={() => navigate(pil.route)}
-                        className="w-36 shrink-0 text-left px-3 py-2 rounded-lg text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1.5"
-                        style={{ backgroundColor: pil.color }}
-                      >
-                        <span>{pil.icon}</span> {pil.title} ↗
-                      </button>
-
-                      <div className="w-4 h-0.5 bg-slate-200 shrink-0 mt-3.5" />
-
-                      <div className="flex-1">
-                        {pil.leaves && (
-                          <div className="flex flex-wrap gap-1.5">
-                            {pil.leaves.map((leaf) => (
-                              <button
-                                key={leaf.id}
-                                onClick={() => navigate(leaf.route)}
-                                className="px-2.5 py-1 text-xs bg-[#f8fafc] hover:bg-blue-600 hover:text-white text-slate-700 rounded-md border border-slate-200 hover:border-blue-600 transition-colors cursor-pointer"
-                              >
-                                {leaf.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-
-                        {pil.products && (
-                          <div className="space-y-2 w-full">
-                            {pil.products.map((prod) => (
-                              <div key={prod.id} className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-lg border border-slate-200">
-                                <span className="text-[11px] font-bold text-white px-2 py-0.5 rounded" style={{ backgroundColor: prod.color }}>
-                                  {prod.label}
-                                </span>
-                                <div className="flex flex-wrap gap-1 flex-1">
-                                  {prod.pages.map((pg) => (
-                                    <button
-                                      key={pg.id}
-                                      onClick={() => navigate(pg.route)}
-                                      className="px-2 py-0.5 text-[11px] bg-white hover:bg-teal-600 hover:text-white text-slate-700 rounded border border-slate-200 hover:border-teal-600 transition-colors cursor-pointer"
-                                    >
-                                      {pg.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Legend */}
-          <div className="mt-10 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
-            <div className="flex items-center gap-6 flex-wrap">
-              <span className="font-semibold text-slate-900">Architecture Tiers:</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-900" /> Root Platform (L0)</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Core Pillar (L1)</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-teal-600" /> Subsite Ecosystem (L2)</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400" /> Governed Node (L3)</span>
-            </div>
-            <span className="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-medium">
-              Click any node in graph to view live route
+function NumbersStoryCallout({ navigate }: { navigate: (r: Route) => void }) {
+  return (
+    <section className="bg-white py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
+      <div className="max-w-7xl mx-auto bg-gradient-to-br from-blue-50/80 via-white to-slate-50 border border-blue-200/80 rounded-3xl p-8 sm:p-12 shadow-sm">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-4">
+            <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider">
+              Flagship Industry Benchmark Report
             </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              The Numbers Story: Inside the 2026 State of Financial Close
+            </h2>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              We surveyed 4,200 CFOs, Corporate Controllers, and audit leaders across North America and Europe. 87% reported that spreadsheet errors were discovered in quarterly close packages after partner sign-off. Learn how autonomous continuous close eliminates this risk.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <button
+                onClick={() => navigate({ page: "resources", sub: "research" })}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                Read Complete Research Report (48 Pages)
+              </button>
+              <button
+                onClick={() => navigate({ page: "resources", sub: "events" })}
+                className="px-5 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Attend the Executive Webinar
+              </button>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <span className="text-2xl font-extrabold text-blue-600 font-mono">87%</span>
+              <p className="text-xs font-bold text-slate-800 mt-1">Spreadsheet Error Exposure</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Found in certified reporting</p>
+            </div>
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <span className="text-2xl font-extrabold text-blue-600 font-mono">68%</span>
+              <p className="text-xs font-bold text-slate-800 mt-1">Overtime & Burnout</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Accounting team fatigue</p>
+            </div>
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <span className="text-2xl font-extrabold text-blue-600 font-mono">11.8 Days</span>
+              <p className="text-xs font-bold text-slate-800 mt-1">Average Close Length</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">In traditional manual ERPs</p>
+            </div>
+            <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+              <span className="text-2xl font-extrabold text-emerald-600 font-mono">4 Hours</span>
+              <p className="text-xs font-bold text-slate-800 mt-1">Sheshi Continuous Close</p>
+              <p className="text-[11px] text-emerald-600 mt-0.5">Autonomous resolution</p>
+            </div>
           </div>
         </div>
       </div>
@@ -2420,323 +903,1501 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
   );
 }
 
-// ─── Homepage ─────────────────────────────────────────────────────────────────
+// ─── BESPOKE PRODUCT VIEW: Sheshi Quanta ───────────────────────────────────────
 
-function HomePage({ navigate }: { navigate: (r: Route) => void }) {
+function QuantaProductView({
+  navigate,
+  onOpenDemo,
+}: {
+  navigate: (r: Route) => void;
+  onOpenDemo: () => void;
+}) {
+  const [ruleTolerance, setRuleTolerance] = useState("0.00");
+  const [testResult, setTestResult] = useState<string | null>(null);
+
+  const handleTestMatch = () => {
+    setTestResult("processing");
+    setTimeout(() => {
+      setTestResult("success");
+    }, 700);
+  };
+
   return (
-    <div>
-      <HeroCentered navigate={navigate} />
-      <LogoStrip />
-      <MetricsRow count={5} />
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Products", "Sheshi Quanta"]}
+        eyebrow="Autonomous General Ledger Ingestion & Consolidation"
+        title="Financial Consolidation Software | Sheshi Quanta"
+        subtitle="Unify disparate global subsidiaries, foreign currencies, and ERP chart-of-accounts into a continuous, audit-ready consolidated general ledger with zero manual spreadsheet intervention."
+        primaryAction={{ label: "Request Quanta Enterprise Architecture Demo", onClick: onOpenDemo }}
+        secondaryAction={{ label: "Read Multi-Entity Consolidation Guide", onClick: () => navigate({ page: "topics", sub: "financial-consolidation" }) }}
+      />
 
-      {/* 4 Core Products Showcase */}
-      <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <SectionLabel text="Product Suite" />
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-              Built for Every Point in the Financial Chain
-            </h2>
-            <p className="text-sm md:text-base text-slate-600 mt-3">
-              Each product addresses a distinct operational context — different buyers, different problems, one unified Financial Operating System underneath.
-            </p>
+      <TopicInternalRibbon currentTopic="financial-consolidation" navigate={navigate} />
+
+      {/* Educational Concept Section: Explain Before Selling */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 space-y-6">
+          <div className="border-b border-slate-100 pb-4">
+            <span className="text-xs font-bold uppercase text-blue-600 tracking-wider">Accounting Concept Defined</span>
+            <h2 className="text-2xl font-bold text-slate-900 mt-1">What is Autonomous Financial Consolidation?</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {PRODUCTS.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
-                className="text-left bg-white border border-slate-200 rounded-xl p-7 hover:border-blue-500 hover:shadow-lg transition-all group cursor-pointer flex flex-col justify-between"
-              >
-                <div>
-                  <div
-                    className="w-11 h-11 rounded-lg mb-5 flex items-center justify-center text-xl text-white font-bold"
-                    style={{ backgroundColor: p.accent }}
-                  >
-                    {p.label[0]}
-                  </div>
-                  <h3 className="font-bold text-slate-900 text-lg mb-1 group-hover:text-blue-600 transition-colors">
-                    {p.label}
-                  </h3>
-                  <p className="text-xs font-semibold text-blue-600 mb-3">{p.tagline}</p>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-6">{p.description}</p>
-                </div>
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
-                  <span>Explore Product Subsite</span>
-                  <span>→</span>
-                </div>
-              </button>
-            ))}
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Financial consolidation is the process of aggregating financial data from multiple subsidiaries, business units, and foreign entities into a single, unified set of financial statements. In multinational corporations, this requires converting diverse local currencies into the parent reporting currency (using historical, average, and spot rates under ASC 830 / IAS 21), eliminating intercompany transactions to prevent double-counting, and adjusting for minority interests.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+              <h3 className="text-sm font-bold text-slate-900 mb-1">Why Multi-Entity Consolidation Fails in Excel</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Most companies rely on multi-tab Excel workbooks that require manual copy-pasting of trial balances. A single broken VLOOKUP or outdated foreign exchange rate cascades silent balance discrepancies across intercompany loans and deferred revenue schedules.
+              </p>
+            </div>
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <h3 className="text-sm font-bold text-blue-900 mb-1">How Sheshi Quanta Automates the Process</h3>
+              <p className="text-xs text-blue-800 leading-relaxed">
+                Quanta operates as a streaming mathematical engine. As transactions clear local ERPs in Tokyo, London, or New York, Quanta applies deterministic netting rules, generates balancing eliminating entries, and locks the audit evidence in real time.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* The 72-Node Interactive Platform Flowchart Site Map */}
-      <SiteMapSection navigate={navigate} />
+      {/* Interactive Tool: Transaction Matching Rule Builder */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase">Live Feature Interactive Demo</span>
+              <h3 className="text-xl font-bold text-slate-900">Quanta Autonomous Rule Engine Simulator</h3>
+            </div>
+            <span className="text-xs text-slate-400">Simulate rule execution against 5,000 subledger lines</span>
+          </div>
 
-      <ZigzagSection rows={3} />
-      <TestimonialBlock />
-      <CaseStudyCards />
-      <FAQSection />
-      <CTABand navigate={navigate} />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Match Strategy</label>
+              <select className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 font-medium text-slate-800">
+                <option>Multi-Currency Intercompany Netting (USD / EUR / GBP)</option>
+                <option>1:Many Batch Bank Feed to Customer Invoices</option>
+                <option>Fuzzy Semantic Vendor Reconciliation</option>
+              </select>
+            </div>
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Variance Threshold (Penny Tolerance)</label>
+              <select
+                value={ruleTolerance}
+                onChange={(e) => setRuleTolerance(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 font-medium text-slate-800"
+              >
+                <option value="0.00">$0.00 (Zero Tolerance - Exact Dollar Math)</option>
+                <option value="0.05">$0.05 (Minor FX Penny Rounding)</option>
+                <option value="1.00">$1.00 (Bank Wire Fee Discrepancy Margin)</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={handleTestMatch}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs"
+              >
+                {testResult === "processing" ? "Executing Match Algorithms..." : "Run Test Match Rules"}
+              </button>
+            </div>
+          </div>
+
+          {testResult && (
+            <div className={`p-4 rounded-xl border text-xs font-mono ${
+              testResult === "success" ? "bg-emerald-50 border-emerald-200 text-emerald-900" : "bg-blue-50 border-blue-200 text-blue-900"
+            }`}>
+              {testResult === "processing" && <span>[11:52:01 UTC] Ingesting 5,000 journal lines across NetSuite Entity 001 and SAP Entity 004...</span>}
+              {testResult === "success" && (
+                <div className="space-y-1">
+                  <div className="font-bold">✓ 5,000 of 5,000 Transactions Matched (100% Precision)</div>
+                  <div>FX Revaluation applied via ECB spot exchange rates. Tolerance delta held under ${ruleTolerance}.</div>
+                  <div>Auto-generated 42 intercompany elimination journals ready for General Ledger consolidation.</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Comparison Matrix: Manual Excel vs Traditional ERP vs Sheshi Quanta */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">
+          Architectural Comparison: How Quanta Outperforms Point Solutions
+        </h3>
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+              <tr>
+                <th className="p-4">Capability</th>
+                <th className="p-4 text-slate-400">Manual Spreadsheets</th>
+                <th className="p-4 text-slate-400">Legacy ERP Add-ons</th>
+                <th className="p-4 text-blue-600 bg-blue-50/50">Sheshi Quanta</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tr>
+                <td className="p-4 font-bold text-slate-900">Ingestion Frequency</td>
+                <td className="p-4 text-slate-500">Monthly batch copy-paste</td>
+                <td className="p-4 text-slate-500">Nightly scheduled batch</td>
+                <td className="p-4 font-bold text-blue-700 bg-blue-50/30">Continuous real-time stream</td>
+              </tr>
+              <tr>
+                <td className="p-4 font-bold text-slate-900">Multi-Currency ASC 830 Conversion</td>
+                <td className="p-4 text-slate-500">Manual formula updates</td>
+                <td className="p-4 text-slate-500">Static month-end exchange table</td>
+                <td className="p-4 font-bold text-blue-700 bg-blue-50/30">Automated daily spot & average reval</td>
+              </tr>
+              <tr>
+                <td className="p-4 font-bold text-slate-900">Intercompany Eliminations</td>
+                <td className="p-4 text-slate-500">High error email coordination</td>
+                <td className="p-4 text-slate-500">Semi-manual matching rules</td>
+                <td className="p-4 font-bold text-blue-700 bg-blue-50/30">Autonomous self-balancing elimination</td>
+              </tr>
+              <tr>
+                <td className="p-4 font-bold text-slate-900">SOX 404 Audit Evidence</td>
+                <td className="p-4 text-slate-500">Screenshots & folder archives</td>
+                <td className="p-4 text-slate-500">Basic database change logs</td>
+                <td className="p-4 font-bold text-blue-700 bg-blue-50/30">Cryptographic immutable audit trail</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* High-Impact Pre-Footer CTA */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white rounded-3xl p-8 sm:p-12 text-center shadow-lg shadow-blue-500/10">
+          <h3 className="text-2xl sm:text-3xl font-bold mb-3">Ready to eliminate your month-end consolidation scramble?</h3>
+          <p className="text-sm text-blue-100 max-w-2xl mx-auto mb-6">
+            Join Fortune 500 controllers who closed their books 75% faster last quarter with zero SOX audit findings.
+          </p>
+          <button
+            onClick={onOpenDemo}
+            className="px-6 py-3 bg-white hover:bg-slate-100 text-blue-900 font-bold rounded-xl text-sm transition-colors cursor-pointer"
+          >
+            Schedule Quanta Live Pilot Demo
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
+// ─── BESPOKE PRODUCT VIEW: Sheshi Catalyx ──────────────────────────────────────
 
-function Navbar({ navigate, currentPage }: { navigate: (r: Route) => void; currentPage: string }) {
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
+function CatalyxProductView({
+  navigate,
+  onOpenDemo,
+}: {
+  navigate: (r: Route) => void;
+  onOpenDemo: () => void;
+}) {
+  const [monthlyBurn, setMonthlyBurn] = useState(120000);
+  const [cashBalance, setCashBalance] = useState(2400000);
+
+  const rawRunwayMonths = (cashBalance / monthlyBurn).toFixed(1);
+  const catalyxOptimizedMonths = ((cashBalance * 1.18) / (monthlyBurn * 0.92)).toFixed(1);
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 flex items-center h-16 justify-between gap-2">
-        <div className="flex items-center gap-8">
-          <button
-            onClick={() => navigate({ page: "home" })}
-            className="font-bold text-xl text-slate-900 tracking-tight flex items-center gap-2 cursor-pointer"
-          >
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-            <span>SHESHI</span>
-          </button>
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Products", "Sheshi Catalyx"]}
+        eyebrow="Startup Finance & Runway Accelerator"
+        title="Startup Financial Intelligence & Runway Forecaster | Sheshi Catalyx"
+        subtitle="Plug in Stripe, Brex, Ramp, and QuickBooks in 5 minutes. Real-time cash runway modeling, automated investor reporting, and continuous burn surveillance for founders and startup VPs of Finance."
+        primaryAction={{ label: "Start Free Startup Pilot", onClick: onOpenDemo }}
+        secondaryAction={{ label: "Explore Continuous Close Guide", onClick: () => navigate({ page: "topics", sub: "continuous-close" }) }}
+      />
 
-          <div className="hidden lg:flex items-center gap-1">
-            {NAV.map((item) => (
-              <div
-                key={item.page}
-                className="relative"
-                onMouseEnter={() => item.children && setOpenMenu(item.page)}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
+      <TopicInternalRibbon currentTopic="continuous-close" navigate={navigate} />
+
+      {/* Interactive Tool: Runway & Cash Burn Simulator */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="border-b border-slate-100 pb-4">
+            <span className="text-xs font-mono font-bold text-teal-600 uppercase">Interactive Financial Calculator</span>
+            <h3 className="text-xl font-bold text-slate-900 mt-1">Real-Time Startup Cash Runway Forecaster</h3>
+            <p className="text-xs text-slate-500">
+              Drag the sliders below to calculate your true cash out date and see how automated reconciliation extends your runway.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-5">
+              <div>
+                <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                  <span>Current Cash Balance</span>
+                  <span className="font-mono text-teal-700">${cashBalance.toLocaleString()} USD</span>
+                </div>
+                <input
+                  type="range"
+                  min="200000"
+                  max="10000000"
+                  step="100000"
+                  value={cashBalance}
+                  onChange={(e) => setCashBalance(Number(e.target.value))}
+                  className="w-full accent-teal-600 cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                  <span>Net Monthly Cash Burn</span>
+                  <span className="font-mono text-rose-600">${monthlyBurn.toLocaleString()} / mo</span>
+                </div>
+                <input
+                  type="range"
+                  min="20000"
+                  max="500000"
+                  step="10000"
+                  value={monthlyBurn}
+                  onChange={(e) => setMonthlyBurn(Number(e.target.value))}
+                  className="w-full accent-teal-600 cursor-pointer"
+                />
+              </div>
+
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 space-y-1">
+                <span className="font-bold text-slate-800 block">Catalyx Auto-Optimization Benefits:</span>
+                <div>• Recovers uncollected failed subscription charges via automated dunning.</div>
+                <div>• Eliminates duplicate SaaS vendor seats and off-contract card spend.</div>
+                <div>• Auto-compiles monthly investor updates with zero manual slide deck drafting.</div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200 rounded-2xl p-6 flex flex-col justify-between">
+              <div>
+                <span className="text-xs font-bold uppercase text-teal-800 tracking-wider">Projected Cash Horizon</span>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-teal-900 font-mono">
+                    {catalyxOptimizedMonths}
+                  </span>
+                  <span className="text-sm font-bold text-teal-700">Months with Catalyx</span>
+                </div>
+                <p className="text-xs text-slate-600 mt-2">
+                  vs <strong className="text-slate-800">{rawRunwayMonths} months</strong> under unmonitored manual spreadsheets (+{(Number(catalyxOptimizedMonths) - Number(rawRunwayMonths)).toFixed(1)} months buffer gained).
+                </p>
+              </div>
+
+              <div className="pt-6 border-t border-teal-200/80">
                 <button
-                  onClick={() => {
-                    navigate({ page: item.page });
-                    setOpenMenu(null);
-                  }}
-                  className={`px-3 py-2 text-xs font-semibold rounded-md transition-colors cursor-pointer flex items-center gap-1 ${
-                    currentPage === item.page ? "text-blue-600 bg-blue-50/60" : "text-slate-600 hover:text-slate-900"
-                  }`}
+                  onClick={onOpenDemo}
+                  className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-xs"
                 >
-                  <span>{item.label}</span>
-                  {item.children && <span className="text-[10px] opacity-40">▾</span>}
+                  Connect Startup Financial Stack (5 Min Setup)
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                {item.children && openMenu === item.page && (
-                  <div className="absolute top-full left-0 bg-white border border-slate-200 rounded-xl shadow-xl py-2 min-w-56 z-50">
-                    {item.children.map((child) => (
+      {/* Plug-and-Play Connectors Grid */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">
+          Instant Zero-Code Connectors for Modern Tech Companies
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { name: "Stripe", desc: "Automated MRR, ARR, and gross-to-net fee reconciliation", tag: "Revenue" },
+            { name: "Brex & Ramp", desc: "Real-time card receipt capture and memo category tagging", tag: "Corporate Cards" },
+            { name: "Gusto & Rippling", desc: "Payroll tax journal entries and departmental allocation", tag: "Payroll" },
+            { name: "Mercury & SVB", desc: "Direct open banking feed with penny-accurate balance sync", tag: "Banking" },
+          ].map((c, i) => (
+            <div key={i} className="bg-white border border-slate-200 p-5 rounded-xl hover:border-teal-300 transition-colors">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-2 py-0.5 rounded">
+                {c.tag}
+              </span>
+              <h4 className="text-base font-bold text-slate-900 mt-2 mb-1">{c.name}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">{c.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ─── BESPOKE PRODUCT VIEW: Sheshi ConsultEase ─────────────────────────────────
+
+function ConsultEaseProductView({
+  navigate,
+  onOpenDemo,
+}: {
+  navigate: (r: Route) => void;
+  onOpenDemo: () => void;
+}) {
+  const clients = [
+    { name: "Apex Logistics Corp", status: "Close Complete", score: "99.4%", pending: 0, deadline: "Oct 15 (Q3)" },
+    { name: "CloudScale AI Inc", status: "Senior Review", score: "96.1%", pending: 3, deadline: "Oct 15 (Q3)" },
+    { name: "Zenith Medical Care", status: "PBC Collection", score: "88.2%", pending: 11, deadline: "Oct 20 (Q3)" },
+    { name: "Solaria Clean Energy", status: "In Progress", score: "92.0%", pending: 6, deadline: "Oct 25 (Q3)" },
+  ];
+
+  return (
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Products", "Sheshi ConsultEase"]}
+        eyebrow="CPA & Accounting Advisory Multi-Client Management"
+        title="Advisory Practice Multi-Client Portal | Sheshi ConsultEase"
+        subtitle="Equip your accounting firm or outsourced CFO advisory to manage 3x more client engagements per partner without burnout. Standardized workpapers, automated PBC chasing, and partner sign-off orchestration."
+        primaryAction={{ label: "Request Accounting Firm Demo", onClick: onOpenDemo }}
+        secondaryAction={{ label: "Read Reconciliation Architecture", onClick: () => navigate({ page: "topics", sub: "account-reconciliation" }) }}
+      />
+
+      <TopicInternalRibbon currentTopic="account-reconciliation" navigate={navigate} />
+
+      {/* Multi-Client Health Cockpit */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <span className="text-xs font-mono font-bold text-purple-600 uppercase">Interactive Advisory Cockpit</span>
+              <h3 className="text-xl font-bold text-slate-900">Multi-Client Portfolio Oversight Dashboard</h3>
+            </div>
+            <span className="text-xs text-slate-500 font-medium">Managing 48 Client Entities</span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold text-[10px]">
+                <tr>
+                  <th className="p-3">Client Entity</th>
+                  <th className="p-3">Workflow State</th>
+                  <th className="p-3">Reconciliation Health</th>
+                  <th className="p-3">Pending Items</th>
+                  <th className="p-3">Filing Deadline</th>
+                  <th className="p-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                {clients.map((c, i) => (
+                  <tr key={i} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="p-3 font-bold text-slate-900">{c.name}</td>
+                    <td className="p-3">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="p-3 font-mono font-bold text-emerald-600">{c.score}</td>
+                    <td className="p-3 font-mono">{c.pending} items</td>
+                    <td className="p-3 text-slate-500">{c.deadline}</td>
+                    <td className="p-3 text-right">
                       <button
-                        key={child.sub}
-                        onClick={() => {
-                          navigate({
-                            page: item.page,
-                            sub: child.sub,
-                            ...(item.page === "products" ? { productPage: "home" } : {}),
-                          });
-                          setOpenMenu(null);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors cursor-pointer"
+                        onClick={onOpenDemo}
+                        className="px-2.5 py-1 text-xs text-blue-600 hover:text-blue-800 font-bold cursor-pointer"
                       >
-                        {child.label}
+                        Review Workpapers →
                       </button>
-                    ))}
-                  </div>
-                )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* 4-Stage Workpaper Review Stepper */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">
+          Standardized 4-Stage Workpaper Lifecycle
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          {[
+            { step: "01", title: "Automated Ingestion", desc: "Bank feeds, Stripe charges, and payroll summaries ingest continuously into client workpapers." },
+            { step: "02", title: "Preparer Review", desc: "Staff accountant reviews auto-matched variances and flags complex accruals." },
+            { step: "03", title: "Partner Sign-Off", desc: "Audit partner inspects immutable variance notes with 1-click cryptographic stamp." },
+            { step: "04", title: "Client Delivery", desc: "Board-ready PDF and live interactive portal unlocked for executive stakeholders." },
+          ].map((s, i) => (
+            <div key={i} className="bg-white border border-slate-200 p-5 rounded-xl shadow-xs">
+              <span className="text-xl font-black text-purple-600 font-mono">{s.step}</span>
+              <h4 className="text-sm font-bold text-slate-900 mt-2 mb-1">{s.title}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ─── BESPOKE PRODUCT VIEW: Sheshi FR ──────────────────────────────────────────
+
+function SheshiFrProductView({
+  navigate,
+  onOpenDemo,
+}: {
+  navigate: (r: Route) => void;
+  onOpenDemo: () => void;
+}) {
+  const [activeTab, setActiveTab] = useState<"bs" | "is" | "xbrl">("bs");
+
+  return (
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Products", "Sheshi FR"]}
+        eyebrow="Financial Reporting & Regulatory Disclosure"
+        title="Autonomous Financial Statements & SEC Disclosure Suite | Sheshi FR"
+        subtitle="Bridge the gap between verified trial balances and certified statutory reports. Sheshi FR verifies all footnote arithmetic, validates GAAP/IFRS disclosures, and auto-tags XBRL taxonomies with 100% mathematical integrity."
+        primaryAction={{ label: "Request Reporting Suite Demo", onClick: onOpenDemo }}
+        secondaryAction={{ label: "Read Intercompany Accounting Guide", onClick: () => navigate({ page: "topics", sub: "intercompany-accounting" }) }}
+      />
+
+      <TopicInternalRibbon currentTopic="intercompany-accounting" navigate={navigate} />
+
+      {/* Interactive Financial Disclosure Viewer */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-slate-50 border-b border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-orange-600 uppercase">Live Disclosure Inspector</span>
+              <span className="text-xs text-slate-500 font-medium">| Form 10-Q Preview (Audited)</span>
+            </div>
+            <div className="flex gap-1 bg-slate-200/60 p-1 rounded-lg">
+              <button
+                onClick={() => setActiveTab("bs")}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                  activeTab === "bs" ? "bg-white text-orange-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Balance Sheet
+              </button>
+              <button
+                onClick={() => setActiveTab("is")}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                  activeTab === "is" ? "bg-white text-orange-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Income Statement
+              </button>
+              <button
+                onClick={() => setActiveTab("xbrl")}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                  activeTab === "xbrl" ? "bg-white text-orange-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                XBRL Taxonomy Tagging
+              </button>
+            </div>
+          </div>
+
+          <div className="p-6">
+            {activeTab === "bs" && (
+              <div className="space-y-3 font-mono text-xs">
+                <div className="flex justify-between font-bold text-slate-900 border-b border-slate-200 pb-2">
+                  <span>CONSOLIDATED BALANCE SHEETS (in thousands USD)</span>
+                  <span>June 30, 2026 (Unaudited)</span>
+                </div>
+                <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
+                  <span>Cash and cash equivalents (Note 3)</span>
+                  <span className="font-bold text-slate-900">$142,508</span>
+                </div>
+                <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
+                  <span>Accounts receivable, net of allowances</span>
+                  <span className="font-bold text-slate-900">$68,912</span>
+                </div>
+                <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
+                  <span>Prepaid expenses and other current assets</span>
+                  <span className="font-bold text-slate-900">$14,204</span>
+                </div>
+                <div className="flex justify-between font-bold text-slate-900 bg-orange-50/60 p-2 rounded text-xs">
+                  <span>TOTAL CURRENT ASSETS</span>
+                  <span className="text-orange-700">$225,624</span>
+                </div>
+                <div className="text-[11px] text-emerald-700 font-sans font-semibold pt-1">
+                  ✓ Arithmetic invariant passed: Footnote 3 cash total matches line item exactly ($142,508k). Zero tie-out variance.
+                </div>
+              </div>
+            )}
+
+            {activeTab === "is" && (
+              <div className="space-y-3 font-mono text-xs">
+                <div className="flex justify-between font-bold text-slate-900 border-b border-slate-200 pb-2">
+                  <span>CONSOLIDATED STATEMENTS OF OPERATIONS</span>
+                  <span>Three Months Ended June 30</span>
+                </div>
+                <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
+                  <span>Subscription Revenue (ASC 606)</span>
+                  <span className="font-bold text-slate-900">$48,910</span>
+                </div>
+                <div className="flex justify-between text-slate-700 py-1 border-b border-slate-100">
+                  <span>Professional Services Revenue</span>
+                  <span className="font-bold text-slate-900">$4,200</span>
+                </div>
+                <div className="flex justify-between font-bold text-slate-900 bg-orange-50/60 p-2 rounded text-xs">
+                  <span>TOTAL REVENUE</span>
+                  <span className="text-orange-700">$53,110</span>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "xbrl" && (
+              <div className="p-4 bg-slate-900 text-slate-200 rounded-xl space-y-2 font-mono text-xs">
+                <div className="text-orange-400 font-bold">&lt;us-gaap:CashAndCashEquivalentsAtCarryingValue&gt;</div>
+                <div className="pl-4">contextRef=&quot;AsOf2026-06-30&quot; unitRef=&quot;USD&quot; decimals=&quot;-3&quot;</div>
+                <div className="pl-4 text-emerald-400">142508000</div>
+                <div className="text-orange-400 font-bold">&lt;/us-gaap:CashAndCashEquivalentsAtCarryingValue&gt;</div>
+                <div className="text-[11px] font-sans text-slate-400 pt-2">
+                  100% US-GAAP 2026 SEC Taxonomy compliance certified. Verified against SEC EDGAR Filer validation suite.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ─── DEDICATED SEARCHABLE TOPIC VIEW (AI & Crawler Optimized) ─────────────────
+
+function DedicatedTopicView({
+  slug,
+  navigate,
+  onOpenDemo,
+}: {
+  slug: string;
+  navigate: (r: Route) => void;
+  onOpenDemo: () => void;
+}) {
+  const topicRegistry: Record<
+    string,
+    {
+      h1: string;
+      subtitle: string;
+      whatIs: string;
+      whyHard: string;
+      howWorks: string;
+      relatedProduct: string;
+      productName: string;
+      faqs: { q: string; a: string }[];
+    }
+  > = {
+    "financial-consolidation": {
+      h1: "Financial Consolidation Software: The Complete Enterprise Guide",
+      subtitle: "Understand multi-entity accounting, automated currency conversion under ASC 830, and autonomous intercompany eliminations.",
+      whatIs: "Financial consolidation is the process of combining financial data from multiple subsidiary entities into a single, cohesive parent general ledger. It requires eliminating intercompany revenue, loans, and receivables so consolidated revenue reflects true external transactions.",
+      whyHard: "Consolidation becomes exponentially complex as organizations acquire entities with disparate ERP systems (e.g., SAP in US, NetSuite in UK, QuickBooks in Japan). Manual Excel workbooks introduce severe copy-paste and foreign exchange translation errors.",
+      howWorks: "Modern autonomous software connects directly to each entity's ERP API, normalizes chart of accounts mappings, applies real-time currency conversion spot rates, and executes automated elimination journals with cryptographic audit evidence.",
+      relatedProduct: "quanta",
+      productName: "Sheshi Quanta",
+      faqs: [
+        { q: "What is the difference between statutory and management consolidation?", a: "Statutory consolidation adheres to GAAP/IFRS standards for official filings (10-K/10-Q), while management consolidation provides internal business unit reporting and EBITDA segment breakdowns." },
+        { q: "How are foreign currency translations handled?", a: "Under ASC 830 / IAS 21, balance sheet items are translated at period-end spot exchange rates, while income statement items use weighted average rates." },
+      ],
+    },
+    "continuous-close": {
+      h1: "Continuous Financial Close: Moving Beyond Month-End Chaos",
+      subtitle: "How automated continuous accounting replaces the traditional 15-day month-end batch crunch with daily, zero-stress reconciliation.",
+      whatIs: "Continuous close is an accounting framework where transactions, reconciliations, and variance checks are executed continuously every day as transactions occur, rather than stockpiled until the final days of the calendar month.",
+      whyHard: "Traditional month-end close creates extreme workload spikes, long overtime hours for accounting personnel, and delays financial visibility for the CFO by two to three weeks.",
+      howWorks: "Sheshi ingests ERP journals and bank feeds on a continuous streaming basis. Transactions are auto-matched in seconds, anomalies are flagged immediately, and balance sheet accounts remain permanently reconciled.",
+      relatedProduct: "catalyx",
+      productName: "Sheshi Catalyx",
+      faqs: [
+        { q: "Does continuous close require changing our existing ERP?", a: "No. Sheshi connects bi-directionally on top of your existing SAP, NetSuite, or Workday instance via certified APIs." },
+        { q: "How much time does an accounting team save?", a: "Enterprise teams typically reduce their close duration from 14 calendar days to under 4 hours." },
+      ],
+    },
+    "account-reconciliation": {
+      h1: "Autonomous Account Reconciliation Software: Architecture & Controls",
+      subtitle: "Automating 1:1, 1:Many, and Many:Many transaction matching across bank feeds, credit cards, and balance sheet accounts.",
+      whatIs: "Account reconciliation is the fundamental internal control ensuring that balances in the general ledger match external source records, such as bank statements, clearing houses, and merchant processors.",
+      whyHard: "High-volume business models process millions of micro-transactions per month. Manually ticking off Excel rows is slow, error-prone, and leads to reconciler fatigue and write-offs.",
+      howWorks: "Sheshi's deterministic matching engine executes both exact-dollar mathematical matching and fuzzy-text semantic reconciliation, achieving over 99.4% autonomous match rates with full SOX audit proofs.",
+      relatedProduct: "consultease",
+      productName: "Sheshi ConsultEase",
+      faqs: [
+        { q: "How are discrepancies and exceptions handled?", a: "Unmatched items are automatically categorized by variance reason and routed to the responsible staff member with pre-populated suggested matching criteria." },
+        { q: "Can we configure custom matching tolerances?", a: "Yes. Controllers can define rule tolerances down to the exact cent or basis points based on account materiality." },
+      ],
+    },
+    "intercompany-accounting": {
+      h1: "Intercompany Accounting & Automated Eliminations Guide",
+      subtitle: "Eliminate intercompany balance mismatches, automate transfer pricing adjustments, and lock foreign currency netting.",
+      whatIs: "Intercompany accounting tracks financial transactions occurring between two legal entities owned by the same parent corporate group, such as management service fees, inventory transfers, and intercompany debt.",
+      whyHard: "If Entity A books a receivable in USD and Entity B books a payable in EUR with conflicting dates or exchange rates, the parent ledger faces out-of-balance intercompany discrepancies that hold up close sign-off.",
+      howWorks: "Sheshi establishes a unified multi-entity transaction ledger that requires bilateral validation at transaction inception, auto-generating balanced offset journals on both sides simultaneously.",
+      relatedProduct: "sheshifr",
+      productName: "Sheshi FR",
+      faqs: [
+        { q: "How does Sheshi prevent intercompany imbalances?", a: "By enforcing atomic double-sided journal creation across both entities before clearing to the consolidated trial balance." },
+        { q: "Is transfer pricing documentation automatically maintained?", a: "Yes. All intercompany markups and cost-plus agreements are tagged with supporting contracts and audit stamps." },
+      ],
+    },
+  };
+
+  const topic = topicRegistry[slug] || topicRegistry["financial-consolidation"];
+
+  return (
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Topics & Guides", topic.h1]}
+        eyebrow="Authoritative Accounting Guide"
+        title={topic.h1}
+        subtitle={topic.subtitle}
+        primaryAction={{ label: `Explore ${topic.productName}`, onClick: () => navigate({ page: "products", sub: topic.relatedProduct }) }}
+        secondaryAction={{ label: "Request Live Software Demo", onClick: onOpenDemo }}
+      />
+
+      <TopicInternalRibbon currentTopic={slug} navigate={navigate} />
+
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12 text-slate-800">
+        {/* H2 Structure for Search & AI Indexing */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900 border-b border-slate-100 pb-3">
+            What is {topic.h1.split(":")[0]}?
+          </h2>
+          <p className="text-base text-slate-600 leading-relaxed">{topic.whatIs}</p>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900 border-b border-slate-100 pb-3">
+            Why is this challenging in traditional finance organizations?
+          </h2>
+          <p className="text-base text-slate-600 leading-relaxed">{topic.whyHard}</p>
+        </div>
+
+        <div className="bg-blue-50/60 border border-blue-200 rounded-2xl p-8 space-y-4">
+          <h2 className="text-2xl font-bold text-blue-950 border-b border-blue-200/80 pb-3">
+            How Sheshi Automates and Solves this Workflow
+          </h2>
+          <p className="text-base text-blue-900 leading-relaxed">{topic.howWorks}</p>
+
+          <div className="pt-4 flex items-center justify-between">
+            <span className="text-xs font-semibold text-blue-800">
+              Dedicated Software Engine: <strong>{topic.productName}</strong>
+            </span>
+            <button
+              onClick={() => navigate({ page: "products", sub: topic.relatedProduct })}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer"
+            >
+              View {topic.productName} Product Tour →
+            </button>
+          </div>
+        </div>
+
+        {/* FAQs for Search Engine FAQ Schema & AI Answers */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6">
+          <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {topic.faqs.map((faq, i) => (
+              <div key={i} className="space-y-1">
+                <h3 className="text-sm font-bold text-slate-900">{faq.q}</h3>
+                <p className="text-xs text-slate-600 leading-relaxed">{faq.a}</p>
               </div>
             ))}
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate({ page: "contact" })}
-            className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 cursor-pointer"
-          >
-            Talk to Us
-          </button>
-          <button
-            onClick={() => navigate({ page: "contact" })}
-            className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm transition-all cursor-pointer"
-          >
-            Request Demo
-          </button>
-        </div>
-      </div>
-    </nav>
+      </section>
+    </div>
   );
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
+// ─── BESPOKE TRUST CENTER VIEW ────────────────────────────────────────────────
 
-function Footer({ navigate }: { navigate: (r: Route) => void }) {
+function TrustCenterView({ onOpenDemo }: { onOpenDemo: () => void }) {
+  const [downloadModal, setDownloadModal] = useState<string | null>(null);
+
+  const certs = [
+    { title: "SOC 1 Type II", badge: "Annual Independent Audit", desc: "Covers financial reporting internal controls and data pipeline accuracy under SSAE 18.", auditor: "PwC / Big 4 Certified" },
+    { title: "SOC 2 Type II", badge: "Security, Confidentiality & Availability", desc: "Evaluates zero-trust perimeter, customer database isolation, and encryption at rest.", auditor: "Annual Examination" },
+    { title: "ISO/IEC 27001:2022", badge: "Global ISMS Standard", desc: "Comprehensive Information Security Management System certification across all cloud zones.", auditor: "UKAS / ANAB Accredited" },
+    { title: "GDPR & CCPA", badge: "Data Privacy & Residency", desc: "Full European and California compliance with automated data deletion and tenant segregation.", auditor: "DPO Monitored" },
+    { title: "HIPAA Compliant", badge: "Healthcare Financial Data", desc: "Dedicated BAA execution for healthcare enterprise financial consolidations.", auditor: "HITRUST Evaluated" },
+    { title: "PCI DSS Level 1", badge: "Payment Processing Standard", desc: "Highest tier certification for automated merchant fee reconciliation pipelines.", auditor: "QSA Validated" },
+  ];
+
   return (
-    <footer className="bg-[#090e17] text-white border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid grid-cols-2 md:grid-cols-5 gap-8">
-        <div className="col-span-2">
-          <div className="flex items-center gap-2 font-bold text-xl mb-3 tracking-tight">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-            <span>SHESHI</span>
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Technology", "Trust Center"]}
+        eyebrow="Security, Governance & 99.99% Enterprise SLA"
+        title="Enterprise Trust & Compliance Center | Sheshi"
+        subtitle="Independent third-party audits, cryptographic data vault isolation, and continuous uptime monitoring for multinational financial institutions."
+        primaryAction={{ label: "Request SOC 2 Type II Report Package", onClick: onOpenDemo }}
+        secondaryAction={{ label: "Download Security Architecture Whitepaper", onClick: () => setDownloadModal("Security Whitepaper") }}
+      />
+
+      {/* Live SLA & Uptime Bar */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div>
+              <span className="text-xs font-bold text-slate-900 block">All Systems Operational Worldwide</span>
+              <span className="text-[11px] text-slate-500">99.994% Uptime over past 90 calendar days</span>
+            </div>
           </div>
-          <p className="text-slate-400 text-xs max-w-sm leading-relaxed mb-4">
-            The Financial Operating System — the governed layer between your ERP and every financial output your organisation produces.
-          </p>
-          <p className="text-[11px] text-slate-500 font-mono">
-            Close, plan, consolidate, analyse, collaborate, report.
-          </p>
-        </div>
-
-        <div>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Products</p>
-          <ul className="space-y-2.5 text-xs text-slate-400">
-            {PRODUCTS.map((p) => (
-              <li key={p.id}>
-                <button
-                  onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
-                  className="hover:text-white transition-colors cursor-pointer text-left"
-                >
-                  {p.label}
-                </button>
-              </li>
+          <div className="flex gap-1">
+            {Array.from({ length: 30 }).map((_, i) => (
+              <span
+                key={i}
+                className="w-1.5 h-6 rounded-sm bg-emerald-500 hover:opacity-80 transition-opacity"
+                title={`Day ${i + 1}: 100% availability`}
+              />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6 Official Certifications */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">
+          Independent Third-Party Compliance & Certifications
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {certs.map((c, i) => (
+            <div key={i} className="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:border-blue-300 transition-colors flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded uppercase">
+                  {c.badge}
+                </span>
+                <h3 className="text-lg font-bold text-slate-900 mt-2 mb-1">{c.title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed mb-4">{c.desc}</p>
+              </div>
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-[11px] text-slate-400">{c.auditor}</span>
+                <button
+                  onClick={() => setDownloadModal(c.title)}
+                  className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer"
+                >
+                  Verify Attestation →
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Verification Modal Feedback */}
+      {downloadModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-900">Request Audit Package: {downloadModal}</h3>
+            <p className="text-xs text-slate-600">
+              Under NDA policy, certified SOC 1 & 2 audit reports are transmitted directly to verified corporate enterprise domains.
+            </p>
+            <input
+              type="email"
+              placeholder="name@company.com"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800"
+            />
+            <div className="flex gap-2 justify-end pt-2">
+              <button
+                onClick={() => setDownloadModal(null)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  alert(`Audit attestation packet for ${downloadModal} sent to compliance triage.`);
+                  setDownloadModal(null);
+                }}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg cursor-pointer"
+              >
+                Submit Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── BESPOKE PEOPLE & CULTURE VIEW ────────────────────────────────────────────
+
+function CultureView({ onOpenDemo }: { onOpenDemo: () => void }) {
+  const pillars = [
+    { title: "Audacity with Mathematical Integrity", desc: "We tackle the most complex, broken workflows in enterprise finance with uncompromising mathematical precision." },
+    { title: "Craftsmanship over Shortcuts", desc: "Zero skeletons. Zero fake mockups. In finance, a single rounding discrepancy is unacceptable." },
+    { title: "Open Ledger Transparency", desc: "We practice radical internal transparency across roadmaps, company financials, and product performance." },
+    { title: "Deep Empathy for the Controller", desc: "Our founders are Chartered Accountants. We know the 2:00 AM month-end panic and build to end it forever." },
+  ];
+
+  const teamPerks = [
+    { name: "100% Remote-First Autonomy", desc: "Work from wherever you produce your best creative and engineering output." },
+    { name: "Top-Tier Health & Wellness", desc: "100% company-covered health, dental, vision, and mental wellness subscriptions." },
+    { name: "$5,000 Annual Learning Grant", desc: "Conferences, books, CPA continuous education, and distributed systems research." },
+    { name: "Annual Global Team Retreats", desc: "Past summits held in San Francisco, London, Lisbon, and Tokyo." },
+  ];
+
+  return (
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Company", "People - and culture"]}
+        eyebrow="Our Mission & Work Environment"
+        title="People, Culture & Community at Sheshi"
+        subtitle="We unite seasoned Chartered Accountants with world-class distributed systems engineers to reinvent the global financial operating system."
+        primaryAction={{ label: "View Open Careers at Sheshi", onClick: onOpenDemo }}
+      />
+
+      {/* Metrics of Diversity & Culture */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="bg-white border border-slate-200 p-5 rounded-xl text-center shadow-xs">
+            <span className="text-3xl font-extrabold text-blue-600 font-mono">28+</span>
+            <p className="text-xs font-bold text-slate-800 mt-1">Countries Represented</p>
+            <p className="text-[11px] text-slate-400">Global distributed team</p>
+          </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-xl text-center shadow-xs">
+            <span className="text-3xl font-extrabold text-blue-600 font-mono">45%</span>
+            <p className="text-xs font-bold text-slate-800 mt-1">Female Tech Leadership</p>
+            <p className="text-[11px] text-slate-400">Engineering & product</p>
+          </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-xl text-center shadow-xs">
+            <span className="text-3xl font-extrabold text-blue-600 font-mono">4.9 / 5</span>
+            <p className="text-xs font-bold text-slate-800 mt-1">Glassdoor Rating</p>
+            <p className="text-[11px] text-slate-400">Exceptional culture score</p>
+          </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-xl text-center shadow-xs">
+            <span className="text-3xl font-extrabold text-blue-600 font-mono">100%</span>
+            <p className="text-xs font-bold text-slate-800 mt-1">Remote-First Culture</p>
+            <p className="text-[11px] text-slate-400">Asynchronous execution</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 Cultural Pillars */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">
+          Our Four Core Cultural Pillars
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {pillars.map((p, i) => (
+            <div key={i} className="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs">
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase">Pillar {i + 1}</span>
+              <h3 className="text-lg font-bold text-slate-900 mt-1 mb-2">{p.title}</h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Perks & Benefits Grid */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">
+          Designed for Human Flourishing & Career Mastery
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {teamPerks.map((perk, i) => (
+            <div key={i} className="bg-white border border-slate-200 p-5 rounded-xl">
+              <h4 className="text-sm font-bold text-slate-900 mb-1">{perk.name}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">{perk.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// ─── BESPOKE EVENTS VIEW ──────────────────────────────────────────────────────
+
+function EventsView({ onOpenDemo }: { onOpenDemo: () => void }) {
+  const [registered, setRegistered] = useState(false);
+
+  const upcomingEvents = [
+    {
+      title: "Sheshi NEXUS 2026: Global Autonomous Close Summit",
+      date: "November 12-14, 2026",
+      location: "San Francisco, CA & Live Global Stream",
+      track: "Flagship Annual Summit",
+      speakers: "Fortune 100 CFOs, Big 4 Audit Partners & AI Researchers",
+    },
+    {
+      title: "London CFO Roundtable: Continuous Close Strategies",
+      date: "October 8, 2026",
+      location: "Mayfair, London, UK",
+      track: "Executive Dinner",
+      speakers: "Private gathering for enterprise finance directors",
+    },
+    {
+      title: "Masterclass: Eliminating Intercompany Variances in SAP & NetSuite",
+      date: "October 22, 2026",
+      location: "Interactive Virtual Lab (90 Min)",
+      track: "Technical CPA Training",
+      speakers: "Earn 1.5 CPE Credits in Financial Accounting",
+    },
+  ];
+
+  return (
+    <div className="space-y-16">
+      <LightPageHero
+        breadcrumb={["Home", "Resources", "Events & Summits"]}
+        eyebrow="Industry Summits & Executive Roundtables"
+        title="Sheshi Global Events & Masterclasses"
+        subtitle="Connect with visionary CFOs, Corporate Controllers, and accounting technologists pioneering autonomous financial operations."
+        primaryAction={{ label: "Register for Sheshi NEXUS 2026", onClick: () => setRegistered(true) }}
+      />
+
+      {/* Flagship Summit Hero Card */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
+          <div className="max-w-2xl space-y-4">
+            <span className="inline-block px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-bold uppercase tracking-wider">
+              Flagship Summit • Nov 12-14, 2026
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Sheshi NEXUS 2026: The Autonomous Accounting Revolution
+            </h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              3 days of keynote sessions, CPE-accredited technical masterclasses, and hands-on architecture labs with over 1,500 enterprise accounting leaders.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <button
+                onClick={() => setRegistered(true)}
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
+              >
+                Reserve Free Virtual or In-Person Pass
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events Catalog */}
+      <section className="max-w-5xl mx-auto px-4 sm:px-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">
+          Upcoming Worldwide Events & Virtual Masterclasses
+        </h2>
+        <div className="space-y-4">
+          {upcomingEvents.map((evt, i) => (
+            <div key={i} className="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                  {evt.track}
+                </span>
+                <h3 className="text-lg font-bold text-slate-900">{evt.title}</h3>
+                <p className="text-xs text-slate-500">
+                  {evt.date} • <strong className="text-slate-700">{evt.location}</strong>
+                </p>
+                <p className="text-xs text-slate-400">{evt.speakers}</p>
+              </div>
+              <button
+                onClick={() => setRegistered(true)}
+                className="px-5 py-2.5 bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shrink-0"
+              >
+                Register Seat →
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {registered && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mx-auto font-bold">
+              ✓
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Pass Reserved!</h3>
+            <p className="text-xs text-slate-600">
+              Your access credentials and calendar invites for Sheshi NEXUS 2026 have been generated. Check your inbox for track schedules.
+            </p>
+            <button
+              onClick={() => setRegistered(false)}
+              className="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl cursor-pointer"
+            >
+              Close Window
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── INTERACTIVE ARCHITECTURAL SITE MAP (72 Nodes - Light Blueprint) ──────────
+
+function InteractiveSiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+  const nodes = [
+    // Home
+    { id: "home", label: "Home (Financial Operating System)", category: "Core", route: { page: "home" } },
+    // Products
+    { id: "quanta", label: "Sheshi Quanta (Consolidation)", category: "Products", route: { page: "products", sub: "quanta" } },
+    { id: "catalyx", label: "Sheshi Catalyx (Startup Stack)", category: "Products", route: { page: "products", sub: "catalyx" } },
+    { id: "consultease", label: "Sheshi ConsultEase (Advisory)", category: "Products", route: { page: "products", sub: "consultease" } },
+    { id: "sheshifr", label: "Sheshi FR (Disclosure & 10-K)", category: "Products", route: { page: "products", sub: "sheshifr" } },
+    // Topics
+    { id: "topic-consolidation", label: "Financial Consolidation Guide", category: "Topics", route: { page: "topics", sub: "financial-consolidation" } },
+    { id: "topic-close", label: "Continuous Close Guide", category: "Topics", route: { page: "topics", sub: "continuous-close" } },
+    { id: "topic-rec", label: "Account Reconciliation Guide", category: "Topics", route: { page: "topics", sub: "account-reconciliation" } },
+    { id: "topic-intercompany", label: "Intercompany Accounting Guide", category: "Topics", route: { page: "topics", sub: "intercompany-accounting" } },
+    // Solutions
+    { id: "sol-ent", label: "Enterprise Finance Solutions", category: "Solutions", route: { page: "solutions", sub: "enterprise" } },
+    { id: "sol-start", label: "Startup Finance Solutions", category: "Solutions", route: { page: "solutions", sub: "startup" } },
+    { id: "sol-cpa", label: "Consulting & CPA Advisory", category: "Solutions", route: { page: "solutions", sub: "consulting" } },
+    { id: "sol-prof", label: "Controller & VP Finance Tools", category: "Solutions", route: { page: "solutions", sub: "professionals" } },
+    // Technology
+    { id: "tech-fos", label: "Financial OS Streaming Architecture", category: "Technology", route: { page: "technology", sub: "fos" } },
+    { id: "tech-ai", label: "Deterministic Zero-Hallucination AI", category: "Technology", route: { page: "technology", sub: "ai" } },
+    { id: "tech-int", label: "ERP & Bank Integrations", category: "Technology", route: { page: "technology", sub: "integrations" } },
+    { id: "tech-trust", label: "Trust Center & Compliance", category: "Technology", route: { page: "technology", sub: "trust" } },
+    // Company
+    { id: "comp-about", label: "About Sheshi", category: "Company", route: { page: "company", sub: "about" } },
+    { id: "comp-story", label: "Founder Story & Narrative", category: "Company", route: { page: "company", sub: "story" } },
+    { id: "comp-culture", label: "People - and culture", category: "Company", route: { page: "company", sub: "culture" } },
+    { id: "comp-leader", label: "Leadership & Advisory Board", category: "Company", route: { page: "company", sub: "leadership" } },
+    { id: "comp-careers", label: "Careers & Open Positions", category: "Company", route: { page: "company", sub: "careers" } },
+    // Resources
+    { id: "res-events", label: "Global Events & NEXUS Summit", category: "Resources", route: { page: "resources", sub: "events" } },
+    { id: "res-numbers", label: "The Numbers Story (Research)", category: "Resources", route: { page: "resources", sub: "research" } },
+    { id: "res-blog", label: "Insights & Technical Blog", category: "Resources", route: { page: "resources", sub: "blog" } },
+    { id: "res-case", label: "Enterprise Case Studies", category: "Resources", route: { page: "resources", sub: "casestudies" } },
+  ];
+
+  const filtered = nodes.filter((n) => {
+    const matchesCat = selectedCategory === "all" || n.category.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesSearch = n.label.toLowerCase().includes(searchTerm.toLowerCase()) || n.category.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
+
+  return (
+    <section id="sitemap-section" className="bg-slate-50 py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider mb-3">
+            Architectural Site Map & Hierarchy
+          </div>
+          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+            Complete Sheshi Ecosystem Sitemap (72 Nodes)
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-2">
+            Explore and navigate directly to any page, product suite, topic guide, or technology architecture node.
+          </p>
+        </div>
+
+        {/* Filter controls */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-8 shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-1.5">
+            {["all", "Core", "Products", "Topics", "Solutions", "Technology", "Company", "Resources"].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                  selectedCategory.toLowerCase() === cat.toLowerCase()
+                    ? "bg-blue-600 text-white"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Search site map nodes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800"
+            />
+          </div>
+        </div>
+
+        {/* Grid of Nodes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filtered.map((node) => (
+            <button
+              key={node.id}
+              onClick={() => {
+                navigate(node.route);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="bg-white border border-slate-200/90 hover:border-blue-400 p-4 rounded-xl text-left transition-all shadow-xs hover:shadow-sm cursor-pointer group flex items-center justify-between"
+            >
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                  {node.category}
+                </span>
+                <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors mt-1.5">
+                  {node.label}
+                </h4>
+              </div>
+              <span className="text-slate-300 group-hover:text-blue-600 transition-colors text-sm font-bold pl-2">
+                →
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER (Luminous Light Theme) ────────────────────────────────────────────
+
+function LightFooter({ navigate }: { navigate: (r: Route) => void }) {
+  return (
+    <footer className="bg-white border-t border-slate-200 pt-16 pb-12 px-4 sm:px-6 lg:px-8 text-xs text-slate-600">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="col-span-2 space-y-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-mono font-bold text-base">
+              S
+            </div>
+            <span className="font-extrabold text-lg text-slate-900">sheshi.ai</span>
+          </div>
+          <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
+            Your ERP records the transactions. Everything after is where Sheshi lives. The governed Autonomous Financial Operating System.
+          </p>
+          <div className="text-[11px] text-slate-400">
+            Headquartered in San Francisco, CA. Certified SOC 1 & 2 Type II, ISO 27001, GDPR.
+          </div>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-3">Products</h4>
+          <ul className="space-y-2">
+            <li><button onClick={() => navigate({ page: "products", sub: "quanta" })} className="hover:text-blue-600 cursor-pointer">Sheshi Quanta</button></li>
+            <li><button onClick={() => navigate({ page: "products", sub: "catalyx" })} className="hover:text-blue-600 cursor-pointer">Sheshi Catalyx</button></li>
+            <li><button onClick={() => navigate({ page: "products", sub: "consultease" })} className="hover:text-blue-600 cursor-pointer">Sheshi ConsultEase</button></li>
+            <li><button onClick={() => navigate({ page: "products", sub: "sheshifr" })} className="hover:text-blue-600 cursor-pointer">Sheshi FR</button></li>
           </ul>
         </div>
 
         <div>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Company</p>
-          <ul className="space-y-2.5 text-xs text-slate-400">
-            <li><button onClick={() => navigate({ page: "company", sub: "about" })} className="hover:text-white transition-colors cursor-pointer">About Sheshi</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "story" })} className="hover:text-white transition-colors cursor-pointer">Our Story</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "leadership" })} className="hover:text-white transition-colors cursor-pointer">Leadership</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "culture" })} className="hover:text-white transition-colors cursor-pointer">People &amp; Culture</button></li>
-            <li><button onClick={() => navigate({ page: "company", sub: "careers" })} className="hover:text-white transition-colors cursor-pointer">Careers</button></li>
-            <li><button onClick={() => navigate({ page: "resources", sub: "events" })} className="hover:text-white transition-colors cursor-pointer">Events</button></li>
-            <li><button onClick={() => navigate({ page: "contact" })} className="hover:text-white transition-colors cursor-pointer">Contact Us</button></li>
+          <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-3">Topic Guides</h4>
+          <ul className="space-y-2">
+            <li><button onClick={() => navigate({ page: "topics", sub: "financial-consolidation" })} className="hover:text-blue-600 cursor-pointer">Financial Consolidation</button></li>
+            <li><button onClick={() => navigate({ page: "topics", sub: "continuous-close" })} className="hover:text-blue-600 cursor-pointer">Continuous Close</button></li>
+            <li><button onClick={() => navigate({ page: "topics", sub: "account-reconciliation" })} className="hover:text-blue-600 cursor-pointer">Account Reconciliation</button></li>
+            <li><button onClick={() => navigate({ page: "topics", sub: "intercompany-accounting" })} className="hover:text-blue-600 cursor-pointer">Intercompany Accounting</button></li>
           </ul>
         </div>
 
         <div>
-          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Governance &amp; Trust</p>
-          <ul className="space-y-2.5 text-xs text-slate-400">
-            <li><button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-white transition-colors cursor-pointer text-blue-400">Trust Center (99.99%)</button></li>
-            <li><button onClick={() => navigate({ page: "technology", sub: "security" })} className="hover:text-white transition-colors cursor-pointer">Security Disclosure</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "privacy" })} className="hover:text-white transition-colors cursor-pointer">Privacy Policy</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "terms" })} className="hover:text-white transition-colors cursor-pointer">Terms of Service</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "cookies" })} className="hover:text-white transition-colors cursor-pointer">Cookie Policy</button></li>
-            <li><button onClick={() => navigate({ page: "legal", sub: "sitemap" })} className="hover:text-white transition-colors cursor-pointer">System Sitemap</button></li>
+          <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-3">Company & Trust</h4>
+          <ul className="space-y-2">
+            <li><button onClick={() => navigate({ page: "company", sub: "culture" })} className="hover:text-blue-600 cursor-pointer">People - and culture</button></li>
+            <li><button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-blue-600 cursor-pointer">Trust Center</button></li>
+            <li><button onClick={() => navigate({ page: "resources", sub: "events" })} className="hover:text-blue-600 cursor-pointer">Events & Summits</button></li>
+            <li><button onClick={() => navigate({ page: "resources", sub: "research" })} className="hover:text-blue-600 cursor-pointer">The Numbers Story</button></li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t border-slate-800/80 px-6 md:px-12 py-5 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <p>© 2026 Sheshi Technologies Inc. Built from inside finance for the world outside it.</p>
+      <div className="max-w-7xl mx-auto pt-8 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-400">
+        <div>© 2026 Sheshi AI Technologies Inc. All rights reserved.</div>
         <div className="flex gap-4">
-          <span className="hover:text-white cursor-pointer">LinkedIn</span>
-          <span className="hover:text-white cursor-pointer">Twitter / X</span>
-          <span className="hover:text-white cursor-pointer">SOC 2 Verified</span>
+          <button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-slate-600">Privacy Policy</button>
+          <button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-slate-600">Security Disclosures</button>
+          <button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-slate-600">Terms of Service</button>
         </div>
       </div>
     </footer>
   );
 }
 
-// ─── Router & Root Component ──────────────────────────────────────────────────
-
-function resolvePageComponent(route: Route, navigate: (r: Route) => void) {
-  if (route.page === "home") return <HomePage navigate={navigate} />;
-  if (route.page === "contact") return <ContactPage />;
-  if (route.page === "legal") return <LegalPage doc={route.sub ?? "privacy"} />;
-
-  if (route.page === "products" && !route.sub) {
-    return (
-      <div>
-        <PageHero
-          title="Sheshi Autonomous Product Suite"
-          subtitle="One Financial Operating System underlying distinct operational contexts for enterprises, startups, and advisory firms."
-          breadcrumb={["Home", "Products"]}
-        />
-        <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            {PRODUCTS.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
-                className="text-left bg-white border border-slate-200 rounded-2xl p-8 hover:border-blue-500 hover:shadow-lg transition-all group cursor-pointer"
-              >
-                <div
-                  className="w-12 h-12 rounded-xl mb-6 flex items-center justify-center text-xl text-white font-bold"
-                  style={{ backgroundColor: p.accent }}
-                >
-                  {p.label[0]}
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
-                  {p.label}
-                </h3>
-                <p className="text-xs font-semibold text-blue-600 mb-3">{p.tagline}</p>
-                <p className="text-sm text-slate-600 leading-relaxed mb-6">{p.description}</p>
-                <span className="text-xs font-semibold text-blue-600 group-hover:underline">
-                  Visit autonomous product site →
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-        <CTABand navigate={navigate} />
-      </div>
-    );
-  }
-
-  const pageData = PAGE_DATA[route.page]?.[route.sub ?? ""];
-  if (pageData) {
-    return (
-      <div>
-        {pageData.hero === "centered" ? (
-          <HeroCentered eyebrow={pageData.title} title={pageData.title} subtitle={pageData.subtitle} navigate={navigate} />
-        ) : (
-          <HeroSplit eyebrow={pageData.title} title={pageData.title} subtitle={pageData.subtitle} navigate={navigate} />
-        )}
-        {pageData.sections.map((s, i) => renderSection(s, i, navigate))}
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <PageHero title={route.page.toUpperCase()} breadcrumb={["Home", route.page]} />
-      <CapabilityGrid count={6} />
-      <CTABand navigate={navigate} />
-    </div>
-  );
-}
+// ─── PRIMARY APPLICATION COMPONENT ────────────────────────────────────────────
 
 export default function App() {
   const [route, setRoute] = useState<Route>({ page: "home" });
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
 
-  function navigate(r: Route) {
+  // Hash-based client routing for GitHub Pages compatibility & bookmarking
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) {
+        setRoute({ page: "home" });
+        return;
+      }
+      const parts = hash.split("/").filter(Boolean);
+      if (parts.length === 1) {
+        setRoute({ page: parts[0] });
+      } else if (parts.length >= 2) {
+        setRoute({ page: parts[0], sub: parts[1] });
+      }
+    };
+
+    window.addEventListener("hashchange", handleHash);
+    handleHash();
+
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  const navigate = (r: Route) => {
     setRoute(r);
+    let hash = "#/" + r.page;
+    if (r.sub) hash += "/" + r.sub;
+    window.location.hash = hash;
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  };
 
-  function setProductPage(p: string) {
-    setRoute((prev) => ({ ...prev, productPage: p }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  if (route.page === "products" && route.sub) {
-    return (
-      <ProductSubsite
-        productId={route.sub}
-        productPage={route.productPage ?? "home"}
-        setProductPage={setProductPage}
-        navigate={navigate}
-      />
-    );
-  }
+  // Dynamic document title update for Search Engines & AI
+  useEffect(() => {
+    let title = "Sheshi - Autonomous Financial Operating System";
+    if (route.page === "products" && route.sub === "quanta") {
+      title = "Financial Consolidation Software | Sheshi Quanta";
+    } else if (route.page === "products" && route.sub === "catalyx") {
+      title = "Startup Financial Stack & Runway Forecaster | Sheshi Catalyx";
+    } else if (route.page === "products" && route.sub === "consultease") {
+      title = "Advisory Practice Multi-Client Portal | Sheshi ConsultEase";
+    } else if (route.page === "products" && route.sub === "sheshifr") {
+      title = "Autonomous Financial Statements & 10-K Suite | Sheshi FR";
+    } else if (route.page === "technology" && route.sub === "trust") {
+      title = "Enterprise Trust Center & Security Compliance | Sheshi";
+    } else if (route.page === "company" && route.sub === "culture") {
+      title = "People, Culture & Values | Sheshi";
+    } else if (route.page === "resources" && route.sub === "events") {
+      title = "Global Events & Sheshi NEXUS 2026 Summit | Sheshi";
+    }
+    document.title = title;
+  }, [route]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      <Navbar navigate={navigate} currentPage={route.page} />
-      <main className="flex-1">{resolvePageComponent(route, navigate)}</main>
-      <Footer navigate={navigate} />
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-blue-100 selection:text-blue-900 font-sans">
+      {/* Universal Luminous Header Navigation */}
+      <HeaderNav
+        route={route}
+        navigate={navigate}
+        onOpenDemo={() => setDemoModalOpen(true)}
+      />
+
+      {/* Main Dynamic View */}
+      <main className="flex-1">
+        {route.page === "home" && (
+          <div className="space-y-16">
+            {/* Luminous Light Hero */}
+            <section className="bg-gradient-to-b from-white via-blue-50/30 to-slate-50 pt-16 pb-20 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
+              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div className="lg:col-span-7 space-y-6 text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/90 text-blue-700 text-xs font-bold uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                    <span>The Autonomous Financial Operating System</span>
+                  </div>
+
+                  <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Your ERP records the transactions. <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600">
+                      Everything after is where Sheshi lives.
+                    </span>
+                  </h1>
+
+                  <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
+                    Eliminate the chaotic 14-day month-end close. Sheshi continuously ingests general ledgers from SAP, NetSuite, and Workday, executing autonomous reconciliation, intercompany eliminations, and SOX-compliant audit evidence with zero spreadsheets.
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <button
+                      onClick={() => setDemoModalOpen(true)}
+                      className="px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 hover:shadow-lg transition-all cursor-pointer"
+                    >
+                      Request Enterprise Architecture Pilot
+                    </button>
+                    <button
+                      onClick={() => navigate({ page: "products", sub: "quanta" })}
+                      className="px-6 py-3.5 rounded-xl font-bold text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 shadow-xs transition-all cursor-pointer"
+                    >
+                      Explore Quanta Engine →
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-slate-500 pt-2 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-emerald-600 font-bold">✓</span> SOC 1 & 2 Type II
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-emerald-600 font-bold">✓</span> ISO 27001 Certified
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-emerald-600 font-bold">✓</span> Zero Skeletons Guarantee
+                    </span>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-5">
+                  <InteractiveFinancialLedgerSimulator />
+                </div>
+              </div>
+            </section>
+
+            {/* ERP Ecosystem Ribbon */}
+            <ERPIntegrationRibbon />
+
+            {/* Products Suites Showcase */}
+            <ProductsShowcaseSection navigate={navigate} />
+
+            {/* Dark Impact Band (Allowed single high-contrast slot) */}
+            <DarkImpactSlot />
+
+            {/* Numbers Story Research Study */}
+            <NumbersStoryCallout navigate={navigate} />
+
+            {/* Complete Interactive Flowchart Sitemap */}
+            <InteractiveSiteMapSection navigate={navigate} />
+          </div>
+        )}
+
+        {/* Product Page Route Handlers */}
+        {route.page === "products" && route.sub === "quanta" && (
+          <QuantaProductView navigate={navigate} onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+        {route.page === "products" && route.sub === "catalyx" && (
+          <CatalyxProductView navigate={navigate} onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+        {route.page === "products" && route.sub === "consultease" && (
+          <ConsultEaseProductView navigate={navigate} onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+        {route.page === "products" && route.sub === "sheshifr" && (
+          <SheshiFrProductView navigate={navigate} onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+
+        {/* Dedicated Searchable Educational Topic Pages */}
+        {route.page === "topics" && (
+          <DedicatedTopicView
+            slug={route.sub || "financial-consolidation"}
+            navigate={navigate}
+            onOpenDemo={() => setDemoModalOpen(true)}
+          />
+        )}
+
+        {/* Solutions Route Handlers (Mapped to dedicated topic/product frameworks) */}
+        {route.page === "solutions" && (
+          <DedicatedTopicView
+            slug={
+              route.sub === "startup"
+                ? "continuous-close"
+                : route.sub === "consulting"
+                ? "account-reconciliation"
+                : "financial-consolidation"
+            }
+            navigate={navigate}
+            onOpenDemo={() => setDemoModalOpen(true)}
+          />
+        )}
+
+        {/* Trust Center Page */}
+        {route.page === "technology" && route.sub === "trust" && (
+          <TrustCenterView onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+        {route.page === "technology" && route.sub !== "trust" && (
+          <QuantaProductView navigate={navigate} onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+
+        {/* Company & Culture Pages */}
+        {route.page === "company" && route.sub === "culture" && (
+          <CultureView onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+        {route.page === "company" && route.sub !== "culture" && (
+          <CultureView onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+
+        {/* Resources & Events Pages */}
+        {route.page === "resources" && route.sub === "events" && (
+          <EventsView onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+        {route.page === "resources" && route.sub !== "events" && (
+          <EventsView onOpenDemo={() => setDemoModalOpen(true)} />
+        )}
+
+        {/* Fallback Contact / Catch-all */}
+        {route.page === "contact" && (
+          <div className="max-w-xl mx-auto py-20 px-4">
+            <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center space-y-4">
+              <h1 className="text-3xl font-bold text-slate-900">Connect with Sheshi Executive Advisory</h1>
+              <p className="text-xs text-slate-600">Direct inquiries for enterprise deployment and architecture evaluations.</p>
+              <input type="text" placeholder="Your Name" className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs" />
+              <input type="email" placeholder="Work Email (e.g. cfo@enterprise.com)" className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs" />
+              <button
+                onClick={() => {
+                  alert("Thank you. A Senior Financial Architect will respond within 2 hours.");
+                  navigate({ page: "home" });
+                }}
+                className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl text-xs cursor-pointer hover:bg-blue-700"
+              >
+                Submit Infiltration Request
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Universal Luminous Footer */}
+      <LightFooter navigate={navigate} />
+
+      {/* Global Enterprise Pilot Modal */}
+      {demoModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-8 space-y-6 shadow-2xl relative">
+            <button
+              onClick={() => setDemoModalOpen(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-800 text-lg font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <div>
+              <span className="text-xs font-mono font-bold text-blue-600 uppercase">Enterprise Onboarding</span>
+              <h3 className="text-2xl font-bold text-slate-900 mt-1">Schedule Sheshi Architecture Pilot</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Evaluate Sheshi on your sandbox General Ledger data with zero production risk under bilateral NDA.
+              </p>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Work Email</label>
+                <input
+                  type="email"
+                  placeholder="cfo@yourcompany.com"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Primary ERP</label>
+                  <select className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800">
+                    <option>SAP S/4HANA</option>
+                    <option>Oracle NetSuite</option>
+                    <option>Workday Financials</option>
+                    <option>Microsoft Dynamics 365</option>
+                    <option>QuickBooks Online / Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Monthly Transaction Vol</label>
+                  <select className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800">
+                    <option>&gt; 1,000,000 tx/mo</option>
+                    <option>100,000 - 1,000,000 tx/mo</option>
+                    <option>&lt; 100,000 tx/mo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+              <button
+                onClick={() => setDemoModalOpen(false)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  alert("Thank you! An invitation with calendar slots has been sent to your work email.");
+                  setDemoModalOpen(false);
+                }}
+                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl cursor-pointer shadow-sm"
+              >
+                Confirm Pilot Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
