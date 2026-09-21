@@ -1,8 +1,13 @@
-import { useState } from "react"
+import { useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Route = { page: string sub?: string product?: string productPage?: string }
+type Route = {
+  page: string;
+  sub?: string;
+  product?: string;
+  productPage?: string;
+};
 
 // ─── Navigation Data ──────────────────────────────────────────────────────────
 
@@ -25,10 +30,10 @@ const NAV = [
     label: "Products",
     page: "products",
     children: [
-      { label: "Quanta", sub: "quanta" },
-      { label: "Catalyx", sub: "catalyx" },
-      { label: "ConsultEase", sub: "consultease" },
-      { label: "Sheshi FR", sub: "sheshifr" },
+      { label: "Quanta (Enterprise)", sub: "quanta" },
+      { label: "Catalyx (Startups)", sub: "catalyx" },
+      { label: "ConsultEase (Advisory)", sub: "consultease" },
+      { label: "Sheshi FR (Reporting)", sub: "sheshifr" },
     ],
   },
   {
@@ -59,7 +64,7 @@ const NAV = [
       { label: "Blog", sub: "blog" },
       { label: "Insights", sub: "insights" },
       { label: "Case Studies", sub: "casestudies" },
-      { label: "Research", sub: "research" },
+      { label: "Research (Numbers Story)", sub: "research" },
       { label: "Events", sub: "events" },
       { label: "Webinars", sub: "webinars" },
       { label: "Product Updates", sub: "updates" },
@@ -75,816 +80,902 @@ const NAV = [
     ],
   },
   { label: "Contact", page: "contact" },
-]
+];
 
 const PRODUCTS = [
   {
     id: "quanta",
     label: "Quanta",
-    tagline: "Enterprise Intelligence Platform",
+    tagline: "Enterprise Governance & Intelligence Platform",
+    description: "The governed financial lifecycle for CFOs and finance leaders — close, plan, consolidate, analyse, collaborate, and report in one platform.",
+    accent: "#1d4ed8",
     pages: [
-      { id: "home", label: "Home" },
+      { id: "home", label: "Overview" },
       { id: "platform", label: "Platform" },
       { id: "solutions", label: "Solutions" },
       { id: "capabilities", label: "Capabilities" },
       { id: "enterprise", label: "Enterprise" },
       { id: "resources", label: "Resources" },
-      { id: "contact", label: "Contact Us" },
+      { id: "contact", label: "Contact Sales" },
     ],
   },
   {
     id: "catalyx",
     label: "Catalyx",
-    tagline: "Startup Finance Accelerator",
+    tagline: "Startup Finance Command Center",
+    description: "Built for speed, burn oversight, runway predictability, and effortless investor board pack generation.",
+    accent: "#059669",
     pages: [
-      { id: "home", label: "Home" },
+      { id: "home", label: "Overview" },
       { id: "solutions", label: "Solutions" },
       { id: "features", label: "Features" },
       { id: "startups", label: "For Startups" },
       { id: "resources", label: "Resources" },
-      { id: "contact", label: "Get in Touch" },
+      { id: "contact", label: "Get Started" },
     ],
   },
   {
     id: "consultease",
     label: "ConsultEase",
-    tagline: "Advisory Workflow Management",
+    tagline: "Advisory & Client Engagement Suite",
+    description: "Power your client engagements with multi-entity financial oversight, automated reconciliation, and white-label advisory dashboards.",
+    accent: "#7c3aed",
     pages: [
-      { id: "home", label: "Home" },
+      { id: "home", label: "Overview" },
       { id: "solutions", label: "Solutions" },
       { id: "features", label: "Features" },
-      { id: "firms", label: "For Consulting Firms" },
+      { id: "firms", label: "For Advisory Firms" },
       { id: "resources", label: "Resources" },
-      { id: "contact", label: "Contact Us" },
+      { id: "contact", label: "Partner With Us" },
     ],
   },
   {
     id: "sheshifr",
     label: "Sheshi FR",
-    tagline: "Financial Reporting Suite",
+    tagline: "Autonomous Financial Reporting Suite",
+    description: "Automated statement generation, XBRL tag alignment, and audit-ready schedules designed by Chartered Accountants.",
+    accent: "#d97706",
     pages: [
-      { id: "home", label: "Home" },
+      { id: "home", label: "Overview" },
       { id: "features", label: "Features" },
       { id: "workflows", label: "Workflows" },
-      { id: "professionals", label: "For Finance Professionals" },
+      { id: "professionals", label: "For Controllers" },
       { id: "resources", label: "Resources" },
-      { id: "contact", label: "Contact Us" },
+      { id: "contact", label: "Request Demo" },
     ],
   },
-]
+];
 
 const ACCENT_COLORS: Record<string, string> = {
-  quanta: "#1a2744",
-  catalyx: "#0d6b4e",
+  quanta: "#1d4ed8",
+  catalyx: "#059669",
   consultease: "#7c3aed",
-  sheshifr: "#b45309",
-}
+  sheshifr: "#d97706",
+};
 
-// ─── Primitive Helpers ────────────────────────────────────────────────────────
+// ─── Minimalist Design Primitives & Live Mockups ─────────────────────────────
 
-function Sk({
-  w = "full",
-  h = "3",
-  className = "",
-}: {
-  w?: string
-  h?: string
-  className?: string
-}) {
+function SectionLabel({ text, light = false }: { text: string; light?: boolean }) {
   return (
-    <div
-      className={`h-${h} bg-[#e2e6ea] rounded ${className}`}
-      style={{ width: w === "full" ? "100%" : w }}
-    />
-  )
-}
-
-function SectionLabel({
-  text,
-  light = false,
-}: {
-  text: string
-  light?: boolean
-}) {
-  return (
-    <p
-      className={`text-xs font-semibold tracking-widest uppercase mb-3 ${
-        light ? "text-white/50" : "text-[#3b5bdb]"
-      }`}
-    >
-      {text}
-    </p>
-  )
+    <div className="inline-flex items-center gap-2 mb-3">
+      <span className={`w-1.5 h-1.5 rounded-full ${light ? "bg-blue-400" : "bg-blue-600"}`} />
+      <span className={`text-xs font-semibold tracking-wider uppercase ${light ? "text-blue-300" : "text-blue-600"}`}>
+        {text}
+      </span>
+    </div>
+  );
 }
 
 function PageHero({
   title,
   subtitle,
   breadcrumb,
+  badge,
 }: {
-  title: string
-  subtitle?: string
-  breadcrumb?: string[]
+  title: string;
+  subtitle?: string;
+  breadcrumb?: string[];
+  badge?: string;
 }) {
   return (
-    <div className="border-b border-[#dde1e7] bg-white px-8 py-12">
-      {breadcrumb && (
-        <p className="text-xs text-[#9ca3af] mb-4 tracking-wide">
-          {breadcrumb.join(" / ")}
-        </p>
-      )}
-      <h1 className="text-4xl font-bold text-[#1a2744] mb-3">{title}</h1>
-      {subtitle && (
-        <p className="text-base text-[#6b7280] max-w-xl">{subtitle}</p>
-      )}
+    <div className="border-b border-slate-200/80 bg-white px-6 md:px-12 py-14">
+      <div className="max-w-6xl mx-auto">
+        {breadcrumb && (
+          <div className="flex items-center gap-2 text-xs text-slate-500 mb-4 font-medium">
+            {breadcrumb.map((item, idx) => (
+              <span key={item} className="flex items-center gap-2">
+                {idx > 0 && <span className="text-slate-300">/</span>}
+                <span className={idx === breadcrumb.length - 1 ? "text-blue-600 font-semibold" : ""}>{item}</span>
+              </span>
+            ))}
+          </div>
+        )}
+        {badge && (
+          <span className="inline-block text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200/60 px-3 py-1 rounded-full mb-3">
+            {badge}
+          </span>
+        )}
+        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight mb-4 max-w-3xl leading-tight">
+          {title}
+        </h1>
+        {subtitle && <p className="text-base md:text-lg text-slate-600 max-w-2xl leading-relaxed">{subtitle}</p>}
+      </div>
     </div>
-  )
+  );
 }
 
-// ─── Reference-Styled Section Components ─────────────────────────────────────
+// ─── Real Financial Software UI Mockup (NO Skeletons) ─────────────────────────
 
-// BlackLine / Trintech: Dark centered hero with large app mockup below
+function FinancialLedgerMockup() {
+  const [activeTab, setActiveTab] = useState<"close" | "ledger" | "audit">("close");
+
+  const ledgerItems = [
+    { id: "JE-9042", account: "1010 • Cash & Operating Accounts", erp: "NetSuite", debit: "$14,820,450.00", credit: "—", match: "100% Matched", status: "Verified" },
+    { id: "JE-9043", account: "1200 • Accounts Receivable Trade", erp: "SAP S/4HANA", debit: "$8,412,900.00", credit: "—", match: "AI Auto-Match", status: "Verified" },
+    { id: "JE-9044", account: "2150 • Intercompany Elimination", erp: "Workday", debit: "—", credit: "$3,150,000.00", match: "Auto-Balanced", status: "Governed" },
+    { id: "JE-9045", account: "2400 • Deferred SaaS Revenue", erp: "Stripe / ERP", debit: "—", credit: "$19,650,200.00", match: "Rule ASC 606", status: "Verified" },
+    { id: "JE-9046", account: "6010 • Cloud Infrastructure Accruals", erp: "AWS / NetSuite", debit: "$485,320.00", credit: "—", match: "Flux Checked", status: "Pending Review" },
+  ];
+
+  return (
+    <div className="bg-[#090e17] text-white rounded-2xl border border-slate-800 shadow-2xl overflow-hidden text-left max-w-5xl mx-auto">
+      {/* Top Application Bar */}
+      <div className="bg-[#0f172a] px-5 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-rose-500/80" />
+            <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+            <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+          </div>
+          <span className="text-xs font-mono text-slate-400 pl-2 border-l border-slate-700">
+            Sheshi Financial OS • Session ID: #SH-2026-LIVE
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-emerald-400 font-medium">99.99% Live Sync</span>
+          <span className="text-slate-600">•</span>
+          <span className="text-slate-400 font-mono">Entity: Sheshi Global Holdings Inc.</span>
+        </div>
+      </div>
+
+      {/* Control Strip */}
+      <div className="bg-[#0b132b]/80 px-6 py-4 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2 bg-slate-900/90 p-1 rounded-lg border border-slate-800">
+          <button
+            onClick={() => setActiveTab("close")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              activeTab === "close" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Financial Close Progress
+          </button>
+          <button
+            onClick={() => setActiveTab("ledger")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              activeTab === "ledger" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Governed General Ledger
+          </button>
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              activeTab === "audit" ? "bg-blue-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Audit Trail &amp; Lineage
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4 text-xs">
+          <div>
+            <span className="text-slate-400">Close Phase: </span>
+            <span className="font-semibold text-white">Day 3 of Close (89% Complete)</span>
+          </div>
+          <div className="w-28 h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div className="w-[89%] h-full bg-blue-500 rounded-full" />
+          </div>
+        </div>
+      </div>
+
+      {/* Table Content */}
+      <div className="p-6 overflow-x-auto">
+        {activeTab === "close" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span className="text-xs text-slate-400">Total Journal Entries</span>
+                <p className="text-xl font-bold text-white mt-1">42,890</p>
+                <span className="text-[11px] text-emerald-400 font-medium">↑ 99.4% Auto-Verified</span>
+              </div>
+              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span className="text-xs text-slate-400">Unreconciled Variances</span>
+                <p className="text-xl font-bold text-emerald-400 mt-1">$0.00</p>
+                <span className="text-[11px] text-slate-400">Zero variance tolerance</span>
+              </div>
+              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span className="text-xs text-slate-400">Multi-Entity Consolidations</span>
+                <p className="text-xl font-bold text-white mt-1">14 Subsidiaries</p>
+                <span className="text-[11px] text-blue-400">FX Remeasured (USD)</span>
+              </div>
+              <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span className="text-xs text-slate-400">External Auditor Status</span>
+                <p className="text-xl font-bold text-white mt-1">Pre-Certified</p>
+                <span className="text-[11px] text-emerald-400">SOC 1 / SOX Aligned</span>
+              </div>
+            </div>
+
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead>
+                <tr className="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[10px]">
+                  <th className="pb-3 font-semibold">Entry ID</th>
+                  <th className="pb-3 font-semibold">Account / Description</th>
+                  <th className="pb-3 font-semibold">Source ERP</th>
+                  <th className="pb-3 font-semibold text-right">Debit Balance</th>
+                  <th className="pb-3 font-semibold text-right">Credit Balance</th>
+                  <th className="pb-3 font-semibold">Governance Engine</th>
+                  <th className="pb-3 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60 font-mono">
+                {ledgerItems.map((row) => (
+                  <tr key={row.id} className="hover:bg-slate-900/40 transition-colors">
+                    <td className="py-3 text-blue-400 font-semibold">{row.id}</td>
+                    <td className="py-3 text-white font-sans font-medium">{row.account}</td>
+                    <td className="py-3 text-slate-400 font-sans">{row.erp}</td>
+                    <td className="py-3 text-right text-emerald-400">{row.debit}</td>
+                    <td className="py-3 text-right text-slate-200">{row.credit}</td>
+                    <td className="py-3">
+                      <span className="inline-block px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800 text-[10px] font-sans">
+                        {row.match}
+                      </span>
+                    </td>
+                    <td className="py-3 text-right">
+                      <button className="text-[11px] text-blue-400 hover:text-white font-sans transition-colors cursor-pointer">
+                        Audit Trail →
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeTab === "ledger" && (
+          <div className="py-6 text-center text-slate-300 max-w-xl mx-auto space-y-3">
+            <h4 className="font-semibold text-white text-base">Governed Unified Ledger Architecture</h4>
+            <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              Sheshi sits between SAP S/4, Oracle NetSuite, and Workday, normalizing disparate charts of accounts into a single immutable ledger layer. Changes require cryptographic dual-signoff.
+            </p>
+            <div className="flex justify-center gap-3 pt-2">
+              <span className="text-[11px] bg-slate-800 text-slate-300 px-3 py-1 rounded-full font-mono">
+                Lineage: SHA-256 Provenance
+              </span>
+              <span className="text-[11px] bg-blue-900/50 text-blue-300 px-3 py-1 rounded-full font-mono">
+                SOX 404 Controls Active
+              </span>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "audit" && (
+          <div className="py-6 text-center text-slate-300 max-w-xl mx-auto space-y-3">
+            <h4 className="font-semibold text-white text-base">Continuous Independent Audit Trail</h4>
+            <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              Every journal entry, flux explanation, and controller signoff is watermarked with immutable timestamps and user identities. Big 4 auditors receive read-only federated portal access.
+            </p>
+            <div className="flex justify-center gap-3 pt-2">
+              <span className="text-[11px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-3 py-1 rounded-full font-mono">
+                Audit Status: 100% Traceable
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Status Ribbon */}
+      <div className="bg-[#0b132b] px-6 py-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span className="flex items-center gap-2">
+          <span>🔒 End-to-End TLS 1.3 Encryption</span>
+          <span>•</span>
+          <span>SOC 2 Type II Certified</span>
+        </span>
+        <button className="text-blue-400 hover:text-blue-300 font-semibold cursor-pointer">
+          Generate Governed Board Report Pack →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Hero Components ─────────────────────────────────────────────────────────
+
 function HeroCentered({
   eyebrow,
-  bg = "#1a2744",
+  title,
+  subtitle,
+  navigate,
 }: {
-  eyebrow: string
-  bg?: string
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  navigate: (r: Route) => void;
 }) {
   return (
-    <div
-      style={{ backgroundColor: bg }}
-      className="px-8 py-20 text-center text-white"
-    >
-      <span className="inline-block border border-white/20 text-white/70 text-xs px-3 py-1 rounded-full mb-6 tracking-wider uppercase">
-        {eyebrow}
-      </span>
-      <div className="max-w-2xl mx-auto mb-6 space-y-3">
-        <Sk w="85%" h="10" className="mx-auto" />
-        <Sk w="70%" h="10" className="mx-auto" />
-        <Sk w="55%" h="10" className="mx-auto" />
-      </div>
-      <div className="max-w-lg mx-auto mb-8 space-y-2">
-        <Sk w="90%" h="4" className="mx-auto" />
-        <Sk w="75%" h="4" className="mx-auto" />
-      </div>
-      <div className="flex gap-3 justify-center mb-14">
-        <div className="bg-[#3b5bdb] text-white px-6 py-3 rounded-md text-sm font-semibold">
-          Get Started
+    <div className="relative bg-[#090e17] text-white px-6 md:px-12 pt-24 pb-20 overflow-hidden border-b border-slate-800">
+      {/* Subtle minimalist gradient aura */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle at 50% 30%, #2563eb, transparent 70%)",
+        }}
+      />
+
+      <div className="max-w-5xl mx-auto text-center relative z-10">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-300 text-xs font-medium mb-8">
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+          <span>{eyebrow ?? "The Financial Operating System"}</span>
         </div>
-        <div className="border border-white/30 text-white px-6 py-3 rounded-md text-sm font-semibold">
-          Learn More
+
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6 leading-tight max-w-4xl mx-auto">
+          {title ?? (
+            <>
+              Your ERP records the transactions. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">
+                Everything after is where Sheshi lives.
+              </span>
+            </>
+          )}
+        </h1>
+
+        <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed">
+          {subtitle ??
+            "The governed layer between your ERP and every financial output your organisation produces. Close, plan, consolidate, analyse, collaborate, and report with immutable trust."}
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
+          <button
+            onClick={() => navigate({ page: "contact" })}
+            className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+          >
+            Request a Conversation
+          </button>
+          <button
+            onClick={() => navigate({ page: "products", sub: "quanta" })}
+            className="bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-sm px-6 py-3.5 rounded-xl transition-all cursor-pointer"
+          >
+            Explore Products
+          </button>
+          <button
+            onClick={() => {
+              const el = document.getElementById("sitemap-flowchart");
+              el?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="border border-slate-700/80 text-slate-400 hover:text-white text-sm px-5 py-3.5 rounded-xl transition-all cursor-pointer"
+          >
+            Interactive Site Map ↓
+          </button>
         </div>
-      </div>
-      <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-xl h-72 flex items-center justify-center">
-        <span className="text-white/20 text-sm tracking-wide uppercase">
-          App Mockup / Screenshot
-        </span>
+
+        {/* Live Interactive Ledger Mockup */}
+        <div className="mt-8">
+          <FinancialLedgerMockup />
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-// FloQast / Trintech: Split hero — text left, mockup right
 function HeroSplit({
   eyebrow,
-  bg = "#f8f9fb",
-  dark = false,
+  title,
+  subtitle,
+  navigate,
 }: {
-  eyebrow: string
-  bg?: string
-  dark?: boolean
+  eyebrow: string;
+  title?: string;
+  subtitle?: string;
+  navigate?: (r: Route) => void;
 }) {
-  const txt = dark ? "text-white" : "text-[#1a2744]"
-  const sub = dark ? "text-white/60" : "text-[#6b7280]"
-  const btnBorder = dark
-    ? "border-white/30 text-white"
-    : "border-[#dde1e7] text-[#374151]"
   return (
-    <div style={{ backgroundColor: bg }} className="px-8 py-20">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <span
-            className={`inline-block text-xs font-semibold tracking-widest uppercase mb-4 px-3 py-1 rounded-full border ${
-              dark
-                ? "border-white/20 text-white/50"
-                : "border-[#dde1e7] text-[#3b5bdb]"
-            }`}
-          >
-            {eyebrow}
-          </span>
-          <div className="space-y-3 mb-5">
-            <Sk w="90%" h="10" className={dark ? "!bg-white/20" : ""} />
-            <Sk w="75%" h="10" className={dark ? "!bg-white/20" : ""} />
-          </div>
-          <div className="space-y-2 mb-8">
-            <Sk w="full" h="4" className={dark ? "!bg-white/10" : ""} />
-            <Sk w="85%" h="4" className={dark ? "!bg-white/10" : ""} />
-            <Sk w="70%" h="4" className={dark ? "!bg-white/10" : ""} />
-          </div>
-          <div className="flex gap-3">
-            <div
-              className={`bg-[#3b5bdb] text-white px-5 py-2.5 rounded-md text-sm font-semibold`}
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="lg:col-span-7">
+          <SectionLabel text={eyebrow} />
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-4 leading-tight">
+            {title ?? eyebrow}
+          </h2>
+          <p className="text-base text-slate-600 leading-relaxed mb-8 max-w-xl">
+            {subtitle ??
+              "Sheshi provides the governed architectural layer between raw transaction systems and verified executive outputs."}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {navigate && (
+              <button
+                onClick={() => navigate({ page: "contact" })}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Request Consultation
+              </button>
+            )}
+            <button
+              onClick={() => {
+                const el = document.getElementById("sitemap-flowchart");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
             >
-              Get Started
-            </div>
-            <div
-              className={`border px-5 py-2.5 rounded-md text-sm font-semibold ${btnBorder}`}
-            >
-              See a Demo
-            </div>
+              Explore Architecture
+            </button>
           </div>
         </div>
-        <div
-          className={`rounded-2xl h-80 flex items-center justify-center ${
-            dark ? "bg-white/5 border border-white/10" : "bg-[#e8ecf0]"
-          }`}
-        >
-          <span
-            className={`text-sm tracking-wide uppercase ${
-              dark ? "text-white/20" : "text-[#9ca3af]"
-            }`}
-          >
-            App Mockup
-          </span>
+
+        <div className="lg:col-span-5 bg-[#090e17] text-white p-6 rounded-2xl border border-slate-800 shadow-lg">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4 text-xs font-mono text-slate-400">
+            <span>GOVERNANCE ENGINE</span>
+            <span className="text-emerald-400">● ACTIVE</span>
+          </div>
+          <div className="space-y-3 text-xs">
+            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">ERP INGESTION</span>
+              <span className="font-semibold text-white">SAP S/4HANA &amp; NetSuite Stream</span>
+              <span className="text-emerald-400 block text-[10px] mt-1">✓ 12ms Synchronization Latency</span>
+            </div>
+            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">AGENTIC RECONCILIATION</span>
+              <span className="font-semibold text-white">Flux &amp; Variance Analysis Agent</span>
+              <span className="text-blue-400 block text-[10px] mt-1">99.4% Automated Match Rate</span>
+            </div>
+            <div className="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+              <span className="text-slate-400 block text-[10px]">AUDIT PACK LINEAGE</span>
+              <span className="font-semibold text-white">Cryptographic Board Reporting</span>
+              <span className="text-slate-400 block text-[10px] mt-1">SHA-256 Provenance Ledger</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// Trintech: 5-stat dark metrics row
-function MetricsRow({
-  count = 5,
-  bg = "#0f172a",
-}: {
-  count?: number
-  bg?: string
-}) {
-  const metrics = ["99%+", "96%+", "75%+", "62%+", "60%+"].slice(0, count)
-  const labels = [
-    "Auto-Match Rate",
-    "Reduction in Time Spent",
-    "Shorter Time to Close",
-    "Reduction in Write-Offs",
-    "Reduction for Auditors",
-  ].slice(0, count)
+// ─── Real Metrics & Impact Section ───────────────────────────────────────────
+
+function MetricsRow({ count = 5 }: { count?: number }) {
+  const metrics = [
+    { stat: "99.4%", label: "Automated Reconciliation Rate", desc: "Matched across complex multi-entity journals" },
+    { stat: "68%", label: "Reduction in Close Cycle Duration", desc: "From 14-day month-end closes down to 3 days" },
+    { stat: "100%", label: "Governed Audit Lineage", desc: "Zero untracked spreadsheet formulas or hidden edits" },
+    { stat: "12ms", label: "Real-Time ERP Sync Latency", desc: "Continuous ledger streaming for SAP, NetSuite & Workday" },
+    { stat: "$4.2M", label: "Average Annual Operational Savings", desc: "Eliminating manual re-keying & audit penalty risk" },
+  ].slice(0, count);
+
   return (
-    <div style={{ backgroundColor: bg }} className="px-8 py-14">
+    <div className="bg-[#0b132b] text-white px-6 md:px-12 py-16 border-b border-slate-800">
       <div className="max-w-6xl mx-auto">
-        <p className="text-center text-xs font-semibold tracking-widest uppercase text-white/40 mb-10">
-          Real results, measurable impact
-        </p>
-        <div className={`grid grid-cols-2 md:grid-cols-${count} gap-6`}>
-          {metrics.map((m, i) => (
-            <div key={i} className="text-center">
-              <p className="text-4xl font-bold text-white mb-2">{m}</p>
-              <p className="text-xs text-white/40 leading-tight">{labels[i]}</p>
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <SectionLabel text="Quantifiable Financial Impact" light />
+          <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            Real Results from Global Finance Transformations
+          </h3>
+          <p className="text-sm text-slate-300 mt-2">
+            Independent proof of what happens when financial governance is built directly into the operating system.
+          </p>
+        </div>
+
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${count} gap-6`}>
+          {metrics.map((m) => (
+            <div key={m.label} className="bg-slate-900/60 border border-slate-800 p-6 rounded-xl text-center">
+              <p className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">{m.stat}</p>
+              <p className="text-xs font-semibold text-blue-400 mb-1">{m.label}</p>
+              <p className="text-xs text-slate-300 leading-relaxed">{m.desc}</p>
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// BlackLine: Alternating text + mockup rows
-function ZigzagSection({
-  rows = 2,
-  bg1 = "white",
-  bg2 = "#f8f9fb",
-}: {
-  rows?: number
-  bg1?: string
-  bg2?: string
-}) {
+// ─── Real Feature Breakdown & Alternating Sections ───────────────────────────
+
+function ZigzagSection({ rows = 3 }: { rows?: number }) {
+  const items = [
+    {
+      label: "Autonomous Multi-Entity Consolidation",
+      title: "Consolidate 50+ Subsidiaries with Zero Spreadsheet Vulnerability",
+      desc: "Between the transaction recorded in an ERP and the result presented to the board, something consequential and largely invisible occurs. Sheshi automates currency remeasurement, eliminations, and complex equity adjustments in a governed, auditable pipeline.",
+      points: [
+        "Automated intercompany balance elimination and dispute flagging",
+        "Real-time FX remeasurement with continuous central bank rate feeds",
+        "Configurable multi-tier GAAP and IFRS parallel reporting",
+      ],
+      tag: "Consolidation Engine",
+    },
+    {
+      label: "Continuous Close without Month-End Chaos",
+      title: "Transform the 15-Day Month-End Crisis into a Daily Automated Routine",
+      desc: "Stop waiting for month-end to discover discrepancies. Sheshi runs automated transaction matching, accrual validation, and variance detection agents continuously every 24 hours.",
+      points: [
+        "Pre-close anomaly detection before ledger locks occur",
+        "Automated journal entry postings with segregation-of-duties rules",
+        "Real-time visibility into close readiness across global business units",
+      ],
+      tag: "Continuous Close",
+    },
+    {
+      label: "Governed Board Reporting & Audit Readiness",
+      title: "Board Packs with Cryptographic Data Provenance",
+      desc: "Every number in your board presentation links back to its exact ERP source line item. External auditors receive a federated, read-only room that cuts audit preparation time by over 70%.",
+      points: [
+        "Immutable SHA-256 digital watermark for every published figure",
+        "Role-based controller sign-offs and timestamped approval hierarchies",
+        "One-click XBRL and statutory filing compliance exports",
+      ],
+      tag: "Governance & Audit",
+    },
+  ].slice(0, rows);
+
   return (
-    <div>
-      {Array.from({ length: rows }).map((_, i) => {
-        const reversed = i % 2 !== 0
-        const bg = i % 2 === 0 ? bg1 : bg2
+    <div className="bg-white">
+      {items.map((item, idx) => {
+        const isOdd = idx % 2 !== 0;
         return (
-          <div key={i} style={{ backgroundColor: bg }} className="px-8 py-20">
-            <div
-              className={`max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center ${
-                reversed ? "direction-rtl" : ""
-              }`}
-            >
-              <div className={reversed ? "order-2 lg:order-1" : ""}>
-                <SectionLabel text={`Feature ${i + 1}`} />
-                <div className="space-y-3 mb-5">
-                  <Sk w="85%" h="7" />
-                  <Sk w="65%" h="7" />
-                </div>
-                <div className="space-y-4 mb-7">
-                  {[0, 1, 2, 3].map((b) => (
-                    <div key={b} className="flex gap-3 items-start">
-                      <div className="w-5 h-5 rounded-full bg-[#e8ecf0] flex-shrink-0 mt-0.5" />
-                      <div className="flex-1 space-y-1.5">
-                        <Sk w="full" h="3" />
-                        <Sk w="80%" h="3" />
-                      </div>
-                    </div>
+          <div key={item.label} className={`px-6 md:px-12 py-20 border-b border-slate-200/80 ${isOdd ? "bg-[#f8fafc]" : "bg-white"}`}>
+            <div className={`max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center ${isOdd ? "lg:flex-row-reverse" : ""}`}>
+              <div className={`lg:col-span-6 ${isOdd ? "lg:order-2" : "lg:order-1"}`}>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-2 font-mono">
+                  0{idx + 1} // {item.tag}
+                </span>
+                <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 leading-tight">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed mb-6">
+                  {item.desc}
+                </p>
+                <ul className="space-y-3 mb-8">
+                  {item.points.map((pt) => (
+                    <li key={pt} className="flex items-start gap-3 text-xs text-slate-700">
+                      <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                        ✓
+                      </span>
+                      <span>{pt}</span>
+                    </li>
                   ))}
-                </div>
-                <div className="inline-block border border-[#dde1e7] text-[#374151] px-5 py-2.5 rounded-md text-sm font-medium">
-                  Explore Feature →
+                </ul>
+                <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
+                  <span>Learn how this architecture works</span>
+                  <span>→</span>
                 </div>
               </div>
-              <div
-                className={`bg-[#e8ecf0] rounded-xl h-72 flex items-center justify-center ${
-                  reversed ? "order-1 lg:order-2" : ""
-                }`}
-              >
-                <span className="text-xs text-[#9ca3af] uppercase tracking-wide">
-                  Product Screenshot
-                </span>
+
+              <div className={`lg:col-span-6 ${isOdd ? "lg:order-1" : "lg:order-2"}`}>
+                <div className="bg-[#090e17] text-white p-6 rounded-2xl border border-slate-800 shadow-xl">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                    <span className="text-xs font-mono text-blue-400">COMPONENT // {item.tag.toUpperCase()}</span>
+                    <span className="text-[10px] bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded">
+                      Verified
+                    </span>
+                  </div>
+                  <div className="space-y-2.5 text-xs font-mono">
+                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+                      <span className="text-slate-400">Processing Node</span>
+                      <span className="text-white">Sheshi-FOS-v4.2</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+                      <span className="text-slate-400">Status</span>
+                      <span className="text-emerald-400">100% Governed</span>
+                    </div>
+                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
+                      <span className="text-slate-400">Security Guardrail</span>
+                      <span className="text-white">SOX 404 Cryptographic Log</span>
+                    </div>
+                    <div className="pt-2 text-[11px] text-slate-400 font-sans leading-relaxed">
+                      All calculations execute in memory with real-time audit checkpoint validation.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
-// Trintech: 3×3 icon capability grid
-function CapabilityGrid({
-  cols = 3,
-  count = 9,
-}: {
-  cols?: number
-  count?: number
-}) {
+// ─── Capability & Feature Grids ──────────────────────────────────────────────
+
+function CapabilityGrid({ count = 9 }: { count?: number }) {
+  const caps = [
+    { title: "Autonomous Transaction Matching", desc: "Rule-based and probabilistic machine learning algorithms match millions of ledger records daily.", icon: "⚡" },
+    { title: "Multi-Currency & FX Remeasurement", desc: "Real-time automated conversion with historical rate locks and translation adjustment reserves.", icon: "🌐" },
+    { title: "Variance & Flux Analysis Agents", desc: "AI agents explain balance sheet fluctuations and flag unexpected spikes before month-end close.", icon: "📊" },
+    { title: "Governed Board Reporting Packs", desc: "Automated creation of board-ready executive summaries with drill-down audit capabilities.", icon: "📋" },
+    { title: "Intercompany Elimination", desc: "Bilateral reconciliation engine identifies unmatched transactions across global entities.", icon: "🔄" },
+    { title: "Continuous Audit Readiness", desc: "Permanent digital trail with immutable record-keeping ensures effortless Big 4 review cycles.", icon: "🛡️" },
+    { title: "Automated Journal Entry Postings", desc: "Validates and automatically posts recurring adjustments directly back to core ERPs.", icon: "✍️" },
+    { title: "Role-Based Segregation of Duties", desc: "Enforces enterprise financial controls so no single individual can author and approve entries.", icon: "🔐" },
+    { title: "Dispute & Deduction Management", desc: "Tracks deduction trends and accelerates invoice dispute resolution across accounts receivable.", icon: "📑" },
+  ].slice(0, count);
+
   return (
-    <div className="bg-white px-8 py-20">
+    <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <SectionLabel text="Capabilities" />
-          <div className="space-y-2 max-w-lg mx-auto">
-            <Sk w="60%" h="7" className="mx-auto" />
-            <Sk w="80%" h="4" className="mx-auto" />
-          </div>
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <SectionLabel text="Core Platform Capabilities" />
+          <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+            The Governed Infrastructure Your ERP Was Never Built to Be
+          </h3>
+          <p className="text-sm text-slate-600 mt-3">
+            Modular financial operating capabilities designed to eliminate manual spreadsheet chaos and governance risk.
+          </p>
         </div>
-        <div className={`grid grid-cols-2 md:grid-cols-3 gap-5`}>
-          {Array.from({ length: count }).map((_, i) => (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {caps.map((c) => (
             <div
-              key={i}
-              className="border border-[#dde1e7] rounded-xl p-6 text-center hover:border-[#3b5bdb] transition-colors"
+              key={c.title}
+              className="bg-white border border-slate-200/90 rounded-xl p-6 hover:border-blue-500/50 hover:shadow-md transition-all group"
             >
-              <div className="w-12 h-12 rounded-full bg-[#e8ecf0] mx-auto mb-4" />
-              <Sk w="70%" h="4" className="mx-auto mb-2" />
-              <Sk w="90%" h="3" className="mx-auto" />
+              <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg mb-4 group-hover:scale-110 transition-transform">
+                {c.icon}
+              </div>
+              <h4 className="font-bold text-slate-900 text-base mb-2 group-hover:text-blue-600 transition-colors">
+                {c.title}
+              </h4>
+              <p className="text-xs text-slate-600 leading-relaxed">{c.desc}</p>
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// OneStream: Feature card grid with icon + description
-function FeatureCards({
-  count = 3,
-  cols = 3,
-  bg = "white",
-}: {
-  count?: number
-  cols?: number
-  bg?: string
-}) {
+function FeatureCards({ count = 3, cols = 3 }: { count?: number; cols?: number }) {
+  const feats = [
+    { title: "Financial Close Orchestration", desc: "Coordinate task checklists, reconciliation assignments, and dependency blockers in one live command console.", badge: "Automation" },
+    { title: "Agentic Flux Explanations", desc: "Generative financial agents analyze general ledger variances and write executive explanations automatically.", badge: "Agentic AI" },
+    { title: "Multi-ERP Unified Lineage", desc: "Harmonize SAP, NetSuite, and Workday ledger feeds into a single coherent financial hierarchy.", badge: "Integration" },
+    { title: "Regulatory XBRL & SEC Filing", desc: "One-click export into compliant XBRL tags, audited statutory formats, and investor pack PDFs.", badge: "Compliance" },
+  ].slice(0, count);
+
   return (
-    <div style={{ backgroundColor: bg }} className="px-8 py-20">
+    <div className="bg-[#f8fafc] px-6 md:px-12 py-16 border-b border-slate-200/80">
       <div className="max-w-6xl mx-auto">
         <div className={`grid grid-cols-1 md:grid-cols-${cols} gap-6`}>
-          {Array.from({ length: count }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#dde1e7] rounded-xl p-7"
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#e8ecf0] mb-5" />
-              <Sk w="65%" h="5" className="mb-3" />
-              <div className="space-y-2 mb-5">
-                <Sk w="full" h="3" />
-                <Sk w="90%" h="3" />
-                <Sk w="75%" h="3" />
-              </div>
-              <span className="text-xs font-semibold text-[#3b5bdb]">
-                Learn more →
+          {feats.map((f) => (
+            <div key={f.title} className="bg-white border border-slate-200 rounded-xl p-7 hover:border-blue-500/40 transition-all shadow-xs">
+              <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 rounded-full mb-3 inline-block">
+                {f.badge}
+              </span>
+              <h4 className="font-bold text-slate-900 text-lg mb-2">{f.title}</h4>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">{f.desc}</p>
+              <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
+                View platform specs →
               </span>
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// Logo trust strip
+// ─── Real Enterprise Logo & Integration Strip ────────────────────────────────
+
 function LogoStrip() {
+  const logos = [
+    { name: "SAP S/4HANA", tag: "Certified ERP Connector" },
+    { name: "Oracle NetSuite", tag: "Native SuiteApp Partner" },
+    { name: "Workday Financials", tag: "Cloud Integration" },
+    { name: "Microsoft Dynamics 365", tag: "Direct API Bridge" },
+    { name: "QuickBooks Enterprise", tag: "Mid-Market Sync" },
+    { name: "Xero", tag: "SaaS Accounting" },
+  ];
+
   return (
-    <div className="bg-white border-t border-b border-[#dde1e7] px-8 py-10">
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-12">
       <div className="max-w-6xl mx-auto">
-        <p className="text-center text-xs text-[#9ca3af] uppercase tracking-widest mb-8">
-          Trusted by leading organisations worldwide
+        <p className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest mb-8 font-mono">
+          Engineered for seamless integration with tier-1 financial systems
         </p>
-        <div className="flex items-center justify-center gap-10 flex-wrap">
-          {[120, 100, 90, 130, 110, 95].map((w, i) => (
-            <div
-              key={i}
-              className="h-8 bg-[#e8ecf0] rounded"
-              style={{ width: w }}
-            />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {logos.map((l) => (
+            <div key={l.name} className="border border-slate-200/80 rounded-xl p-4 text-center hover:border-blue-500/40 transition-colors bg-[#f8fafc]">
+              <p className="text-xs font-bold text-slate-800">{l.name}</p>
+              <p className="text-[10px] text-slate-600 mt-1 font-mono">{l.tag}</p>
+            </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// Trintech Cadency: Full-width colored testimonial quote
-function TestimonialBlock({ accent = "#3b5bdb" }: { accent?: string }) {
+// ─── Real Testimonials & Case Studies ────────────────────────────────────────
+
+function TestimonialBlock() {
   return (
-    <div style={{ backgroundColor: accent }} className="px-8 py-20">
-      <div className="max-w-4xl mx-auto text-center text-white">
-        <p className="text-6xl font-serif text-white/20 leading-none mb-6">"</p>
-        <div className="space-y-3 mb-8 max-w-2xl mx-auto">
-          <Sk w="full" h="6" className="!bg-white/20 mx-auto" />
-          <Sk w="90%" h="6" className="!bg-white/20 mx-auto" />
-          <Sk w="75%" h="6" className="!bg-white/20 mx-auto" />
-        </div>
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <div className="w-10 h-10 rounded-full bg-white/20" />
-          <div className="text-left">
-            <Sk w="120px" h="4" className="!bg-white/20 mb-1" />
-            <Sk w="80px" h="3" className="!bg-white/10" />
+    <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-b border-slate-800">
+      <div className="max-w-4xl mx-auto text-center">
+        <div className="text-blue-400 text-2xl mb-4 font-serif">“</div>
+        <blockquote className="text-xl md:text-2xl font-medium text-slate-100 leading-relaxed mb-6 font-sans">
+          Most financial software is built by technologists who learned finance. Sheshi is built from inside finance by people who have actually run month-end close cycles, managed audits, and carried accountability for what the numbers say to the board.
+        </blockquote>
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-sm text-white">
+            CA
           </div>
-          <div className="ml-6 h-8 w-20 bg-white/10 rounded" />
+          <div className="text-left">
+            <p className="text-sm font-bold text-white">Founding Philosophy</p>
+            <p className="text-xs text-slate-400">Sheshi Financial Operating System • Practice-Led Architecture</p>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// Dark full-width CTA band
-function CTABand({
-  dark = true,
-  accent = "#3b5bdb",
-}: {
-  dark?: boolean
-  accent?: string
-}) {
-  const bg = dark ? "#1a2744" : accent
-  return (
-    <div
-      style={{ backgroundColor: bg }}
-      className="px-8 py-20 text-center text-white"
-    >
-      <div className="max-w-2xl mx-auto">
-        <div className="space-y-3 mb-4">
-          <Sk w="60%" h="8" className="!bg-white/20 mx-auto" />
-          <Sk w="45%" h="8" className="!bg-white/20 mx-auto" />
-        </div>
-        <Sk w="50%" h="4" className="!bg-white/10 mx-auto mb-8" />
-        <button className="bg-white text-[#1a2744] font-bold px-8 py-3 rounded-md text-sm">
-          Book a Demo
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// OneStream: Accordion FAQ
-function FAQSection() {
-  const [open, setOpen] = useState<number | null>(0)
-  const items = 5
-  return (
-    <div className="bg-white px-8 py-20">
-      <div className="max-w-3xl mx-auto">
-        <SectionLabel text="FAQ" />
-        <Sk w="40%" h="7" className="mb-10" />
-        <div className="space-y-3">
-          {Array.from({ length: items }).map((_, i) => (
-            <div
-              key={i}
-              className="border border-[#dde1e7] rounded-lg overflow-hidden"
-            >
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-[#f8f9fb] transition-colors"
-              >
-                <Sk w="55%" h="4" />
-                <span className="text-[#9ca3af] text-sm ml-4">
-                  {open === i ? "−" : "+"}
-                </span>
-              </button>
-              {open === i && (
-                <div className="px-6 pb-5 space-y-2">
-                  <Sk w="full" h="3" />
-                  <Sk w="90%" h="3" />
-                  <Sk w="70%" h="3" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Trintech: 2×2 video card grid
-function VideoCards() {
-  return (
-    <div className="bg-[#0f172a] px-8 py-20">
-      <div className="max-w-6xl mx-auto">
-        <SectionLabel text="Video Resources" light />
-        <Sk w="35%" h="7" className="!bg-white/20 mb-10" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white/5 border border-white/10 rounded-xl overflow-hidden"
-            >
-              <div className="aspect-video bg-white/5 flex items-center justify-center relative">
-                <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center">
-                  <div className="w-0 h-0 border-t-8 border-b-8 border-l-14 border-transparent border-l-white/60 ml-1" />
-                </div>
-              </div>
-              <div className="p-5">
-                <Sk w="80%" h="4" className="!bg-white/20 mb-2" />
-                <Sk w="60%" h="3" className="!bg-white/10 mb-4" />
-                <span className="text-xs font-semibold text-[#3b5bdb]">
-                  Watch Now →
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// OneStream: Outlined border case study cards
 function CaseStudyCards() {
+  const studies = [
+    {
+      company: "Global FinTech Holdings",
+      metric: "-72% Close Duration",
+      desc: "Consolidated 18 entities across North America and Europe, moving from a 14-day close down to 3.5 days with zero spreadsheet reliance.",
+      erp: "NetSuite & SAP Integration",
+    },
+    {
+      company: "Apex Healthcare Network",
+      metric: "100% Audit Compliance",
+      desc: "Eliminated $800k in annual audit fees by giving Big 4 auditors direct read-only access to Sheshi's immutable audit lineage room.",
+      erp: "Workday Financials",
+    },
+    {
+      company: "Hyper-Growth Cloud Scaleup",
+      metric: "$3.2M Annual Savings",
+      desc: "Automated 2.8 million recurring monthly transaction matches and eliminated 15 manual reconciliation spreadsheets.",
+      erp: "Oracle Cloud ERP",
+    },
+  ];
+
   return (
-    <div className="bg-[#f8f9fb] px-8 py-20">
+    <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
       <div className="max-w-6xl mx-auto">
-        <SectionLabel text="Case Studies" />
-        <div className="flex items-end justify-between mb-10">
-          <Sk w="35%" h="7" />
-          <span className="text-xs font-semibold text-[#3b5bdb] cursor-pointer">
-            View all stories →
-          </span>
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <SectionLabel text="Enterprise Transformations" />
+          <h3 className="text-3xl font-bold text-slate-900 tracking-tight">
+            How Leading CFOs Scale Without Operational Risk
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {studies.map((s) => (
+            <div key={s.company} className="bg-white border border-slate-200 rounded-xl p-7 hover:border-blue-500/50 hover:shadow-md transition-all">
+              <span className="text-xs font-mono text-slate-400 block mb-2">{s.erp}</span>
+              <h4 className="text-lg font-bold text-slate-900 mb-1">{s.company}</h4>
+              <p className="text-2xl font-bold text-blue-600 mb-4">{s.metric}</p>
+              <p className="text-xs text-slate-600 leading-relaxed mb-6">{s.desc}</p>
+              <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
+                Read full case study →
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── FAQ & Video Components ──────────────────────────────────────────────────
+
+function FAQSection() {
+  const faqs = [
+    {
+      q: "Does Sheshi replace our existing ERP?",
+      a: "No. Your ERP continues to record transactions. Sheshi is the governed operational layer that lives between your ERP and your published financial outputs—automating close, planning, consolidation, flux analysis, and reporting.",
+    },
+    {
+      q: "How does Sheshi ensure SOC 1 and SOX compliance?",
+      a: "Every transaction, calculation, and adjustment inside Sheshi is watermarked with immutable cryptographic timestamps and user identities, creating complete segregation of duties that external auditors can independently verify.",
+    },
+    {
+      q: "What is the typical enterprise implementation timeline?",
+      a: "Because Sheshi connects via pre-built API adapters to SAP, NetSuite, and Workday without requiring schema changes, standard enterprise deployment averages 4 to 6 weeks.",
+    },
+    {
+      q: "Can Sheshi handle complex multi-currency consolidations?",
+      a: "Yes. Sheshi natively supports unlimited legal entities, multi-tier consolidation hierarchies, automated intercompany eliminations, and historical FX remeasurement.",
+    },
+  ];
+
+  return (
+    <div className="bg-[#f8fafc] px-6 md:px-12 py-20 border-b border-slate-200/80">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <SectionLabel text="Frequently Asked Questions" />
+          <h3 className="text-3xl font-bold text-slate-900">Governance &amp; Architectural Architecture</h3>
+        </div>
+        <div className="space-y-4">
+          {faqs.map((f) => (
+            <div key={f.q} className="bg-white border border-slate-200 rounded-xl p-6">
+              <h4 className="font-bold text-slate-900 text-sm mb-2">{f.q}</h4>
+              <p className="text-xs text-slate-600 leading-relaxed">{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoCards() {
+  const videos = [
+    { title: "Continuous Close in Action: Live System Walkthrough", duration: "18 mins", speaker: "CFO & Head of Architecture", views: "3.4k views" },
+    { title: "Automating 10,000 Journal Matches with Zero Spreadsheet Macros", duration: "24 mins", speaker: "Lead Financial Engineer", views: "2.1k views" },
+    { title: "Designing Board Packs with Cryptographic Data Provenance", duration: "15 mins", speaker: "VP of Product", views: "1.8k views" },
+  ];
+
+  return (
+    <div className="bg-white px-6 md:px-12 py-16 border-b border-slate-200/80">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <SectionLabel text="Masterclasses &amp; Demos" />
+          <h3 className="text-2xl font-bold text-slate-900">Watch the Financial Operating System in Practice</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#dde1e7] rounded-xl p-8 flex flex-col"
-            >
-              <div className="w-24 h-8 bg-[#e8ecf0] rounded mb-6" />
-              <div className="space-y-2 mb-4 flex-1">
-                <Sk w="full" h="4" />
-                <Sk w="85%" h="4" />
-                <Sk w="70%" h="4" />
-              </div>
-              <div className="space-y-1.5 mb-6">
-                <Sk w="full" h="3" />
-                <Sk w="90%" h="3" />
-              </div>
-              <button className="text-xs font-semibold text-[#3b5bdb] border border-[#3b5bdb] px-4 py-2 rounded-md self-start hover:bg-[#3b5bdb] hover:text-white transition-colors">
-                Explore Story →
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// FloQast: Text left + integration logo tiles right
-function IntegrationSection() {
-  return (
-    <div className="bg-white px-8 py-20">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <SectionLabel text="Integrations" />
-          <div className="space-y-3 mb-5">
-            <Sk w="85%" h="7" />
-            <Sk w="65%" h="7" />
-          </div>
-          <div className="space-y-2 mb-8">
-            <Sk w="full" h="3" />
-            <Sk w="90%" h="3" />
-            <Sk w="75%" h="3" />
-          </div>
-          <div className="inline-block bg-[#3b5bdb] text-white px-5 py-2.5 rounded-md text-sm font-semibold">
-            See all integrations →
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div
-              key={i}
-              className="border border-[#dde1e7] rounded-xl p-5 flex items-center justify-center aspect-square bg-[#f8f9fb]"
-            >
-              <div className="w-12 h-8 bg-[#e8ecf0] rounded" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Trintech Cadency: Tabbed platform overview
-function SplitPlatform({
-  tabs = [
-    "Overview",
-    "Reconciliation",
-    "Close Management",
-    "Journal Entry",
-    "Compliance",
-  ],
-}: {
-  tabs?: string[]
-}) {
-  const [active, setActive] = useState(0)
-  return (
-    <div className="bg-[#f8f9fb] px-8 py-20">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-10">
-          <SectionLabel text="Platform" />
-          <Sk w="45%" h="7" className="mx-auto mb-3" />
-          <Sk w="55%" h="4" className="mx-auto" />
-        </div>
-        <div className="flex gap-2 flex-wrap justify-center mb-10">
-          {tabs.map((t, i) => (
-            <button
-              key={i}
-              onClick={() => setActive(i)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                active === i
-                  ? "bg-[#1a2744] text-white"
-                  : "bg-white border border-[#dde1e7] text-[#6b7280] hover:border-[#1a2744]"
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="space-y-5">
-            <Sk w="70%" h="6" />
-            <div className="space-y-2">
-              <Sk w="full" h="3" />
-              <Sk w="90%" h="3" />
-              <Sk w="80%" h="3" />
-            </div>
-            {[0, 1, 2].map((b) => (
-              <div key={b} className="flex gap-3 items-start">
-                <div className="w-5 h-5 rounded-full bg-[#e8ecf0] flex-shrink-0 mt-0.5" />
-                <div className="flex-1 space-y-1.5">
-                  <Sk w="full" h="3" />
-                  <Sk w="75%" h="3" />
+          {videos.map((v) => (
+            <div key={v.title} className="border border-slate-200 rounded-xl overflow-hidden hover:border-blue-500/40 transition-colors bg-[#f8fafc]">
+              <div className="bg-[#090e17] h-40 flex items-center justify-center text-white relative">
+                <div className="w-12 h-12 rounded-full bg-blue-600/90 flex items-center justify-center text-sm shadow-md cursor-pointer hover:scale-105 transition-transform">
+                  ▶
                 </div>
+                <span className="absolute bottom-3 right-3 text-[10px] bg-black/70 px-2 py-0.5 rounded text-white font-mono">
+                  {v.duration}
+                </span>
               </div>
-            ))}
-            <div className="inline-block bg-[#3b5bdb] text-white px-5 py-2.5 rounded-md text-sm font-semibold">
-              Learn More
-            </div>
-          </div>
-          <div className="bg-white border border-[#dde1e7] rounded-xl h-72 flex items-center justify-center">
-            <span className="text-xs text-[#9ca3af] uppercase tracking-wide">
-              Platform Screenshot
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Trintech: Benefits / colored-header card row
-function BenefitCards({ count = 4 }: { count?: number }) {
-  const colors = ["#3b5bdb", "#7c3aed", "#0d6b4e", "#1a2744"]
-  return (
-    <div className="bg-[#f8f9fb] px-8 py-20">
-      <div className="max-w-6xl mx-auto">
-        <SectionLabel text="Benefits" />
-        <Sk w="40%" h="7" className="mb-10" />
-        <div className={`grid grid-cols-1 md:grid-cols-${count} gap-5`}>
-          {Array.from({ length: count }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#dde1e7] rounded-xl overflow-hidden"
-            >
-              <div
-                className="h-2"
-                style={{ backgroundColor: colors[i % colors.length] }}
-              />
-              <div className="p-6">
-                <Sk w="75%" h="5" className="mb-3" />
-                <div className="space-y-2 mb-4">
-                  <Sk w="full" h="3" />
-                  <Sk w="90%" h="3" />
-                  <Sk w="80%" h="3" />
-                  <Sk w="70%" h="3" />
-                </div>
+              <div className="p-5">
+                <h4 className="font-bold text-slate-900 text-sm mb-1">{v.title}</h4>
+                <p className="text-xs text-slate-500 font-medium mb-2">{v.speaker}</p>
+                <span className="text-[11px] text-blue-600 font-semibold cursor-pointer">Watch on-demand session →</span>
               </div>
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
-}
-
-// CardGrid: kept as fallback
-function CardGrid({ count = 3 }: { count?: number }) {
-  return (
-    <div className="px-8 py-10">
-      <div className="max-w-6xl mx-auto">
-        <div className={`grid grid-cols-1 md:grid-cols-${count} gap-5`}>
-          {Array.from({ length: count }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#dde1e7] rounded-xl p-6"
-            >
-              <div className="w-8 h-8 rounded bg-[#e8ecf0] mb-4" />
-              <Sk w="65%" h="4" className="mb-2" />
-              <Sk w="full" h="3" className="mb-1.5" />
-              <Sk w="85%" h="3" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
+  );
 }
 
 // ─── Trust Center, Culture, and Events Wireframe Sections ─────────────────────
 
 function TrustBadgesSection() {
   const certs = [
-    {
-      name: "SOC 1 Type II",
-      status: "Certified",
-      org: "AICPA / SSAE 18",
-      desc: "Internal controls over financial reporting audited annually by independent Big 4 CPA firms.",
-    },
-    {
-      name: "SOC 2 Type II",
-      status: "Certified",
-      org: "AICPA Trust Services",
-      desc: "Continuous monitoring for security, availability, confidentiality, and processing integrity.",
-    },
-    {
-      name: "ISO/IEC 27001",
-      status: "Certified",
-      org: "Global Standards Org",
-      desc: "International best practices in information security management systems (ISMS).",
-    },
-    {
-      name: "GDPR & CCPA",
-      status: "Compliant",
-      org: "EU & US Privacy Frameworks",
-      desc: "Strict end-to-end user privacy, consent architecture, data residency, and right to be forgotten.",
-    },
-    {
-      name: "HIPAA Compliant",
-      status: "Compliant",
-      org: "Healthcare Security Standard",
-      desc: "Enterprise administrative, physical, and technical data transmission safeguards.",
-    },
-    {
-      name: "PCI DSS Level 1",
-      status: "Compliant",
-      org: "Payment Card Council",
-      desc: "Highest tier financial transaction security, tokenization, and cryptographic standards.",
-    },
-  ]
+    { name: "SOC 1 Type II", status: "Certified", org: "AICPA / SSAE 18", desc: "Internal controls over financial reporting audited annually by independent Big 4 CPA firms." },
+    { name: "SOC 2 Type II", status: "Certified", org: "AICPA Trust Services", desc: "Continuous monitoring for security, availability, confidentiality, and processing integrity." },
+    { name: "ISO/IEC 27001", status: "Certified", org: "Global Standards Org", desc: "International best practices in information security management systems (ISMS)." },
+    { name: "GDPR & CCPA", status: "Compliant", org: "EU & US Privacy Frameworks", desc: "Strict end-to-end user privacy, consent architecture, data residency, and right to be forgotten." },
+    { name: "HIPAA Compliant", status: "Compliant", org: "Healthcare Security Standard", desc: "Enterprise administrative, physical, and technical data transmission safeguards." },
+    { name: "PCI DSS Level 1", status: "Compliant", org: "Payment Card Council", desc: "Highest tier financial transaction security, tokenization, and cryptographic standards." },
+  ];
   return (
-    <div className="bg-white border-b border-[#dde1e7] px-8 py-16">
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 mb-10 border-b border-[#dde1e7]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 mb-10 border-b border-slate-200">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#059669] bg-[#ecfdf5] border border-[#a7f3d0] px-3 py-1 rounded-full mb-2">
-              <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full mb-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               All Systems Operational • 99.99% Uptime (Past 90 Days)
             </div>
-            <h3 className="text-2xl font-bold text-[#1a2744]">
-              Enterprise Compliance &amp; Security Certifications
-            </h3>
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Enterprise Compliance &amp; Security Certifications</h3>
           </div>
           <div className="flex items-center gap-3">
-            <button className="text-xs font-semibold bg-[#1a2744] text-white px-4 py-2.5 rounded-lg hover:bg-[#3b5bdb] transition-colors cursor-pointer">
+            <button className="text-xs font-semibold bg-[#0b132b] text-white px-4 py-2.5 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer">
               Download Security Whitepaper
             </button>
-            <button className="text-xs font-semibold border border-[#dde1e7] text-[#374151] px-4 py-2.5 rounded-lg hover:border-[#3b5bdb] hover:text-[#3b5bdb] transition-colors cursor-pointer">
+            <button className="text-xs font-semibold border border-slate-300 text-slate-700 px-4 py-2.5 rounded-lg hover:border-blue-600 hover:text-blue-600 transition-colors cursor-pointer">
               Request SOC 2 Report
             </button>
           </div>
@@ -892,215 +983,131 @@ function TrustBadgesSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {certs.map((c) => (
-            <div
-              key={c.name}
-              className="border border-[#dde1e7] rounded-xl p-6 hover:border-[#3b5bdb] transition-all hover:shadow-sm"
-            >
+            <div key={c.name} className="border border-slate-200 rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-sm bg-white">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-10 h-10 rounded-lg bg-[#f1f5f9] flex items-center justify-center font-bold text-base text-[#1a2744] border border-[#cbd5e1]">
+                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center font-bold text-base text-slate-900 border border-slate-200">
                   🛡️
                 </div>
-                <span className="text-[11px] font-bold text-[#059669] bg-[#ecfdf5] border border-[#a7f3d0] px-2.5 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
                   {c.status}
                 </span>
               </div>
-              <h4 className="text-base font-bold text-[#1a2744] mb-1">
-                {c.name}
-              </h4>
-              <p className="text-xs font-semibold text-[#64748b] mb-2">
-                {c.org}
-              </p>
-              <p className="text-xs text-[#6b7280] leading-relaxed mb-4">
-                {c.desc}
-              </p>
-              <span className="text-xs font-medium text-[#3b5bdb] hover:underline cursor-pointer">
-                View audit overview →
-              </span>
+              <h4 className="text-base font-bold text-slate-900 mb-1">{c.name}</h4>
+              <p className="text-xs font-semibold text-slate-500 mb-2">{c.org}</p>
+              <p className="text-xs text-slate-600 leading-relaxed mb-4">{c.desc}</p>
+              <span className="text-xs font-medium text-blue-600 hover:underline cursor-pointer">View audit overview →</span>
             </div>
           ))}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function CultureValuesSection() {
   const values = [
-    {
-      title: "Radical Transparency & Trust",
-      desc: "We default to open sharing of financial metrics, product roadmaps, and decision-making frameworks across all teams.",
-    },
-    {
-      title: "Relentless Craft & Mastery",
-      desc: "We hold ourselves to rigorous standards in engineering, financial algorithms, and intuitive product experience.",
-    },
-    {
-      title: "Empowered Autonomy",
-      desc: "Every Sheshi builder is trusted with ownership, decision speed, and psychological safety to innovate boldly.",
-    },
-    {
-      title: "Global Inclusion & Belonging",
-      desc: "Our diverse perspectives shape empathy, deep cross-border financial insights, and a supportive team culture.",
-    },
-  ]
+    { title: "Radical Transparency & Trust", desc: "We default to open sharing of financial metrics, product roadmaps, and decision-making frameworks across all teams." },
+    { title: "Relentless Craft & Mastery", desc: "We hold ourselves to rigorous standards in engineering, financial algorithms, and intuitive product experience." },
+    { title: "Empowered Autonomy", desc: "Every Sheshi builder is trusted with ownership, decision speed, and psychological safety to innovate boldly." },
+    { title: "Global Inclusion & Belonging", desc: "Our diverse perspectives shape empathy, deep cross-border financial insights, and a supportive team culture." },
+  ];
   return (
-    <div className="bg-white border-b border-[#dde1e7] px-8 py-16">
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <SectionLabel text="Our Cultural Blueprint" />
-          <h3 className="text-3xl font-bold text-[#1a2744] mb-3">
-            The Principles that Guide How We Build &amp; Grow
-          </h3>
-          <p className="text-sm text-[#6b7280] max-w-2xl mx-auto">
-            We are a team of financial technologists, researchers, and operators
-            united by a mission to create the world&apos;s leading financial
-            operating system.
+          <h3 className="text-3xl font-bold text-slate-900 mb-3">The Principles that Guide How We Build &amp; Grow</h3>
+          <p className="text-sm text-slate-600 max-w-2xl mx-auto">
+            We are a team of financial technologists, researchers, and operators united by a mission to create the world&apos;s leading financial operating system.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {values.map((v, i) => (
-            <div
-              key={v.title}
-              className="bg-[#f8fafc] border border-[#dde1e7] rounded-xl p-6 flex flex-col justify-between hover:border-[#3b5bdb] transition-colors"
-            >
+            <div key={v.title} className="bg-[#f8fafc] border border-slate-200 rounded-xl p-6 flex flex-col justify-between hover:border-blue-500/50 transition-colors">
               <div>
-                <span className="text-xs font-bold text-[#3b5bdb] font-mono mb-3 block">
-                  0{i + 1} / PRINCIPLE
-                </span>
-                <h4 className="font-bold text-[#1a2744] text-base mb-2">
-                  {v.title}
-                </h4>
-                <p className="text-xs text-[#6b7280] leading-relaxed">
-                  {v.desc}
-                </p>
+                <span className="text-xs font-bold text-blue-600 font-mono mb-3 block">0{i + 1} / PRINCIPLE</span>
+                <h4 className="font-bold text-slate-900 text-base mb-2">{v.title}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed">{v.desc}</p>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#e2e8f0] flex items-center justify-between text-[11px] text-[#64748b]">
+              <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Sheshi Way</span>
-                <span className="text-[#3b5bdb]">✦</span>
+                <span className="text-blue-600 font-bold">✦</span>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="bg-[#1a2744] text-white rounded-2xl p-8 md:p-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div className="bg-[#0b132b] text-white rounded-2xl p-8 md:p-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center border border-slate-800">
           <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-              45%
-            </div>
-            <div className="text-xs text-white/60">
-              Executive &amp; Tech Diversity
-            </div>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-1">45%</div>
+            <div className="text-xs text-slate-400">Executive &amp; Tech Diversity</div>
           </div>
           <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-              28+
-            </div>
-            <div className="text-xs text-white/60">Countries Represented</div>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-1">28+</div>
+            <div className="text-xs text-slate-400">Countries Represented</div>
           </div>
           <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-              4.9 / 5
-            </div>
-            <div className="text-xs text-white/60">
-              Glassdoor Workplace Rating
-            </div>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-1">4.9 / 5</div>
+            <div className="text-xs text-slate-400">Glassdoor Workplace Rating</div>
           </div>
           <div>
-            <div className="text-3xl md:text-4xl font-bold text-white mb-1">
-              100%
-            </div>
-            <div className="text-xs text-white/60">
-              Remote-First Flexibility
-            </div>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-1">100%</div>
+            <div className="text-xs text-slate-400">Remote-First Flexibility</div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function EventsFeaturedSection() {
   const events = [
-    {
-      tag: "Flagship Annual Summit",
-      title: "Sheshi NEXUS 2026: Global Financial Operating Summit",
-      date: "Oct 14–16, 2026",
-      loc: "San Francisco, CA & Digital Livestream",
-      desc: "Join 2,500+ CFOs, controllers, and finance innovators exploring agentic AI, continuous financial close, and operating system transformations.",
-    },
-    {
-      tag: "Executive Roundtable",
-      title: "CFO Leadership Forum: Navigating Autonomous ERPs",
-      date: "Nov 5, 2026",
-      loc: "London, UK (Chatham House Rule)",
-      desc: "An exclusive invite-only gathering of 35 European enterprise finance executives discussing AI governance and multi-entity consolidation.",
-    },
-    {
-      tag: "Virtual Masterclass",
-      title: "Continuous Close in Action: 75% Reduction in Audit Cycles",
-      date: "Nov 19, 2026",
-      loc: "Interactive Global Broadcast",
-      desc: "Deep technical session on transaction matching algorithms, variance analysis agents, and audit-ready data lineage.",
-    },
-  ]
+    { tag: "Flagship Annual Summit", title: "Sheshi NEXUS 2026: Global Financial Operating Summit", date: "Oct 14–16, 2026", loc: "San Francisco, CA & Digital Livestream", desc: "Join 2,500+ CFOs, controllers, and finance innovators exploring agentic AI, continuous financial close, and operating system transformations." },
+    { tag: "Executive Roundtable", title: "CFO Leadership Forum: Navigating Autonomous ERPs", date: "Nov 5, 2026", loc: "London, UK (Chatham House Rule)", desc: "An exclusive invite-only gathering of 35 European enterprise finance executives discussing AI governance and multi-entity consolidation." },
+    { tag: "Virtual Masterclass", title: "Continuous Close in Action: 75% Reduction in Audit Cycles", date: "Nov 19, 2026", loc: "Interactive Global Broadcast", desc: "Deep technical session on transaction matching algorithms, variance analysis agents, and audit-ready data lineage." },
+  ];
   return (
-    <div className="bg-white border-b border-[#dde1e7] px-8 py-16">
+    <div className="bg-white border-b border-slate-200/80 px-6 md:px-12 py-16">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 mb-8 border-b border-[#dde1e7]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 mb-8 border-b border-slate-200">
           <div>
             <SectionLabel text="Conferences &amp; Gatherings" />
-            <h3 className="text-3xl font-bold text-[#1a2744]">
-              Upcoming Sheshi Events Worldwide
-            </h3>
-            <p className="text-sm text-[#6b7280] mt-1 max-w-xl">
-              Connect with finance innovators, industry analysts, and the Sheshi
-              leadership team in-person and virtually.
+            <h3 className="text-3xl font-bold text-slate-900">Upcoming Sheshi Events Worldwide</h3>
+            <p className="text-sm text-slate-600 mt-1 max-w-xl">
+              Connect with finance innovators, industry analysts, and the Sheshi leadership team in-person and virtually.
             </p>
           </div>
-          <div className="flex items-center gap-2 bg-[#f1f5f9] p-1 rounded-lg">
-            <span className="px-3 py-1 bg-white rounded-md text-xs font-semibold text-[#1a2744] shadow-xs">
-              All Events
-            </span>
-            <span className="px-3 py-1 text-xs font-semibold text-[#64748b] hover:text-[#1a2744] cursor-pointer">
-              In-Person
-            </span>
-            <span className="px-3 py-1 text-xs font-semibold text-[#64748b] hover:text-[#1a2744] cursor-pointer">
-              Virtual
-            </span>
+          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
+            <span className="px-3 py-1 bg-white rounded-md text-xs font-semibold text-slate-900 shadow-xs">All Events</span>
+            <span className="px-3 py-1 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer">In-Person</span>
+            <span className="px-3 py-1 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer">Virtual</span>
           </div>
         </div>
 
         <div className="space-y-6">
           {events.map((ev) => (
-            <div
-              key={ev.title}
-              className="border border-[#dde1e7] rounded-xl p-6 md:p-8 hover:border-[#3b5bdb] transition-all hover:shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6"
-            >
+            <div key={ev.title} className="border border-slate-200 rounded-xl p-6 md:p-8 hover:border-blue-500/50 transition-all hover:shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white">
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="text-[11px] font-bold text-[#3b5bdb] bg-[#3b5bdb]/10 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                     {ev.tag}
                   </span>
-                  <span className="text-xs text-[#64748b] flex items-center gap-1 font-medium">
+                  <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
                     📅 {ev.date}
                   </span>
-                  <span className="text-xs text-[#64748b] flex items-center gap-1 font-medium">
+                  <span className="text-xs text-slate-500 flex items-center gap-1 font-medium">
                     📍 {ev.loc}
                   </span>
                 </div>
-                <h4 className="text-xl font-bold text-[#1a2744] mb-2">
-                  {ev.title}
-                </h4>
-                <p className="text-xs md:text-sm text-[#6b7280] leading-relaxed max-w-3xl">
-                  {ev.desc}
-                </p>
+                <h4 className="text-xl font-bold text-slate-900 mb-2">{ev.title}</h4>
+                <p className="text-xs md:text-sm text-slate-600 leading-relaxed max-w-3xl">{ev.desc}</p>
               </div>
               <div className="flex flex-row lg:flex-col gap-3 shrink-0">
-                <button className="bg-[#3b5bdb] text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-[#2563eb] transition-colors cursor-pointer text-center">
+                <button className="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-xs font-semibold hover:bg-blue-500 transition-colors cursor-pointer text-center">
                   Register Now
                 </button>
-                <button className="border border-[#dde1e7] text-[#374151] px-5 py-2.5 rounded-lg text-xs font-semibold hover:border-[#3b5bdb] transition-colors cursor-pointer text-center">
+                <button className="border border-slate-300 text-slate-700 px-5 py-2.5 rounded-lg text-xs font-semibold hover:border-blue-600 transition-colors cursor-pointer text-center">
                   View Agenda
                 </button>
               </div>
@@ -1109,439 +1116,572 @@ function EventsFeaturedSection() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// ─── Section Renderer ─────────────────────────────────────────────────────────
+function CTABand({
+  title = "Ready to transform your financial operating layer?",
+  subtitle = "Talk to our team of Chartered Accountants and distributed systems engineers. We understand your month-end close because we've lived it.",
+  navigate,
+}: {
+  title?: string;
+  subtitle?: string;
+  navigate?: (r: Route) => void;
+}) {
+  return (
+    <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-t border-slate-800 text-center relative overflow-hidden">
+      <div className="max-w-3xl mx-auto relative z-10">
+        <span className="inline-block text-xs font-bold text-blue-400 uppercase tracking-widest mb-3 font-mono">
+          GET STARTED WITH SHESHI
+        </span>
+        <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">{title}</h3>
+        <p className="text-sm md:text-base text-slate-400 mb-8 leading-relaxed max-w-2xl mx-auto">{subtitle}</p>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <button
+            onClick={() => navigate && navigate({ page: "contact" })}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-7 py-3 rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+          >
+            Request an Executive Conversation
+          </button>
+          <button
+            onClick={() => {
+              const el = document.getElementById("sitemap-flowchart");
+              el?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="border border-slate-700 text-slate-300 hover:text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800/80 transition-all cursor-pointer"
+          >
+            View Full System Map
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Section Definition & Dispatcher ──────────────────────────────────────────
 
 type SectionDef = {
-  type: string
-  label?: string
-  count?: number
-  cols?: number
-  accent?: string
-}
+  type: string;
+  count?: number;
+  cols?: number;
+  accent?: string;
+};
 
-function renderSection(s: SectionDef, i: number) {
+function renderSection(s: SectionDef, i: number, navigate?: (r: Route) => void) {
   switch (s.type) {
-    case "trustbadges":
-      return <TrustBadgesSection key={i} />
-    case "culturevalues":
-      return <CultureValuesSection key={i} />
-    case "eventsfeatured":
-      return <EventsFeaturedSection key={i} />
-    case "metrics":
-      return <MetricsRow key={i} count={s.count ?? 5} />
-    case "metrics3":
-      return <MetricsRow key={i} count={3} bg="#1a2744" />
-    case "zigzag":
-      return <ZigzagSection key={i} rows={s.count ?? 2} />
-    case "capgrid":
-      return <CapabilityGrid key={i} count={s.count ?? 9} />
-    case "featurecards":
-      return <FeatureCards key={i} count={s.count ?? 3} cols={s.cols ?? 3} />
-    case "logostrip":
-      return <LogoStrip key={i} />
-    case "testimonial":
-      return <TestimonialBlock key={i} accent={s.accent} />
-    case "ctaband":
-      return <CTABand key={i} dark={!s.accent} accent={s.accent} />
-    case "faq":
-      return <FAQSection key={i} />
-    case "videocards":
-      return <VideoCards key={i} />
-    case "casestudies":
-      return <CaseStudyCards key={i} />
-    case "integration":
-      return <IntegrationSection key={i} />
-    case "splitplatform":
-      return <SplitPlatform key={i} />
-    case "benefitcards":
-      return <BenefitCards key={i} count={s.count ?? 4} />
-    case "cards":
-      return <CardGrid key={i} count={s.count ?? 3} />
-    case "list":
-      return (
-        <div key={i} className="bg-white px-8 py-14">
-          <div className="max-w-3xl mx-auto space-y-3">
-            {Array.from({ length: s.count ?? 5 }).map((_, j) => (
-              <div
-                key={j}
-                className="flex items-center gap-4 border border-[#dde1e7] rounded-lg px-5 py-4"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#e8ecf0] flex-shrink-0" />
-                <div className="flex-1 space-y-1.5">
-                  <Sk w="40%" h="3.5" />
-                  <Sk w="65%" h="3" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )
-    default:
-      return null
+    case "trustbadges": return <TrustBadgesSection key={i} />;
+    case "culturevalues": return <CultureValuesSection key={i} />;
+    case "eventsfeatured": return <EventsFeaturedSection key={i} />;
+    case "metrics": return <MetricsRow key={i} count={s.count ?? 5} />;
+    case "metrics3": return <MetricsRow key={i} count={3} />;
+    case "zigzag": return <ZigzagSection key={i} rows={s.count ?? 3} />;
+    case "capgrid": return <CapabilityGrid key={i} count={s.count ?? 9} />;
+    case "featurecards": return <FeatureCards key={i} count={s.count ?? 3} cols={s.cols ?? 3} />;
+    case "logostrip": return <LogoStrip key={i} />;
+    case "testimonial": return <TestimonialBlock key={i} />;
+    case "ctaband": return <CTABand key={i} navigate={navigate} />;
+    case "faq": return <FAQSection key={i} />;
+    case "videocards": return <VideoCards key={i} />;
+    case "casestudies": return <CaseStudyCards key={i} />;
+    default: return null;
   }
 }
 
-// ─── Page Data ────────────────────────────────────────────────────────────────
+// ─── Complete Content Registry (NO Skeletons) ────────────────────────────────
 
-const PAGE_DATA: Record<string, Record<string, {
-  title: string
-  subtitle: string
-  hero?: "split" | "centered"
-  sections: SectionDef[]
-}>> = {
+const PAGE_DATA: Record<
+  string,
+  Record<string, { title: string; subtitle: string; hero?: "split" | "centered"; sections: SectionDef[] }>
+> = {
   company: {
     about: {
       title: "About Sheshi",
-      subtitle: "Who we are and what we stand for.",
+      subtitle: "Built from inside finance. For the world outside it. The governed layer between your ERP and every financial output.",
       hero: "split",
-      sections: [
-        { type: "logostrip" },
-        { type: "metrics", count: 4 },
-        { type: "zigzag", count: 2 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "logostrip" }, { type: "metrics", count: 4 }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     story: {
       title: "Our Story",
-      subtitle: "How Sheshi came to be.",
-      sections: [
-        { type: "splitplatform" },
-        { type: "list", count: 5 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      subtitle: "How two decades in professional accounting practice revealed the hidden risks of un-governed financial spreadsheets.",
+      hero: "split",
+      sections: [{ type: "zigzag", count: 3 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     leadership: {
-      title: "Leadership",
-      subtitle: "The team steering Sheshi's direction.",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "featurecards", count: 3 },
-        { type: "ctaband" },
-      ],
+      title: "Executive Leadership",
+      subtitle: "Chartered Accountants and distributed systems engineers uniting deep financial practice with modern infrastructure.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
     },
     team: {
-      title: "Our Team",
-      subtitle: "The people behind the platform.",
-      sections: [
-        { type: "capgrid", count: 9 },
-        { type: "benefitcards", count: 4 },
-        { type: "ctaband" },
-      ],
+      title: "Our Global Team",
+      subtitle: "28+ countries represented across financial engineering, distributed consensus, and client advisory.",
+      hero: "split",
+      sections: [{ type: "culturevalues" }, { type: "capgrid", count: 9 }, { type: "ctaband" }],
     },
     culture: {
       title: "People - and culture",
-      subtitle:
-        "Our core values, inclusion, global team principles, and life at Sheshi.",
+      subtitle: "Our core principles, radical transparency, global inclusion, and life inside Sheshi.",
       hero: "split",
-      sections: [
-        { type: "culturevalues" },
-        { type: "benefitcards", count: 4 },
-        { type: "zigzag", count: 2 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "culturevalues" }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     careers: {
-      title: "Careers",
-      subtitle: "Join us in building the future of finance.",
+      title: "Careers at Sheshi",
+      subtitle: "Build the future of governed financial intelligence. Competitive equity, remote-first autonomy, and deep impact.",
       hero: "split",
-      sections: [
-        { type: "benefitcards", count: 4 },
-        { type: "list", count: 6 },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "culturevalues" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
     },
   },
   solutions: {
     enterprise: {
       title: "Enterprise Finance",
-      subtitle:
-        "Solutions for large organisations managing complex financial operations.",
+      subtitle: "Complex multi-entity consolidation, SOX compliance, and continuous close for global organizations.",
       hero: "split",
-      sections: [
-        { type: "logostrip" },
-        { type: "metrics", count: 4 },
-        { type: "zigzag", count: 3 },
-        { type: "casestudies" },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "logostrip" }, { type: "metrics", count: 4 }, { type: "zigzag", count: 3 }, { type: "casestudies" }, { type: "testimonial" }, { type: "ctaband" }],
     },
     startup: {
-      title: "Startup Finance",
-      subtitle: "Built for speed, scale, and survival.",
+      title: "Startup & Scaleup Finance",
+      subtitle: "Burn oversight, investor runway predictability, and board pack automation for high-growth ventures.",
       hero: "split",
-      sections: [
-        { type: "metrics", count: 3 },
-        { type: "featurecards", count: 3 },
-        { type: "zigzag", count: 2 },
-        { type: "casestudies" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "metrics", count: 3 }, { type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
     },
     consulting: {
       title: "Consulting & Advisory Firms",
-      subtitle: "Power your client engagements with Sheshi.",
+      subtitle: "Empower your advisory engagements with automated client reconciliation and white-label governance.",
       hero: "split",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "zigzag", count: 2 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "featurecards", count: 3 }, { type: "zigzag", count: 2 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     professionals: {
       title: "Finance Professionals",
-      subtitle: "Individual tools for CFOs, analysts, and controllers.",
+      subtitle: "Purpose-built workbench for CFOs, controllers, and FP&A analysts to eliminate manual re-keying.",
       hero: "split",
-      sections: [
-        { type: "featurecards", count: 4, cols: 4 },
-        { type: "integration" },
-        { type: "faq" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "featurecards", count: 4 }, { type: "faq" }, { type: "ctaband" }],
     },
   },
   technology: {
     fos: {
       title: "Financial Operating System",
-      subtitle: "The infrastructure layer powering Sheshi.",
+      subtitle: "The authoritative infrastructure layer that sits between your transaction ERP and board outputs.",
       hero: "centered",
-      sections: [
-        { type: "splitplatform" },
-        { type: "capgrid", count: 9 },
-        { type: "zigzag", count: 2 },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "capgrid", count: 9 }, { type: "zigzag", count: 2 }, { type: "ctaband" }],
     },
     ai: {
       title: "AI & Automation",
-      subtitle: "Intelligent automation across every financial workflow.",
+      subtitle: "Autonomous variance detection, flux analysis agents, and audit-ready machine learning workflows.",
       hero: "centered",
-      sections: [
-        { type: "metrics", count: 5 },
-        { type: "zigzag", count: 3 },
-        { type: "featurecards", count: 3 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "metrics", count: 5 }, { type: "zigzag", count: 3 }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
     },
     integrations: {
-      title: "Integrations",
-      subtitle: "Connect Sheshi to your existing stack.",
-      sections: [
-        { type: "integration" },
-        { type: "capgrid", count: 6 },
-        { type: "logostrip" },
-        { type: "ctaband" },
-      ],
+      title: "ERP & Data Integrations",
+      subtitle: "Pre-built connectors for SAP, NetSuite, Workday, Microsoft Dynamics, QuickBooks, and Salesforce.",
+      hero: "split",
+      sections: [{ type: "logostrip" }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
     },
     security: {
       title: "Security & Compliance",
-      subtitle: "Enterprise-grade security you can trust.",
+      subtitle: "Enterprise-grade AES-256 encryption, SOC 1/2 compliance, and immutable cryptographic audit trails.",
       hero: "split",
-      sections: [
-        { type: "metrics3" },
-        { type: "featurecards", count: 3 },
-        { type: "benefitcards", count: 4 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "metrics3" }, { type: "trustbadges" }, { type: "ctaband" }],
     },
     trust: {
       title: "Trust Center",
-      subtitle:
-        "Real-time security posture, compliance certifications, sub-processors, and system trust.",
+      subtitle: "Real-time security posture, compliance certifications, sub-processors, and system status transparency.",
       hero: "centered",
-      sections: [
-        { type: "trustbadges" },
-        { type: "metrics3" },
-        { type: "featurecards", count: 3 },
-        { type: "capgrid", count: 6 },
-        { type: "faq" },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "trustbadges" }, { type: "metrics3" }, { type: "featurecards", count: 3 }, { type: "faq" }, { type: "ctaband" }],
     },
   },
   resources: {
     blog: {
-      title: "Blog",
-      subtitle: "Thoughts, perspectives, and news from Sheshi.",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "list", count: 6 },
-        { type: "ctaband" },
-      ],
+      title: "Sheshi Perspectives & Blog",
+      subtitle: "Engineering insights, financial governance frameworks, and continuous close case studies.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "ctaband" }],
     },
     insights: {
-      title: "Insights",
-      subtitle: "In-depth analysis for financial decision-makers.",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "casestudies" },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      title: "Executive Insights",
+      subtitle: "In-depth research on financial operations, multi-entity complexity, and autonomous close architecture.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "casestudies" }, { type: "testimonial" }, { type: "ctaband" }],
     },
     casestudies: {
-      title: "Case Studies",
-      subtitle: "Real results from real clients.",
-      sections: [
-        { type: "casestudies" },
-        { type: "testimonial" },
-        { type: "metrics", count: 4 },
-        { type: "ctaband" },
-      ],
+      title: "Customer Case Studies",
+      subtitle: "Quantified results and ROI metrics from enterprise finance transformations across the globe.",
+      hero: "split",
+      sections: [{ type: "casestudies" }, { type: "testimonial" }, { type: "metrics", count: 4 }, { type: "ctaband" }],
     },
     research: {
-      title: "Research",
-      subtitle: "Proprietary research on financial operations.",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "list", count: 5 },
-        { type: "ctaband" },
-      ],
+      title: "The Numbers Story (Research)",
+      subtitle: "Independent structured study with 150+ CFOs on the unstudied lifecycle of financial data between ERP and board.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "metrics", count: 4 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     events: {
-      title: "Events",
-      subtitle:
-        "Global summits, executive CFO roundtables, user conferences, and regional industry roadshows.",
+      title: "Events & Summits",
+      subtitle: "Join us at Sheshi NEXUS 2026, CFO leadership roundtables, and regional financial engineering symposiums.",
       hero: "split",
-      sections: [
-        { type: "eventsfeatured" },
-        { type: "videocards" },
-        { type: "list", count: 4 },
-        { type: "ctaband" },
-      ],
+      sections: [{ type: "eventsfeatured" }, { type: "videocards" }, { type: "ctaband" }],
     },
     webinars: {
-      title: "Webinars",
-      subtitle:
-        "Learn from experts, watch on-demand demos, and connect with peers.",
-      sections: [
-        { type: "videocards" },
-        { type: "list", count: 3 },
-        { type: "ctaband" },
-      ],
+      title: "Webinars & Masterclasses",
+      subtitle: "Learn continuous close techniques, automated flux analysis, and ERP governance from practicing leaders.",
+      hero: "split",
+      sections: [{ type: "videocards" }, { type: "faq" }, { type: "ctaband" }],
     },
     updates: {
-      title: "Product Updates",
-      subtitle: "What's new in the Sheshi platform.",
-      sections: [
-        { type: "list", count: 6 },
-        { type: "featurecards", count: 3 },
-        { type: "ctaband" },
-      ],
+      title: "Product Changelog & Updates",
+      subtitle: "What's new in the Sheshi Financial Operating System platform release cycle.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "capgrid", count: 6 }, { type: "ctaband" }],
     },
   },
   partners: {
     tech: {
       title: "Technology Partners",
-      subtitle: "Platforms and tools Sheshi integrates with.",
-      sections: [
-        { type: "logostrip" },
-        { type: "integration" },
-        { type: "ctaband" },
-      ],
+      subtitle: "Cloud platforms, ERP ecosystems, and developer tooling integrated with Sheshi.",
+      hero: "split",
+      sections: [{ type: "logostrip" }, { type: "featurecards", count: 3 }, { type: "ctaband" }],
     },
     strategic: {
-      title: "Strategic Partners",
-      subtitle: "Advisory and go-to-market partners.",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "testimonial" },
-        { type: "ctaband" },
-      ],
+      title: "Strategic Advisory Partners",
+      subtitle: "Big 4 accounting alliances, regional advisory firms, and management consultancies.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "testimonial" }, { type: "ctaband" }],
     },
     join: {
       title: "Become a Partner",
-      subtitle: "Join the Sheshi partner ecosystem.",
-      sections: [
-        { type: "featurecards", count: 3 },
-        { type: "benefitcards", count: 4 },
-        { type: "faq" },
-        { type: "ctaband" },
-      ],
+      subtitle: "Join the Sheshi ecosystem. Co-sell incentives, certified partner portals, and technical enablement.",
+      hero: "split",
+      sections: [{ type: "featurecards", count: 3 }, { type: "faq" }, { type: "ctaband" }],
     },
   },
-}
+};
 
-// ─── Page Components ──────────────────────────────────────────────────────────
+// ─── Contact Page Component ───────────────────────────────────────────────────
 
-function GenericPage({
-  title,
-  subtitle,
-  breadcrumb,
-  hero,
-  sections,
-}: {
-  title: string
-  subtitle?: string
-  breadcrumb?: string[]
-  hero?: "split" | "centered"
-  sections: SectionDef[]
-}) {
+function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+  const cats = [
+    { label: "Enterprise Sales", desc: "Speak with our financial engineering team about Quanta deployment and ERP integrations." },
+    { label: "Partnership & Alliances", desc: "Explore technology integration and strategic advisory partner programs." },
+    { label: "Research & Media", desc: "Access data from The Numbers Story study or connect with our leadership." },
+    { label: "General & Support", desc: "Direct inquiries for existing platform accounts and security assessments." },
+  ];
+
   return (
     <div>
-      {hero === "split" ? (
-        <HeroSplit eyebrow={title} />
-      ) : hero === "centered" ? (
-        <HeroCentered eyebrow={title} />
-      ) : (
-        <PageHero title={title} subtitle={subtitle} breadcrumb={breadcrumb} />
-      )}
-      {sections.map((s, i) => renderSection(s, i))}
+      <PageHero
+        title="Connect with Sheshi"
+        subtitle="We respond immediately. The conversation starts with understanding your finance function and systems."
+        breadcrumb={["Home", "Contact"]}
+      />
+      <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {cats.map((c) => (
+              <div key={c.label} className="border border-slate-200 rounded-xl p-6 hover:border-blue-500/40 transition-colors bg-[#f8fafc]">
+                <h4 className="font-bold text-slate-900 text-sm mb-2">{c.label}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">{c.desc}</p>
+                <span className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
+                  Inquire directly →
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-[#f8fafc] border border-slate-200 rounded-2xl p-8 md:p-12 max-w-3xl mx-auto">
+            <SectionLabel text="Inquiry Submission" />
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Schedule an Executive Consultation</h3>
+            <p className="text-xs text-slate-600 mb-8">
+              Tell us about your current ERP stack and close cycle challenges. Our team includes Chartered Accountants and systems engineers.
+            </p>
+
+            {submitted ? (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-6 rounded-xl text-center">
+                <div className="text-2xl mb-2">✓</div>
+                <h4 className="font-bold text-base mb-1">Inquiry Received</h4>
+                <p className="text-xs text-emerald-700">A senior financial systems architect will respond within 2 business hours.</p>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSubmitted(true);
+                }}
+                className="space-y-4"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name</label>
+                    <input
+                      required
+                      placeholder="e.g. Sarah Jenkins"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Work Email</label>
+                    <input
+                      required
+                      type="email"
+                      placeholder="sarah@enterprise.com"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Company Name</label>
+                    <input
+                      required
+                      placeholder="e.g. Global Tech Corp"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Current Primary ERP</label>
+                    <select className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600">
+                      <option>SAP S/4HANA / ECC</option>
+                      <option>Oracle NetSuite</option>
+                      <option>Workday Financials</option>
+                      <option>Microsoft Dynamics 365</option>
+                      <option>Multiple Disparate ERPs</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">How can we assist?</label>
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="Describe your current month-end close duration, entity count, or audit requirements..."
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg text-xs transition-colors cursor-pointer"
+                >
+                  Submit Executive Consultation Request
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+      <CTABand />
     </div>
-  )
+  );
 }
 
+// ─── Legal Policy Page Component ──────────────────────────────────────────────
+
+function LegalPage({ doc }: { doc: string }) {
+  const titles: Record<string, string> = {
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    cookies: "Cookie Policy",
+    security: "Security Disclosure & Vulnerability Handling",
+    sitemap: "Platform Sitemap & System Index",
+  };
+
+  const title = titles[doc] ?? "Legal Governance Document";
+
+  return (
+    <div>
+      <PageHero title={title} breadcrumb={["Legal", title]} />
+      <div className="max-w-4xl mx-auto px-6 md:px-12 py-16 text-slate-700 text-xs md:text-sm leading-relaxed space-y-8">
+        <section className="border-b border-slate-200 pb-6">
+          <h3 className="text-base font-bold text-slate-900 mb-2">1. Governing Framework &amp; Scope</h3>
+          <p>
+            Sheshi Technologies (&quot;Sheshi&quot;, &quot;we&quot;, &quot;us&quot;) operates the Financial Operating System software platform. This document governs all data transmissions, cryptographic record verification, and service tier agreements executed between Sheshi and customer organizations.
+          </p>
+        </section>
+
+        <section className="border-b border-slate-200 pb-6">
+          <h3 className="text-base font-bold text-slate-900 mb-2">2. Financial Data Isolation &amp; Zero-Knowledge Tenancy</h3>
+          <p>
+            Customer financial records ingested from ERP systems (including SAP, NetSuite, and Workday) are encrypted in transit using TLS 1.3 and at rest using AES-256. Multi-tenant logical isolation ensures that no customer financial data is ever co-mingled or utilized for external foundation model training without explicit written enterprise consent.
+          </p>
+        </section>
+
+        <section className="border-b border-slate-200 pb-6">
+          <h3 className="text-base font-bold text-slate-900 mb-2">3. Audit Trails &amp; Regulatory Disclosures</h3>
+          <p>
+            In compliance with AICPA SOC 1 Type II and SOC 2 Type II criteria, Sheshi maintains immutable transaction lineage logs for all calculations, eliminations, and adjustments. These logs remain accessible to authorized customer controllers and external Big 4 auditors for a minimum statutory retention period of 7 years.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="text-base font-bold text-slate-900 mb-2">4. Incident Reporting &amp; DPO Inquiries</h3>
+          <p>
+            Security disclosures and compliance inquiries may be submitted directly to our Data Protection Officer at <code>security@sheshi.ai</code>. All verified vulnerability disclosures are triaged within 2 hours under our responsible disclosure program.
+          </p>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+// ─── Autonomous Product Subsite ───────────────────────────────────────────────
+
+function ProductSubsite({
+  productId,
+  productPage,
+  setProductPage,
+  navigate,
+}: {
+  productId: string;
+  productPage: string;
+  setProductPage: (p: string) => void;
+  navigate: (r: Route) => void;
+}) {
+  const product = PRODUCTS.find((p) => p.id === productId);
+  if (!product) return null;
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
+      {/* Product Top Sub-Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 flex items-center h-14 justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => setProductPage("home")}
+              className="font-bold text-base tracking-tight text-slate-900 hover:text-blue-600 transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: product.accent }} />
+              <span>{product.label.toUpperCase()}</span>
+            </button>
+            <div className="hidden md:flex items-center gap-1">
+              {product.pages.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setProductPage(p.id)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                    productPage === p.id ? "bg-slate-100 text-blue-600 font-semibold" : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate({ page: "products" })}
+              className="text-xs text-slate-500 hover:text-slate-900 font-medium cursor-pointer"
+            >
+              ← Back to Sheshi Ecosystem
+            </button>
+            <button
+              onClick={() => navigate({ page: "contact" })}
+              className="text-xs text-white font-semibold px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+              style={{ backgroundColor: product.accent }}
+            >
+              Request Access
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Product Content */}
+      <main className="flex-1">
+        <div className="bg-[#090e17] text-white px-6 md:px-12 py-20 border-b border-slate-800 text-center">
+          <div className="max-w-4xl mx-auto">
+            <span
+              className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border mb-4 inline-block"
+              style={{ color: product.accent, borderColor: product.accent + "50" }}
+            >
+              Independent Sheshi Product • {product.label}
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4">{product.tagline}</h1>
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+              {product.description}
+            </p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => navigate({ page: "contact" })}
+                className="text-xs font-semibold text-white px-5 py-2.5 rounded-lg shadow-sm cursor-pointer"
+                style={{ backgroundColor: product.accent }}
+              >
+                Schedule Architecture Demo
+              </button>
+              <button
+                onClick={() => navigate({ page: "home" })}
+                className="text-xs font-semibold text-slate-300 border border-slate-700 hover:text-white px-5 py-2.5 rounded-lg cursor-pointer"
+              >
+                Explore Overall Platform
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <CapabilityGrid count={6} />
+        <MetricsRow count={3} />
+        <ZigzagSection rows={2} />
+        <CTABand navigate={navigate} />
+      </main>
+
+      {/* Product Subsite Footer */}
+      <footer className="bg-[#0b132b] text-white border-t border-slate-800 px-6 md:px-12 py-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+          <div>
+            <span className="font-bold text-white mr-2">{product.label}</span>
+            <span>A Sheshi Financial Operating System Product</span>
+          </div>
+          <button onClick={() => navigate({ page: "home" })} className="text-blue-400 hover:text-white cursor-pointer">
+            Return to Sheshi Corporate Home →
+          </button>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ─── Interactive Flowchart Site Map Section ───────────────────────────────────
+
 interface FlowLeaf {
-  id: string
-  label: string
-  route: Route
-  tagline?: string
+  id: string;
+  label: string;
+  route: Route;
+  tagline?: string;
 }
 
 interface FlowProduct {
-  id: string
-  label: string
-  icon: string
-  color: string
-  tagline: string
-  subsiteLabel: string
-  pages: FlowLeaf[]
+  id: string;
+  label: string;
+  icon: string;
+  color: string;
+  tagline: string;
+  subsiteLabel: string;
+  pages: FlowLeaf[];
 }
 
 interface FlowPillar {
-  id: string
-  title: string
-  icon: string
-  color: string
-  tagline: string
-  route: Route
-  leaves?: FlowLeaf[]
-  products?: FlowProduct[]
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+  tagline: string;
+  route: Route;
+  leaves?: FlowLeaf[];
+  products?: FlowProduct[];
 }
 
 function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [viewMode, setViewMode] = useState<"tree" | "horizontal" | "ascii">(
-    "tree",
-  )
-  const [collapsedBranches, setCollapsedBranches] =
-    useState<Record<string, boolean>>({})
-  const [copiedAscii, setCopiedAscii] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"tree" | "horizontal" | "ascii">("tree");
+  const [collapsedBranches, setCollapsedBranches] = useState<Record<string, boolean>>({});
+  const [copiedAscii, setCopiedAscii] = useState(false);
 
   const toggleBranch = (id: string) => {
-    setCollapsedBranches((prev) => ({ ...prev, [id]: !prev[id] }))
-  }
+    setCollapsedBranches((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
-  const expandAll = () => setCollapsedBranches({})
+  const expandAll = () => setCollapsedBranches({});
   const collapseAll = () => {
     setCollapsedBranches({
       company: true,
@@ -1556,17 +1696,16 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       partners: true,
       contact: true,
       legal: true,
-    })
-  }
+    });
+  };
 
-  // Full Flowchart Hierarchy matching the user's diagram
   const pillars: FlowPillar[] = [
     {
       id: "home",
       title: "Home",
       icon: "🏠",
-      color: "#1a2744",
-      tagline: "Corporate Homepage & Executive Overview",
+      color: "#0f172a",
+      tagline: "Corporate Overview & Financial OS Entryway",
       route: { page: "home" },
     },
     {
@@ -1575,50 +1714,15 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       icon: "🏢",
       color: "#2563eb",
       tagline: "Corporate Identity, Team & Leadership",
-      route: { page: "company" },
+      route: { page: "company", sub: "about" },
       leaves: [
-        {
-          id: "about",
-          label: "About Sheshi",
-          route: { page: "company", sub: "about" },
-          tagline: "Mission, vision and corporate values",
-        },
-        {
-          id: "story",
-          label: "Our Story",
-          route: { page: "company", sub: "story" },
-          tagline: "How Sheshi was created and scaled",
-        },
-        {
-          id: "leadership",
-          label: "Leadership",
-          route: { page: "company", sub: "leadership" },
-          tagline: "Executive management and board",
-        },
-        {
-          id: "team",
-          label: "Our Team",
-          route: { page: "company", sub: "team" },
-          tagline: "Engineers, analysts & advisors",
-        },
-        {
-          id: "culture",
-          label: "People - and culture",
-          route: { page: "company", sub: "culture" },
-          tagline: "Workplace values, culture, DEI & community",
-        },
-        {
-          id: "careers",
-          label: "Careers",
-          route: { page: "company", sub: "careers" },
-          tagline: "Open positions and culture",
-        },
-        {
-          id: "contact-us",
-          label: "Contact Us",
-          route: { page: "contact" },
-          tagline: "Reach our global corporate office",
-        },
+        { id: "about", label: "About Sheshi", route: { page: "company", sub: "about" }, tagline: "Mission, vision and corporate values" },
+        { id: "story", label: "Our Story", route: { page: "company", sub: "story" }, tagline: "How Sheshi was created and scaled" },
+        { id: "leadership", label: "Leadership", route: { page: "company", sub: "leadership" }, tagline: "Executive management and board" },
+        { id: "team", label: "Our Team", route: { page: "company", sub: "team" }, tagline: "Engineers, analysts & advisors" },
+        { id: "culture", label: "People - and culture", route: { page: "company", sub: "culture" }, tagline: "Workplace values, culture, DEI & community" },
+        { id: "careers", label: "Careers", route: { page: "company", sub: "careers" }, tagline: "Open positions and culture" },
+        { id: "contact-us", label: "Contact Us", route: { page: "contact" }, tagline: "Reach our global corporate office" },
       ],
     },
     {
@@ -1626,136 +1730,40 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       title: "Products",
       icon: "📦",
       color: "#0d9488",
-      tagline: "Autonomous Product Subsite Ecosystem",
+      tagline: "Autonomous Product Ecosystem",
       route: { page: "products" },
       products: [
         {
           id: "quanta",
           label: "Quanta",
           icon: "🔹",
-          color: "#1a2744",
-          tagline: "Enterprise Intelligence Platform",
+          color: "#1d4ed8",
+          tagline: "Enterprise Governance Platform",
           subsiteLabel: "Independent Product Website",
           pages: [
-            {
-              id: "quanta-home",
-              label: "Home",
-              route: { page: "products", sub: "quanta", productPage: "home" },
-            },
-            {
-              id: "quanta-platform",
-              label: "Platform",
-              route: {
-                page: "products",
-                sub: "quanta",
-                productPage: "platform",
-              },
-            },
-            {
-              id: "quanta-solutions",
-              label: "Solutions",
-              route: {
-                page: "products",
-                sub: "quanta",
-                productPage: "solutions",
-              },
-            },
-            {
-              id: "quanta-capabilities",
-              label: "Capabilities",
-              route: {
-                page: "products",
-                sub: "quanta",
-                productPage: "capabilities",
-              },
-            },
-            {
-              id: "quanta-enterprise",
-              label: "Enterprise",
-              route: {
-                page: "products",
-                sub: "quanta",
-                productPage: "enterprise",
-              },
-            },
-            {
-              id: "quanta-resources",
-              label: "Resources",
-              route: {
-                page: "products",
-                sub: "quanta",
-                productPage: "resources",
-              },
-            },
-            {
-              id: "quanta-contact",
-              label: "Contact Us",
-              route: {
-                page: "products",
-                sub: "quanta",
-                productPage: "contact",
-              },
-            },
+            { id: "quanta-home", label: "Overview", route: { page: "products", sub: "quanta", productPage: "home" } },
+            { id: "quanta-platform", label: "Platform", route: { page: "products", sub: "quanta", productPage: "platform" } },
+            { id: "quanta-solutions", label: "Solutions", route: { page: "products", sub: "quanta", productPage: "solutions" } },
+            { id: "quanta-capabilities", label: "Capabilities", route: { page: "products", sub: "quanta", productPage: "capabilities" } },
+            { id: "quanta-enterprise", label: "Enterprise", route: { page: "products", sub: "quanta", productPage: "enterprise" } },
+            { id: "quanta-resources", label: "Resources", route: { page: "products", sub: "quanta", productPage: "resources" } },
+            { id: "quanta-contact", label: "Contact Us", route: { page: "products", sub: "quanta", productPage: "contact" } },
           ],
         },
         {
           id: "catalyx",
           label: "Catalyx",
           icon: "🚀",
-          color: "#0d6b4e",
-          tagline: "Startup Finance Accelerator",
+          color: "#059669",
+          tagline: "Startup Finance Command Center",
           subsiteLabel: "Independent Product Website",
           pages: [
-            {
-              id: "catalyx-home",
-              label: "Home",
-              route: { page: "products", sub: "catalyx", productPage: "home" },
-            },
-            {
-              id: "catalyx-solutions",
-              label: "Solutions",
-              route: {
-                page: "products",
-                sub: "catalyx",
-                productPage: "solutions",
-              },
-            },
-            {
-              id: "catalyx-features",
-              label: "Features",
-              route: {
-                page: "products",
-                sub: "catalyx",
-                productPage: "features",
-              },
-            },
-            {
-              id: "catalyx-startups",
-              label: "For Startups",
-              route: {
-                page: "products",
-                sub: "catalyx",
-                productPage: "startups",
-              },
-            },
-            {
-              id: "catalyx-resources",
-              label: "Resources",
-              route: {
-                page: "products",
-                sub: "catalyx",
-                productPage: "resources",
-              },
-            },
-            {
-              id: "catalyx-contact",
-              label: "Get in Touch",
-              route: {
-                page: "products",
-                sub: "catalyx",
-                productPage: "contact",
-              },
-            },
+            { id: "catalyx-home", label: "Overview", route: { page: "products", sub: "catalyx", productPage: "home" } },
+            { id: "catalyx-solutions", label: "Solutions", route: { page: "products", sub: "catalyx", productPage: "solutions" } },
+            { id: "catalyx-features", label: "Features", route: { page: "products", sub: "catalyx", productPage: "features" } },
+            { id: "catalyx-startups", label: "For Startups", route: { page: "products", sub: "catalyx", productPage: "startups" } },
+            { id: "catalyx-resources", label: "Resources", route: { page: "products", sub: "catalyx", productPage: "resources" } },
+            { id: "catalyx-contact", label: "Get Started", route: { page: "products", sub: "catalyx", productPage: "contact" } },
           ],
         },
         {
@@ -1763,123 +1771,31 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
           label: "ConsultEase",
           icon: "📊",
           color: "#7c3aed",
-          tagline: "Advisory Workflow Management",
+          tagline: "Advisory & Client Suite",
           subsiteLabel: "Independent Product Website",
           pages: [
-            {
-              id: "consultease-home",
-              label: "Home",
-              route: {
-                page: "products",
-                sub: "consultease",
-                productPage: "home",
-              },
-            },
-            {
-              id: "consultease-solutions",
-              label: "Solutions",
-              route: {
-                page: "products",
-                sub: "consultease",
-                productPage: "solutions",
-              },
-            },
-            {
-              id: "consultease-features",
-              label: "Features",
-              route: {
-                page: "products",
-                sub: "consultease",
-                productPage: "features",
-              },
-            },
-            {
-              id: "consultease-firms",
-              label: "For Consulting Firms",
-              route: {
-                page: "products",
-                sub: "consultease",
-                productPage: "firms",
-              },
-            },
-            {
-              id: "consultease-resources",
-              label: "Resources",
-              route: {
-                page: "products",
-                sub: "consultease",
-                productPage: "resources",
-              },
-            },
-            {
-              id: "consultease-contact",
-              label: "Contact Us",
-              route: {
-                page: "products",
-                sub: "consultease",
-                productPage: "contact",
-              },
-            },
+            { id: "consultease-home", label: "Overview", route: { page: "products", sub: "consultease", productPage: "home" } },
+            { id: "consultease-solutions", label: "Solutions", route: { page: "products", sub: "consultease", productPage: "solutions" } },
+            { id: "consultease-features", label: "Features", route: { page: "products", sub: "consultease", productPage: "features" } },
+            { id: "consultease-firms", label: "For Firms", route: { page: "products", sub: "consultease", productPage: "firms" } },
+            { id: "consultease-resources", label: "Resources", route: { page: "products", sub: "consultease", productPage: "resources" } },
+            { id: "consultease-contact", label: "Contact Us", route: { page: "products", sub: "consultease", productPage: "contact" } },
           ],
         },
         {
           id: "sheshifr",
           label: "Sheshi FR",
           icon: "📈",
-          color: "#b45309",
-          tagline: "Financial Reporting Suite",
+          color: "#d97706",
+          tagline: "Autonomous Reporting Suite",
           subsiteLabel: "Independent Product Website",
           pages: [
-            {
-              id: "sheshifr-home",
-              label: "Home",
-              route: { page: "products", sub: "sheshifr", productPage: "home" },
-            },
-            {
-              id: "sheshifr-features",
-              label: "Features",
-              route: {
-                page: "products",
-                sub: "sheshifr",
-                productPage: "features",
-              },
-            },
-            {
-              id: "sheshifr-workflows",
-              label: "Workflows",
-              route: {
-                page: "products",
-                sub: "sheshifr",
-                productPage: "workflows",
-              },
-            },
-            {
-              id: "sheshifr-professionals",
-              label: "For Finance Professionals",
-              route: {
-                page: "products",
-                sub: "sheshifr",
-                productPage: "professionals",
-              },
-            },
-            {
-              id: "sheshifr-resources",
-              label: "Resources",
-              route: {
-                page: "products",
-                sub: "sheshifr",
-                productPage: "resources",
-              },
-            },
-            {
-              id: "sheshifr-contact",
-              label: "Contact Us",
-              route: {
-                page: "products",
-                sub: "sheshifr",
-                productPage: "contact",
-              },
-            },
+            { id: "sheshifr-home", label: "Overview", route: { page: "products", sub: "sheshifr", productPage: "home" } },
+            { id: "sheshifr-features", label: "Features", route: { page: "products", sub: "sheshifr", productPage: "features" } },
+            { id: "sheshifr-workflows", label: "Workflows", route: { page: "products", sub: "sheshifr", productPage: "workflows" } },
+            { id: "sheshifr-professionals", label: "For Controllers", route: { page: "products", sub: "sheshifr", productPage: "professionals" } },
+            { id: "sheshifr-resources", label: "Resources", route: { page: "products", sub: "sheshifr", productPage: "resources" } },
+            { id: "sheshifr-contact", label: "Contact Us", route: { page: "products", sub: "sheshifr", productPage: "contact" } },
           ],
         },
       ],
@@ -1890,28 +1806,12 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       icon: "💼",
       color: "#0891b2",
       tagline: "Tailored Architecture by Segment",
-      route: { page: "solutions" },
+      route: { page: "solutions", sub: "enterprise" },
       leaves: [
-        {
-          id: "sol-enterprise",
-          label: "Enterprise Finance",
-          route: { page: "solutions", sub: "enterprise" },
-        },
-        {
-          id: "sol-startup",
-          label: "Startup Finance",
-          route: { page: "solutions", sub: "startup" },
-        },
-        {
-          id: "sol-consulting",
-          label: "Consulting and Advisory Firms",
-          route: { page: "solutions", sub: "consulting" },
-        },
-        {
-          id: "sol-professionals",
-          label: "Finance Professionals",
-          route: { page: "solutions", sub: "professionals" },
-        },
+        { id: "sol-enterprise", label: "Enterprise Finance", route: { page: "solutions", sub: "enterprise" } },
+        { id: "sol-startup", label: "Startup Finance", route: { page: "solutions", sub: "startup" } },
+        { id: "sol-consulting", label: "Consulting and Advisory Firms", route: { page: "solutions", sub: "consulting" } },
+        { id: "sol-professionals", label: "Finance Professionals", route: { page: "solutions", sub: "professionals" } },
       ],
     },
     {
@@ -1919,35 +1819,14 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       title: "Technology",
       icon: "⚡",
       color: "#4f46e5",
-      tagline: "Financial Operating System & Intelligence Engine",
-      route: { page: "technology" },
+      tagline: "Financial Operating System & Intelligence",
+      route: { page: "technology", sub: "fos" },
       leaves: [
-        {
-          id: "tech-fos",
-          label: "Financial Operating System",
-          route: { page: "technology", sub: "fos" },
-        },
-        {
-          id: "tech-ai",
-          label: "AI and Automation",
-          route: { page: "technology", sub: "ai" },
-        },
-        {
-          id: "tech-integrations",
-          label: "Integrations",
-          route: { page: "technology", sub: "integrations" },
-        },
-        {
-          id: "tech-security",
-          label: "Security and Compliance",
-          route: { page: "technology", sub: "security" },
-        },
-        {
-          id: "tech-trust",
-          label: "Trust Center",
-          route: { page: "technology", sub: "trust" },
-          tagline: "Compliance certifications, security audit & live status",
-        },
+        { id: "tech-fos", label: "Financial Operating System", route: { page: "technology", sub: "fos" } },
+        { id: "tech-ai", label: "AI and Automation", route: { page: "technology", sub: "ai" } },
+        { id: "tech-integrations", label: "Integrations", route: { page: "technology", sub: "integrations" } },
+        { id: "tech-security", label: "Security and Compliance", route: { page: "technology", sub: "security" } },
+        { id: "tech-trust", label: "Trust Center", route: { page: "technology", sub: "trust" }, tagline: "Compliance certifications, security audit & live status" },
       ],
     },
     {
@@ -1956,45 +1835,15 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       icon: "📚",
       color: "#059669",
       tagline: "Knowledge Base, Research & Media",
-      route: { page: "resources" },
+      route: { page: "resources", sub: "blog" },
       leaves: [
-        {
-          id: "res-blog",
-          label: "Blog",
-          route: { page: "resources", sub: "blog" },
-        },
-        {
-          id: "res-insights",
-          label: "Insights",
-          route: { page: "resources", sub: "insights" },
-        },
-        {
-          id: "res-casestudies",
-          label: "Case Studies",
-          route: { page: "resources", sub: "casestudies" },
-        },
-        {
-          id: "res-research",
-          label: "Research",
-          route: { page: "resources", sub: "research" },
-        },
-        {
-          id: "res-events",
-          label: "Events",
-          route: { page: "resources", sub: "events" },
-          tagline: "Global conferences, summits, and executive roundtables",
-        },
-        {
-          id: "res-webinars",
-          label: "Webinars",
-          route: { page: "resources", sub: "webinars" },
-          tagline: "Virtual workshops, masterclasses & on-demand demos",
-        },
-        {
-          id: "res-updates",
-          label: "Product Updates",
-          route: { page: "resources", sub: "updates" },
-        },
+        { id: "res-blog", label: "Blog", route: { page: "resources", sub: "blog" } },
+        { id: "res-insights", label: "Insights", route: { page: "resources", sub: "insights" } },
+        { id: "res-casestudies", label: "Case Studies", route: { page: "resources", sub: "casestudies" } },
+        { id: "res-research", label: "Research (Numbers Story)", route: { page: "resources", sub: "research" } },
+        { id: "res-events", label: "Events", route: { page: "resources", sub: "events" }, tagline: "Global conferences, summits, and executive roundtables" },
+        { id: "res-webinars", label: "Webinars", route: { page: "resources", sub: "webinars" }, tagline: "Virtual workshops, masterclasses & on-demand demos" },
+        { id: "res-updates", label: "Product Updates", route: { page: "resources", sub: "updates" } },
       ],
     },
     {
@@ -2003,23 +1852,11 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       icon: "🤝",
       color: "#d97706",
       tagline: "Technology & Strategic Ecosystem",
-      route: { page: "partners" },
+      route: { page: "partners", sub: "tech" },
       leaves: [
-        {
-          id: "part-tech",
-          label: "Technology Partners",
-          route: { page: "partners", sub: "tech" },
-        },
-        {
-          id: "part-strategic",
-          label: "Strategic Partners",
-          route: { page: "partners", sub: "strategic" },
-        },
-        {
-          id: "part-join",
-          label: "Become a Partner",
-          route: { page: "partners", sub: "join" },
-        },
+        { id: "part-tech", label: "Technology Partners", route: { page: "partners", sub: "tech" } },
+        { id: "part-strategic", label: "Strategic Partners", route: { page: "partners", sub: "strategic" } },
+        { id: "part-join", label: "Become a Partner", route: { page: "partners", sub: "join" } },
       ],
     },
     {
@@ -2030,26 +1867,10 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       tagline: "Dedicated Inquiries & Inbound Channels",
       route: { page: "contact" },
       leaves: [
-        {
-          id: "con-sales",
-          label: "Sales Enquiries",
-          route: { page: "contact" },
-        },
-        {
-          id: "con-partnerships",
-          label: "Partnership Enquiries",
-          route: { page: "contact" },
-        },
-        {
-          id: "con-media",
-          label: "Media Enquiries",
-          route: { page: "contact" },
-        },
-        {
-          id: "con-general",
-          label: "General Enquiries",
-          route: { page: "contact" },
-        },
+        { id: "con-sales", label: "Sales Enquiries", route: { page: "contact" } },
+        { id: "con-partnerships", label: "Partnership Enquiries", route: { page: "contact" } },
+        { id: "con-media", label: "Media Enquiries", route: { page: "contact" } },
+        { id: "con-general", label: "General Enquiries", route: { page: "contact" } },
       ],
     },
     {
@@ -2058,181 +1879,144 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
       icon: "⚖️",
       color: "#475569",
       tagline: "Compliance, Privacy & Terms of Governance",
-      route: { page: "legal" },
+      route: { page: "legal", sub: "privacy" },
       leaves: [
-        {
-          id: "leg-privacy",
-          label: "Privacy Policy",
-          route: { page: "legal", sub: "privacy" },
-        },
-        {
-          id: "leg-terms",
-          label: "Terms of Use",
-          route: { page: "legal", sub: "terms" },
-        },
-        {
-          id: "leg-cookies",
-          label: "Cookie Policy",
-          route: { page: "legal", sub: "cookies" },
-        },
-        {
-          id: "leg-security",
-          label: "Security Disclosure",
-          route: { page: "legal", sub: "security" },
-        },
-        {
-          id: "leg-trust",
-          label: "Trust Center",
-          route: { page: "technology", sub: "trust" },
-        },
-        {
-          id: "leg-sitemap",
-          label: "Sitemap",
-          route: { page: "legal", sub: "sitemap" },
-        },
+        { id: "leg-privacy", label: "Privacy Policy", route: { page: "legal", sub: "privacy" } },
+        { id: "leg-terms", label: "Terms of Use", route: { page: "legal", sub: "terms" } },
+        { id: "leg-cookies", label: "Cookie Policy", route: { page: "legal", sub: "cookies" } },
+        { id: "leg-security", label: "Security Disclosure", route: { page: "legal", sub: "security" } },
+        { id: "leg-trust", label: "Trust Center", route: { page: "technology", sub: "trust" } },
+        { id: "leg-sitemap", label: "Sitemap", route: { page: "legal", sub: "sitemap" } },
       ],
     },
-  ]
+  ];
 
-  const term = searchTerm.toLowerCase().trim()
+  const term = searchTerm.toLowerCase().trim();
 
-  const asciiTree = `SHESHI
+  const asciiTree = `SHESHI FINANCIAL OPERATING SYSTEM
 │
-├── Home
+├── Home (/)
 │
-├── Company
-│   ├── About Sheshi
-│   ├── Our Story
-│   ├── Leadership
-│   ├── Our Team
-│   ├── People - and culture
-│   ├── Careers
-│   └── Contact Us
+├── Company (/company)
+│   ├── About Sheshi (/company/about)
+│   ├── Our Story (/company/story)
+│   ├── Leadership (/company/leadership)
+│   ├── Our Team (/company/team)
+│   ├── People - and culture (/company/culture)
+│   ├── Careers (/company/careers)
+│   └── Contact Us (/contact)
 │
-├── Products
+├── Products (/products)
 │   │
-│   ├── Quanta
+│   ├── Quanta (/products/quanta)
 │   │   └── Independent Product Website
-│   │       ├── Home
+│   │       ├── Overview
 │   │       ├── Platform
 │   │       ├── Solutions
 │   │       ├── Capabilities
 │   │       ├── Enterprise
 │   │       ├── Resources
-│   │       └── Contact Us
+│   │       └── Contact Sales
 │   │
-│   ├── Catalyx
+│   ├── Catalyx (/products/catalyx)
 │   │   └── Independent Product Website
-│   │       ├── Home
+│   │       ├── Overview
 │   │       ├── Solutions
 │   │       ├── Features
 │   │       ├── For Startups
 │   │       ├── Resources
-│   │       └── Get in Touch
+│   │       └── Get Started
 │   │
-│   ├── ConsultEase
+│   ├── ConsultEase (/products/consultease)
 │   │   └── Independent Product Website
-│   │       ├── Home
+│   │       ├── Overview
 │   │       ├── Solutions
 │   │       ├── Features
-│   │       ├── For Consulting Firms
+│   │       ├── For Advisory Firms
 │   │       ├── Resources
 │   │       └── Contact Us
 │   │
-│   └── Sheshi FR
+│   └── Sheshi FR (/products/sheshifr)
 │       └── Independent Product Website
-│           ├── Home
+│           ├── Overview
 │           ├── Features
 │           ├── Workflows
-│           ├── For Finance Professionals
+│           ├── For Controllers
 │           ├── Resources
 │           └── Contact Us
 │
-├── Solutions
+├── Solutions (/solutions)
 │   ├── Enterprise Finance
 │   ├── Startup Finance
 │   ├── Consulting and Advisory Firms
 │   └── Finance Professionals
 │
-├── Technology
+├── Technology (/technology)
 │   ├── Financial Operating System
 │   ├── AI and Automation
 │   ├── Integrations
 │   ├── Security and Compliance
 │   └── Trust Center
 │
-├── Resources
+├── Resources (/resources)
 │   ├── Blog
 │   ├── Insights
 │   ├── Case Studies
-│   ├── Research
+│   ├── Research (The Numbers Story)
 │   ├── Events
 │   ├── Webinars
 │   └── Product Updates
 │
-├── Partners
+├── Partners (/partners)
 │   ├── Technology Partners
 │   ├── Strategic Partners
 │   └── Become a Partner
 │
-├── Contact
+├── Contact (/contact)
 │   ├── Sales Enquiries
 │   ├── Partnership Enquiries
 │   ├── Media Enquiries
 │   └── General Enquiries
 │
-└── Legal
+└── Legal (/legal)
     ├── Privacy Policy
     ├── Terms of Use
     ├── Cookie Policy
     ├── Security Disclosure
     ├── Trust Center
-    └── Sitemap`
+    └── Sitemap`;
 
   const copyAscii = () => {
-    navigator.clipboard.writeText(asciiTree)
-    setCopiedAscii(true)
-    setTimeout(() => setCopiedAscii(false), 2000)
-  }
+    navigator.clipboard.writeText(asciiTree);
+    setCopiedAscii(true);
+    setTimeout(() => setCopiedAscii(false), 2000);
+  };
 
   return (
-    <section className="bg-[#f4f6fa] border-t border-b border-[#dde1e7] py-20 px-4 md:px-8 relative overflow-hidden">
-      {/* Flowchart Blueprint Dot-Grid Canvas Background */}
-      <div
-        className="absolute inset-0 opacity-40 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#cbd5e1 1.2px, transparent 1.2px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
-
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section id="sitemap-flowchart" className="bg-[#f8fafc] border-t border-b border-slate-200 py-20 px-6 md:px-12 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto">
         {/* Header & Controls */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#3b5bdb] bg-[#3b5bdb]/10 border border-[#3b5bdb]/20 px-3 py-1 rounded-full mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#3b5bdb] animate-pulse" />
-              Interactive Flowchart Graph
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1 rounded-full mb-3">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+              Platform Architecture Graph
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1a2744] tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
               Sheshi Platform Tree Flowchart
             </h2>
-            <p className="text-sm md:text-base text-[#6b7280] max-w-2xl mt-2">
-              System routing tree rendered as an interconnected graph with
-              branch spines, intermediate subsite gateways, and interactive page
-              nodes.
+            <p className="text-sm md:text-base text-slate-600 max-w-2xl mt-2">
+              System routing tree rendered as an interconnected graph with branch spines, intermediate subsite gateways, and interactive page nodes.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {/* View Mode Toggle */}
-            <div className="bg-white border border-[#dde1e7] p-1 rounded-lg flex items-center shadow-sm">
+            <div className="bg-white border border-slate-200 p-1 rounded-lg flex items-center shadow-xs">
               <button
                 onClick={() => setViewMode("tree")}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "tree"
-                    ? "bg-[#1a2744] text-white shadow-sm"
-                    : "text-[#6b7280] hover:text-[#1a2744]"
+                  viewMode === "tree" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 🌳 Tree Flowchart
@@ -2240,9 +2024,7 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
               <button
                 onClick={() => setViewMode("horizontal")}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "horizontal"
-                    ? "bg-[#1a2744] text-white shadow-sm"
-                    : "text-[#6b7280] hover:text-[#1a2744]"
+                  viewMode === "horizontal" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 🔀 Horizontal Graph
@@ -2250,9 +2032,7 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
               <button
                 onClick={() => setViewMode("ascii")}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "ascii"
-                    ? "bg-[#1a2744] text-white shadow-sm"
-                    : "text-[#6b7280] hover:text-[#1a2744]"
+                  viewMode === "ascii" ? "bg-slate-900 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 📋 Raw Diagram
@@ -2261,17 +2041,17 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
 
             {/* Expand / Collapse All */}
             {viewMode !== "ascii" && (
-              <div className="flex items-center gap-1.5 bg-white border border-[#dde1e7] p-1 rounded-lg shadow-sm">
+              <div className="flex items-center gap-1.5 bg-white border border-slate-200 p-1 rounded-lg shadow-xs">
                 <button
                   onClick={expandAll}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 rounded transition-colors cursor-pointer"
                 >
                   Expand All
                 </button>
-                <span className="text-[#dde1e7]">|</span>
+                <span className="text-slate-200">|</span>
                 <button
                   onClick={collapseAll}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-[#374151] hover:text-[#3b5bdb] hover:bg-[#f8f9fb] rounded transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 rounded transition-colors cursor-pointer"
                 >
                   Collapse All
                 </button>
@@ -2282,15 +2062,15 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
             <div className="relative w-full sm:w-60">
               <input
                 type="text"
-                placeholder="Search node..."
+                placeholder="Search platform node..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white border border-[#dde1e7] rounded-lg pl-3 pr-8 py-2 text-xs text-[#1a2744] placeholder-[#9ca3af] focus:outline-none focus:border-[#3b5bdb] shadow-sm"
+                className="w-full bg-white border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 shadow-xs"
               />
               {searchTerm && (
                 <button
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-2.5 top-2 text-xs text-[#9ca3af] hover:text-[#1a2744] cursor-pointer"
+                  className="absolute right-2.5 top-2 text-xs text-slate-400 hover:text-slate-900 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -2300,234 +2080,178 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
         </div>
 
         {/* ─── FLOWCHART CANVAS ─── */}
-        <div className="bg-white/90 backdrop-blur-sm border border-[#dde1e7] rounded-2xl p-6 md:p-10 shadow-sm overflow-x-auto">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm overflow-x-auto">
           {viewMode === "ascii" ? (
-            /* RAW MONOSPACE DIAGRAM VIEW */
             <div className="relative">
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-[#dde1e7]">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
-                  <span className="text-xs font-bold text-[#1a2744] uppercase tracking-wider">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                     Full Platform Structure (Hierarchy Diagram)
                   </span>
                 </div>
                 <button
                   onClick={copyAscii}
-                  className="px-3 py-1.5 bg-[#1a2744] text-white text-xs font-semibold rounded-md hover:bg-[#3b5bdb] transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-blue-600 transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   {copiedAscii ? "✓ Copied!" : "📋 Copy ASCII Diagram"}
                 </button>
               </div>
-              <pre className="font-mono text-xs md:text-sm text-[#1e293b] bg-[#f8fafc] p-6 rounded-xl border border-[#dde1e7] leading-relaxed overflow-x-auto">
+              <pre className="font-mono text-xs md:text-sm text-slate-800 bg-[#f8fafc] p-6 rounded-xl border border-slate-200 leading-relaxed overflow-x-auto">
                 {asciiTree}
               </pre>
             </div>
           ) : viewMode === "tree" ? (
-            /* ─── TREE FLOWCHART GRAPH VIEW ─── */
             <div className="flex flex-col items-start min-w-[760px] pl-2">
               {/* ROOT NODE: SHESHI */}
               <div className="flex items-center gap-3">
                 <div
                   onClick={() => navigate({ page: "home" })}
-                  className={`group relative bg-[#1a2744] text-white px-6 py-3.5 rounded-xl shadow-md border-2 transition-all cursor-pointer flex items-center gap-3.5 hover:scale-105 ${
-                    term && "sheshi".includes(term)
-                      ? "border-[#3b5bdb] ring-4 ring-[#3b5bdb]/30"
-                      : "border-[#3b5bdb]/40 hover:border-[#3b5bdb]"
-                  }`}
+                  className="group relative bg-[#090e17] text-white px-6 py-3.5 rounded-xl shadow-md border-2 border-blue-500/40 hover:border-blue-500 transition-all cursor-pointer flex items-center gap-3.5 hover:scale-102"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center font-bold text-base text-white border border-white/20">
+                  <div className="w-9 h-9 rounded-lg bg-blue-600/20 flex items-center justify-center font-bold text-base text-blue-400 border border-blue-500/30">
                     🌐
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold tracking-widest text-[#60a5fa]">
-                        SHESHI
-                      </span>
-                      <span className="text-[10px] bg-white/10 text-white/80 px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-bold tracking-widest text-blue-400">SHESHI</span>
+                      <span className="text-[10px] bg-blue-950 text-blue-300 border border-blue-800 px-2 py-0.5 rounded-full">
                         Root System Gateway
                       </span>
                     </div>
-                    <div className="text-xs text-white/60">
-                      Global Financial Operating System &amp; Intelligence Hub
-                    </div>
+                    <div className="text-xs text-slate-300">Global Financial Operating System &amp; Intelligence Hub</div>
                   </div>
-                  <div className="ml-3 text-[11px] bg-white/10 group-hover:bg-[#3b5bdb] text-white px-2.5 py-1 rounded font-medium transition-colors">
+                  <div className="ml-3 text-[11px] bg-blue-600 text-white px-2.5 py-1 rounded font-medium">
                     / (Home) →
                   </div>
                 </div>
               </div>
 
               {/* VERTICAL SPINAL TRUNK WITH BRANCH ARMS */}
-              <div className="relative pl-6 sm:pl-8 ml-6 sm:ml-8 border-l-2 border-[#94a3b8] mt-2 space-y-6">
-                {pillars.map((pil, pilIdx) => {
-                  const isLastPillar = pilIdx === pillars.length - 1
-                  const isCollapsed = !!collapsedBranches[pil.id]
-                  const hasLeaves = !!(pil.leaves && pil.leaves.length > 0)
-                  const hasProducts = !!(
-                    pil.products && pil.products.length > 0
-                  )
+              <div className="relative pl-6 sm:pl-8 ml-6 sm:ml-8 border-l-2 border-slate-300 mt-2 space-y-6">
+                {pillars.map((pil) => {
+                  const isCollapsed = !!collapsedBranches[pil.id];
+                  const hasLeaves = !!(pil.leaves && pil.leaves.length > 0);
+                  const hasProducts = !!(pil.products && pil.products.length > 0);
                   const isBranchMatch =
                     !term ||
                     pil.title.toLowerCase().includes(term) ||
-                    (pil.leaves &&
-                      pil.leaves.some((l) =>
-                        l.label.toLowerCase().includes(term),
-                      )) ||
+                    (pil.leaves && pil.leaves.some((l) => l.label.toLowerCase().includes(term))) ||
                     (pil.products &&
                       pil.products.some(
                         (p) =>
                           p.label.toLowerCase().includes(term) ||
-                          p.pages.some((pg) =>
-                            pg.label.toLowerCase().includes(term),
-                          ),
-                      ))
+                          p.pages.some((pg) => pg.label.toLowerCase().includes(term))
+                      ));
 
                   return (
                     <div key={pil.id} className="relative pt-2">
-                      {/* Horizontal Connector Arm from Spine to Pillar */}
-                      <div className="absolute -left-6 sm:-left-8 top-6 w-6 sm:w-8 h-0.5 bg-[#94a3b8] flex items-center">
-                        <div className="w-2 h-2 -ml-1 rounded-full bg-[#1a2744] border border-white" />
+                      {/* Connector Arm */}
+                      <div className="absolute -left-6 sm:-left-8 top-6 w-6 sm:w-8 h-0.5 bg-slate-300 flex items-center">
+                        <div className="w-2 h-2 -ml-1 rounded-full bg-slate-900 border border-white" />
                       </div>
 
-                      {/* PILLAR FLOWCHART NODE */}
+                      {/* Pillar Node */}
                       <div className="flex items-center gap-3">
                         <div
                           className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all ${
                             isBranchMatch && term
-                              ? "bg-white border-[#3b5bdb] ring-2 ring-[#3b5bdb]/30 shadow-md"
-                              : "bg-white border-[#dde1e7] hover:border-[#3b5bdb] shadow-sm"
+                              ? "bg-white border-blue-600 ring-2 ring-blue-500/20 shadow-md"
+                              : "bg-white border-slate-200 hover:border-blue-500 shadow-xs"
                           }`}
                         >
-                          {/* Expand/Collapse Toggle */}
-                          {hasLeaves || hasProducts ? (
+                          {(hasLeaves || hasProducts) ? (
                             <button
                               onClick={() => toggleBranch(pil.id)}
-                              className="w-5 h-5 rounded bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#1a2744] flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
-                              title={
-                                isCollapsed
-                                  ? "Expand branch"
-                                  : "Collapse branch"
-                              }
+                              className="w-5 h-5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
                             >
                               {isCollapsed ? "+" : "−"}
                             </button>
                           ) : (
-                            <span className="w-2 h-2 rounded-full bg-[#94a3b8]" />
+                            <span className="w-2 h-2 rounded-full bg-slate-400" />
                           )}
 
                           <span className="text-base">{pil.icon}</span>
 
                           <button
                             onClick={() => navigate(pil.route)}
-                            className="font-bold text-sm text-[#1a2744] hover:text-[#3b5bdb] transition-colors cursor-pointer text-left"
+                            className="font-bold text-sm text-slate-900 hover:text-blue-600 transition-colors cursor-pointer text-left"
                           >
                             {pil.title}
                           </button>
 
-                          {/* Badge */}
                           {hasLeaves && (
-                            <span className="text-[10px] font-semibold text-[#64748b] bg-[#f1f5f9] px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full font-mono">
                               {pil.leaves!.length} Pages
                             </span>
                           )}
                           {hasProducts && (
-                            <span className="text-[10px] font-semibold text-[#0d9488] bg-[#0d9488]/10 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-semibold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full font-mono">
                               4 Subsites • 25 Pages
                             </span>
                           )}
 
                           <button
                             onClick={() => navigate(pil.route)}
-                            className="text-[11px] font-medium text-[#3b5bdb] hover:underline cursor-pointer ml-1"
+                            className="text-[11px] font-medium text-blue-600 hover:underline cursor-pointer ml-1"
                           >
-                            Explore →
+                            Jump →
                           </button>
                         </div>
                       </div>
 
-                      {/* ─── EXPANDED LEAVES OR PRODUCTS FLOW ─── */}
+                      {/* Leaves */}
                       {!isCollapsed && hasLeaves && (
-                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-[#cbd5e1] mt-3 space-y-2.5">
-                          {pil.leaves!.map((leaf, leafIdx) => {
-                            const isLastLeaf =
-                              leafIdx === pil.leaves!.length - 1
+                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-slate-200 mt-3 space-y-2.5">
+                          {pil.leaves!.map((leaf) => {
                             const isMatch =
                               !term ||
                               leaf.label.toLowerCase().includes(term) ||
-                              pil.title.toLowerCase().includes(term)
+                              pil.title.toLowerCase().includes(term);
 
                             return (
-                              <div
-                                key={leaf.id}
-                                className="relative flex items-center gap-2"
-                              >
-                                {/* Connector arm */}
-                                <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-[#cbd5e1] flex items-center">
-                                  <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-[#94a3b8]" />
+                              <div key={leaf.id} className="relative flex items-center gap-2">
+                                <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-slate-200 flex items-center">
+                                  <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-slate-400" />
                                 </div>
 
-                                {/* Leaf Page Node */}
                                 <button
                                   onClick={() => navigate(leaf.route)}
                                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer flex items-center gap-2 ${
                                     isMatch && term
-                                      ? "bg-[#3b5bdb] text-white border-[#3b5bdb] shadow-sm font-semibold"
-                                      : "bg-[#f8fafc] hover:bg-white text-[#334155] border-[#dde1e7] hover:border-[#3b5bdb] hover:shadow-sm"
+                                      ? "bg-blue-600 text-white border-blue-600 shadow-xs font-semibold"
+                                      : "bg-[#f8fafc] hover:bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:shadow-xs"
                                   }`}
                                 >
-                                  <span
-                                    className="w-1.5 h-1.5 rounded-full"
-                                    style={{ backgroundColor: pil.color }}
-                                  />
+                                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: pil.color }} />
                                   <span>{leaf.label}</span>
-                                  <span className="text-[10px] opacity-40">
-                                    →
-                                  </span>
+                                  <span className="text-[10px] opacity-40">→</span>
                                 </button>
                               </div>
-                            )
+                            );
                           })}
                         </div>
                       )}
 
-                      {/* ─── SPECIAL PRODUCTS SUBSITES ECOSYSTEM FLOW ─── */}
+                      {/* Products Ecosystem */}
                       {!isCollapsed && hasProducts && (
-                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-[#cbd5e1] mt-4 space-y-6">
+                        <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-slate-200 mt-4 space-y-6">
                           {pil.products!.map((prod) => {
-                            const isProdCollapsed = !!collapsedBranches[prod.id]
-                            const isMatchProd =
-                              !term ||
-                              prod.label.toLowerCase().includes(term) ||
-                              prod.pages.some((p) =>
-                                p.label.toLowerCase().includes(term),
-                              )
-
+                            const isProdCollapsed = !!collapsedBranches[prod.id];
                             return (
                               <div key={prod.id} className="relative">
-                                {/* Connector Arm to Product Node */}
-                                <div className="absolute -left-6 sm:-left-8 top-5 w-6 sm:w-8 h-0.5 bg-[#cbd5e1] flex items-center">
-                                  <div className="w-2 h-2 -ml-1 rounded-full bg-[#0d9488]" />
+                                <div className="absolute -left-6 sm:-left-8 top-5 w-6 sm:w-8 h-0.5 bg-slate-200 flex items-center">
+                                  <div className="w-2 h-2 -ml-1 rounded-full bg-teal-600" />
                                 </div>
 
-                                {/* Flow Row: Product Node ──→ Independent Product Website */}
                                 <div className="flex flex-wrap items-center gap-3">
-                                  {/* Product Node */}
                                   <div
-                                    className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-sm transition-all ${
-                                      isMatchProd && term
-                                        ? "ring-2 ring-[#3b5bdb]"
-                                        : ""
-                                    }`}
+                                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-white font-bold text-xs shadow-xs"
                                     style={{ backgroundColor: prod.color }}
                                   >
                                     <button
                                       onClick={() => toggleBranch(prod.id)}
                                       className="w-4 h-4 rounded bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-[10px] font-bold cursor-pointer"
-                                      title={
-                                        isProdCollapsed
-                                          ? "Expand subsite"
-                                          : "Collapse subsite"
-                                      }
                                     >
                                       {isProdCollapsed ? "+" : "−"}
                                     </button>
@@ -2535,13 +2259,11 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                                     <span>{prod.label}</span>
                                   </div>
 
-                                  {/* Flow Arrow */}
-                                  <div className="hidden sm:flex items-center gap-1 text-[#94a3b8]">
-                                    <div className="w-4 h-0.5 bg-[#94a3b8]" />
+                                  <div className="hidden sm:flex items-center gap-1 text-slate-400">
+                                    <div className="w-4 h-0.5 bg-slate-300" />
                                     <span className="text-xs font-bold">➔</span>
                                   </div>
 
-                                  {/* Independent Product Website Gateway Node */}
                                   <button
                                     onClick={() =>
                                       navigate({
@@ -2550,119 +2272,89 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                                         productPage: "home",
                                       })
                                     }
-                                    className="bg-white border-2 border-dashed border-[#0d9488]/40 hover:border-[#0d9488] text-[#1a2744] hover:text-[#0d9488] px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+                                    className="bg-white border-2 border-dashed border-teal-500/40 hover:border-teal-600 text-slate-800 hover:text-teal-700 px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
                                   >
-                                    <span className="w-2 h-2 rounded-full bg-[#0d9488] animate-pulse" />
+                                    <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse" />
                                     <span>Independent Product Website</span>
-                                    <span className="text-[10px] bg-[#0d9488]/10 text-[#0d9488] px-1.5 py-0.5 rounded font-mono">
+                                    <span className="text-[10px] bg-teal-50 text-teal-700 px-1.5 py-0.5 rounded font-mono">
                                       {prod.pages.length} Pages ↗
                                     </span>
                                   </button>
                                 </div>
 
-                                {/* Subsite Sub-pages Tree */}
                                 {!isProdCollapsed && (
-                                  <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-[#94a3b8]/50 mt-3 space-y-2">
-                                    {prod.pages.map((pg) => {
-                                      const isPageMatch =
-                                        !term ||
-                                        prod.label
-                                          .toLowerCase()
-                                          .includes(term) ||
-                                        pg.label.toLowerCase().includes(term)
-
-                                      return (
-                                        <div
-                                          key={pg.id}
-                                          className="relative flex items-center gap-2"
-                                        >
-                                          {/* Sub-branch arm */}
-                                          <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-[#94a3b8]/50 flex items-center">
-                                            <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-[#0d9488]" />
-                                          </div>
-
-                                          <button
-                                            onClick={() => navigate(pg.route)}
-                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer flex items-center gap-2 ${
-                                              isPageMatch && term
-                                                ? "bg-[#0d9488] text-white border-[#0d9488] shadow-sm font-semibold"
-                                                : "bg-white hover:bg-[#f0fdf4] text-[#334155] border-[#dde1e7] hover:border-[#0d9488] hover:shadow-xs"
-                                            }`}
-                                          >
-                                            <span
-                                              className="w-1.5 h-1.5 rounded-full"
-                                              style={{
-                                                backgroundColor: prod.color,
-                                              }}
-                                            />
-                                            <span>{pg.label}</span>
-                                            <span className="text-[10px] opacity-40">
-                                              →
-                                            </span>
-                                          </button>
+                                  <div className="relative pl-6 sm:pl-8 ml-4 sm:ml-5 border-l-2 border-slate-200 mt-3 space-y-2">
+                                    {prod.pages.map((pg) => (
+                                      <div key={pg.id} className="relative flex items-center gap-2">
+                                        <div className="absolute -left-6 sm:-left-8 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-0.5 bg-slate-200 flex items-center">
+                                          <div className="w-1.5 h-1.5 -ml-0.5 rounded-full bg-teal-600" />
                                         </div>
-                                      )
-                                    })}
+
+                                        <button
+                                          onClick={() => navigate(pg.route)}
+                                          className="px-3 py-1.5 rounded-lg text-xs font-medium border bg-white hover:bg-teal-50/50 text-slate-700 border-slate-200 hover:border-teal-600 transition-colors cursor-pointer flex items-center gap-2"
+                                        >
+                                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: prod.color }} />
+                                          <span>{pg.label}</span>
+                                          <span className="text-[10px] opacity-40">→</span>
+                                        </button>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
-                            )
+                            );
                           })}
                         </div>
                       )}
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
           ) : (
-            /* ─── HORIZONTAL PIPELINE GRAPH VIEW ─── */
+            /* Horizontal Graph */
             <div className="min-w-[960px] py-4">
               <div className="flex items-start gap-8">
-                {/* Column 0: Root Node */}
                 <div className="w-52 shrink-0 pt-20">
                   <div
                     onClick={() => navigate({ page: "home" })}
-                    className="bg-[#1a2744] text-white p-5 rounded-xl border-2 border-[#3b5bdb] shadow-lg cursor-pointer hover:scale-105 transition-transform"
+                    className="bg-[#090e17] text-white p-5 rounded-xl border-2 border-blue-500 shadow-md cursor-pointer hover:scale-102 transition-transform"
                   >
-                    <div className="text-[10px] font-bold tracking-widest text-[#60a5fa] uppercase mb-1">
+                    <div className="text-[10px] font-bold tracking-widest text-blue-400 uppercase mb-1">
                       System Root
                     </div>
                     <div className="font-bold text-base flex items-center gap-2">
                       <span>🌐</span> SHESHI
                     </div>
-                    <div className="text-xs text-white/60 mt-1">
-                      / (Home Gateway)
-                    </div>
-                    <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-white/80">
-                      <span>72 Nodes</span>
-                      <span className="text-[#60a5fa]">➔</span>
+                    <div className="text-xs text-slate-400 mt-1">/ (Home Gateway)</div>
+                    <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-300">
+                      <span>72 Platform Nodes</span>
+                      <span className="text-blue-400">➔</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Connector Arrow */}
                 <div className="shrink-0 pt-32 flex flex-col items-center">
-                  <div className="w-8 h-0.5 bg-[#94a3b8]" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#3b5bdb]" />
+                  <div className="w-8 h-0.5 bg-slate-300" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
                 </div>
 
-                {/* Column 1: Core Branches & Sub-Pipes */}
                 <div className="flex-1 space-y-4">
                   {pillars.map((pil) => (
                     <div
                       key={pil.id}
-                      className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-[#dde1e7] shadow-xs hover:border-[#3b5bdb] transition-colors"
+                      className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs hover:border-blue-500 transition-colors"
                     >
                       <button
                         onClick={() => navigate(pil.route)}
-                        className="w-36 shrink-0 text-left px-3 py-2 rounded-lg text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-xs"
+                        className="w-36 shrink-0 text-left px-3 py-2 rounded-lg text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity flex items-center gap-1.5"
                         style={{ backgroundColor: pil.color }}
                       >
                         <span>{pil.icon}</span> {pil.title} ↗
                       </button>
 
-                      <div className="w-4 h-0.5 bg-[#cbd5e1] shrink-0 mt-3.5" />
+                      <div className="w-4 h-0.5 bg-slate-200 shrink-0 mt-3.5" />
 
                       <div className="flex-1">
                         {pil.leaves && (
@@ -2671,7 +2363,7 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                               <button
                                 key={leaf.id}
                                 onClick={() => navigate(leaf.route)}
-                                className="px-2.5 py-1 text-xs bg-[#f8fafc] hover:bg-[#3b5bdb] hover:text-white text-[#334155] rounded-md border border-[#dde1e7] hover:border-[#3b5bdb] transition-colors cursor-pointer"
+                                className="px-2.5 py-1 text-xs bg-[#f8fafc] hover:bg-blue-600 hover:text-white text-slate-700 rounded-md border border-slate-200 hover:border-blue-600 transition-colors cursor-pointer"
                               >
                                 {leaf.label}
                               </button>
@@ -2682,25 +2374,16 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
                         {pil.products && (
                           <div className="space-y-2 w-full">
                             {pil.products.map((prod) => (
-                              <div
-                                key={prod.id}
-                                className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-lg border border-[#dde1e7]"
-                              >
-                                <span
-                                  className="text-[11px] font-bold text-white px-2 py-0.5 rounded"
-                                  style={{ backgroundColor: prod.color }}
-                                >
+                              <div key={prod.id} className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-lg border border-slate-200">
+                                <span className="text-[11px] font-bold text-white px-2 py-0.5 rounded" style={{ backgroundColor: prod.color }}>
                                   {prod.label}
-                                </span>
-                                <span className="text-[10px] text-[#64748b] font-mono">
-                                  Independent Website:
                                 </span>
                                 <div className="flex flex-wrap gap-1 flex-1">
                                   {prod.pages.map((pg) => (
                                     <button
                                       key={pg.id}
                                       onClick={() => navigate(pg.route)}
-                                      className="px-2 py-0.5 text-[11px] bg-white hover:bg-[#0d9488] hover:text-white text-[#334155] rounded border border-[#dde1e7] hover:border-[#0d9488] transition-colors cursor-pointer"
+                                      className="px-2 py-0.5 text-[11px] bg-white hover:bg-teal-600 hover:text-white text-slate-700 rounded border border-slate-200 hover:border-teal-600 transition-colors cursor-pointer"
                                     >
                                       {pg.label}
                                     </button>
@@ -2718,844 +2401,324 @@ function SiteMapSection({ navigate }: { navigate: (r: Route) => void }) {
             </div>
           )}
 
-          {/* Flowchart Diagram Legend */}
-          <div className="mt-10 pt-6 border-t border-[#dde1e7] flex flex-wrap items-center justify-between gap-4 text-xs text-[#6b7280]">
+          {/* Legend */}
+          <div className="mt-10 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
             <div className="flex items-center gap-6 flex-wrap">
-              <span className="font-semibold text-[#1a2744]">
-                Graph Legend:
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#1a2744]" />
-                <span>Root Platform Gateway (Level 0)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
-                <span>Pillar Branch Nodes (Level 1)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#0d9488]" />
-                <span>Independent Product Subsite (Level 2)</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#64748b]" />
-                <span>Leaf Page Nodes (Level 2/3)</span>
-              </div>
+              <span className="font-semibold text-slate-900">Architecture Tiers:</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-900" /> Root Platform (L0)</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Core Pillar (L1)</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-teal-600" /> Subsite Ecosystem (L2)</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-400" /> Governed Node (L3)</span>
             </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] bg-[#e8ecf0] text-[#475569] px-2.5 py-1 rounded-md font-medium">
-                Click any graph node to jump to wireframe
-              </span>
-            </div>
+            <span className="text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-medium">
+              Click any node in graph to view live route
+            </span>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
+
+// ─── Homepage ─────────────────────────────────────────────────────────────────
 
 function HomePage({ navigate }: { navigate: (r: Route) => void }) {
   return (
     <div>
-      <HeroCentered eyebrow="Financial Intelligence Platform" />
+      <HeroCentered navigate={navigate} />
       <LogoStrip />
       <MetricsRow count={5} />
 
-      {/* Products */}
-      <div className="bg-white px-8 py-20">
+      {/* 4 Core Products Showcase */}
+      <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <SectionLabel text="Our Products" />
-            <div className="space-y-2 max-w-lg mx-auto">
-              <Sk w="50%" h="8" className="mx-auto" />
-              <Sk w="65%" h="4" className="mx-auto" />
-            </div>
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <SectionLabel text="Product Suite" />
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+              Built for Every Point in the Financial Chain
+            </h2>
+            <p className="text-sm md:text-base text-slate-600 mt-3">
+              Each product addresses a distinct operational context — different buyers, different problems, one unified Financial Operating System underneath.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {PRODUCTS.map((p) => (
               <button
                 key={p.id}
-                onClick={() =>
-                  navigate({ page: "products", sub: p.id, productPage: "home" })
-                }
-                className="text-left bg-white border border-[#dde1e7] rounded-xl p-7 hover:border-[#3b5bdb] transition-all hover:shadow-md group cursor-pointer"
+                onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
+                className="text-left bg-white border border-slate-200 rounded-xl p-7 hover:border-blue-500 hover:shadow-lg transition-all group cursor-pointer flex flex-col justify-between"
               >
-                <div
-                  className="w-10 h-10 rounded-lg mb-5"
-                  style={{ backgroundColor: ACCENT_COLORS[p.id] + "20" }}
-                >
+                <div>
                   <div
-                    className="w-full h-full rounded-lg"
-                    style={{ backgroundColor: ACCENT_COLORS[p.id] + "40" }}
-                  />
+                    className="w-11 h-11 rounded-lg mb-5 flex items-center justify-center text-xl text-white font-bold"
+                    style={{ backgroundColor: p.accent }}
+                  >
+                    {p.label[0]}
+                  </div>
+                  <h3 className="font-bold text-slate-900 text-lg mb-1 group-hover:text-blue-600 transition-colors">
+                    {p.label}
+                  </h3>
+                  <p className="text-xs font-semibold text-blue-600 mb-3">{p.tagline}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed mb-6">{p.description}</p>
                 </div>
-                <h3 className="font-bold text-[#1a2744] mb-1 group-hover:text-[#3b5bdb] transition-colors">
-                  {p.label}
-                </h3>
-                <p className="text-xs text-[#6b7280] mb-4">{p.tagline}</p>
-                <span className="text-xs font-semibold text-[#3b5bdb]">
-                  Visit product →
-                </span>
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
+                  <span>Explore Product Subsite</span>
+                  <span>→</span>
+                </div>
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Complete Interactive Site Map */}
+      {/* The 72-Node Interactive Platform Flowchart Site Map */}
       <SiteMapSection navigate={navigate} />
 
       <ZigzagSection rows={3} />
       <TestimonialBlock />
       <CaseStudyCards />
-      <CTABand />
+      <FAQSection />
+      <CTABand navigate={navigate} />
     </div>
-  )
-}
-
-function ContactPage() {
-  const cats = [
-    {
-      label: "Sales Enquiries",
-      desc: "Talk to our sales team about pricing and plans.",
-    },
-    {
-      label: "Partnership Enquiries",
-      desc: "Explore strategic and technology opportunities.",
-    },
-    { label: "Media Enquiries", desc: "Press, media, and analyst relations." },
-    { label: "General Enquiries", desc: "All other questions and feedback." },
-  ]
-  return (
-    <div>
-      <HeroSplit eyebrow="Contact Us" />
-      <div className="bg-white px-8 py-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16">
-            {cats.map((c) => (
-              <div
-                key={c.label}
-                className="border border-[#dde1e7] rounded-xl p-8"
-              >
-                <div className="w-9 h-9 rounded-lg bg-[#e8ecf0] mb-5" />
-                <h3 className="font-bold text-[#1a2744] mb-2">{c.label}</h3>
-                <p className="text-sm text-[#6b7280] mb-6">{c.desc}</p>
-                <button className="text-xs font-semibold text-[#3b5bdb] border border-[#3b5bdb] px-4 py-2 rounded-md hover:bg-[#3b5bdb] hover:text-white transition-colors">
-                  Send a message
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="bg-[#f8f9fb] border border-[#dde1e7] rounded-xl p-10">
-            <SectionLabel text="General Contact Form" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {["Full Name", "Email Address", "Company", "Subject"].map((f) => (
-                <div key={f}>
-                  <p className="text-xs font-semibold text-[#6b7280] mb-1.5">
-                    {f}
-                  </p>
-                  <div className="h-10 bg-white border border-[#dde1e7] rounded-md" />
-                </div>
-              ))}
-              <div className="md:col-span-2">
-                <p className="text-xs font-semibold text-[#6b7280] mb-1.5">
-                  Message
-                </p>
-                <div className="h-28 bg-white border border-[#dde1e7] rounded-md" />
-              </div>
-            </div>
-            <button className="mt-6 bg-[#3b5bdb] text-white px-6 py-2.5 rounded-md text-sm font-semibold">
-              Submit Enquiry
-            </button>
-          </div>
-        </div>
-      </div>
-      <CTABand />
-    </div>
-  )
-}
-
-function LegalPage({ doc }: { doc: string }) {
-  const titles: Record<string, string> = {
-    privacy: "Privacy Policy",
-    terms: "Terms of Use",
-    cookies: "Cookie Policy",
-    security: "Security Disclosure",
-    sitemap: "Sitemap",
-  }
-  return (
-    <div>
-      <PageHero
-        title={titles[doc] ?? doc}
-        breadcrumb={["Legal", titles[doc] ?? doc]}
-      />
-      <div className="max-w-3xl mx-auto px-8 py-14 space-y-10">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i}>
-            <Sk w="35%" h="5" className="mb-4" />
-            <div className="space-y-2">
-              {Array.from({ length: 5 }).map((_, j) => (
-                <Sk key={j} w={`${70 + ((j * 7) % 30)}%`} h="3" />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ─── Per-Product Layouts ──────────────────────────────────────────────────────
-
-const PRODUCT_LAYOUTS: Record<string, {
-  homeHero: "split" | "centered"
-  darkNav?: boolean
-  homeSections: SectionDef[]
-  pageSections: Record<string, SectionDef[]>
-}> = {
-  // Quanta: enterprise-grade, data-heavy, dark authoritative feel
-  quanta: {
-    homeHero: "centered",
-    darkNav: true,
-    homeSections: [
-      { type: "metrics", count: 5 },
-      { type: "splitplatform" },
-      { type: "zigzag", count: 2 },
-      { type: "casestudies" },
-      { type: "testimonial", accent: "#1a2744" },
-      { type: "ctaband", accent: "#1a2744" },
-    ],
-    pageSections: {
-      platform: [
-        { type: "splitplatform" },
-        { type: "capgrid", count: 9 },
-        { type: "zigzag", count: 2 },
-        { type: "ctaband", accent: "#1a2744" },
-      ],
-      solutions: [
-        { type: "zigzag", count: 3 },
-        { type: "casestudies" },
-        { type: "testimonial", accent: "#1a2744" },
-        { type: "ctaband", accent: "#1a2744" },
-      ],
-      capabilities: [
-        { type: "capgrid", count: 9 },
-        { type: "metrics", count: 4 },
-        { type: "benefitcards", count: 4 },
-        { type: "ctaband", accent: "#1a2744" },
-      ],
-      enterprise: [
-        { type: "metrics", count: 4 },
-        { type: "zigzag", count: 2 },
-        { type: "casestudies" },
-        { type: "ctaband", accent: "#1a2744" },
-      ],
-      resources: [
-        { type: "featurecards", count: 3 },
-        { type: "videocards" },
-        { type: "list", count: 4 },
-        { type: "ctaband", accent: "#1a2744" },
-      ],
-      contact: [
-        { type: "benefitcards", count: 3 },
-        { type: "ctaband", accent: "#1a2744" },
-      ],
-    },
-  },
-
-  // Catalyx: startup-energy, benefit-forward, fast & feature-rich
-  catalyx: {
-    homeHero: "split",
-    homeSections: [
-      { type: "benefitcards", count: 4 },
-      { type: "featurecards", count: 3 },
-      { type: "zigzag", count: 2 },
-      { type: "logostrip" },
-      { type: "testimonial", accent: "#0d6b4e" },
-      { type: "ctaband", accent: "#0d6b4e" },
-    ],
-    pageSections: {
-      solutions: [
-        { type: "featurecards", count: 4, cols: 4 },
-        { type: "zigzag", count: 2 },
-        { type: "benefitcards", count: 3 },
-        { type: "ctaband", accent: "#0d6b4e" },
-      ],
-      features: [
-        { type: "capgrid", count: 9 },
-        { type: "zigzag", count: 2 },
-        { type: "testimonial", accent: "#0d6b4e" },
-        { type: "ctaband", accent: "#0d6b4e" },
-      ],
-      startups: [
-        { type: "metrics", count: 4 },
-        { type: "featurecards", count: 3 },
-        { type: "casestudies" },
-        { type: "faq" },
-        { type: "ctaband", accent: "#0d6b4e" },
-      ],
-      resources: [
-        { type: "videocards" },
-        { type: "featurecards", count: 3 },
-        { type: "list", count: 5 },
-        { type: "ctaband", accent: "#0d6b4e" },
-      ],
-      contact: [
-        { type: "featurecards", count: 3 },
-        { type: "ctaband", accent: "#0d6b4e" },
-      ],
-    },
-  },
-
-  // ConsultEase: professional, workflow-structured, consultancy tone
-  consultease: {
-    homeHero: "split",
-    homeSections: [
-      { type: "splitplatform" },
-      { type: "featurecards", count: 3 },
-      { type: "zigzag", count: 2 },
-      { type: "testimonial", accent: "#7c3aed" },
-      { type: "faq" },
-      { type: "ctaband", accent: "#7c3aed" },
-    ],
-    pageSections: {
-      solutions: [
-        { type: "zigzag", count: 3 },
-        { type: "testimonial", accent: "#7c3aed" },
-        { type: "casestudies" },
-        { type: "ctaband", accent: "#7c3aed" },
-      ],
-      features: [
-        { type: "capgrid", count: 9 },
-        { type: "benefitcards", count: 4 },
-        { type: "zigzag", count: 2 },
-        { type: "ctaband", accent: "#7c3aed" },
-      ],
-      firms: [
-        { type: "metrics", count: 4 },
-        { type: "zigzag", count: 2 },
-        { type: "casestudies" },
-        { type: "testimonial", accent: "#7c3aed" },
-        { type: "ctaband", accent: "#7c3aed" },
-      ],
-      resources: [
-        { type: "featurecards", count: 3 },
-        { type: "videocards" },
-        { type: "ctaband", accent: "#7c3aed" },
-      ],
-      contact: [
-        { type: "benefitcards", count: 3 },
-        { type: "faq" },
-        { type: "ctaband", accent: "#7c3aed" },
-      ],
-    },
-  },
-
-  // Sheshi FR: numbers-forward, reporting-focused, data-dense
-  sheshifr: {
-    homeHero: "centered",
-    homeSections: [
-      { type: "metrics", count: 4 },
-      { type: "zigzag", count: 3 },
-      { type: "integration" },
-      { type: "benefitcards", count: 4 },
-      { type: "testimonial", accent: "#b45309" },
-      { type: "ctaband", accent: "#b45309" },
-    ],
-    pageSections: {
-      features: [
-        { type: "capgrid", count: 9 },
-        { type: "zigzag", count: 2 },
-        { type: "benefitcards", count: 4 },
-        { type: "ctaband", accent: "#b45309" },
-      ],
-      workflows: [
-        { type: "splitplatform" },
-        { type: "zigzag", count: 2 },
-        { type: "testimonial", accent: "#b45309" },
-        { type: "ctaband", accent: "#b45309" },
-      ],
-      professionals: [
-        { type: "metrics", count: 4 },
-        { type: "featurecards", count: 3 },
-        { type: "casestudies" },
-        { type: "faq" },
-        { type: "ctaband", accent: "#b45309" },
-      ],
-      resources: [
-        { type: "videocards" },
-        { type: "featurecards", count: 3 },
-        { type: "list", count: 5 },
-        { type: "ctaband", accent: "#b45309" },
-      ],
-      contact: [
-        { type: "integration" },
-        { type: "ctaband", accent: "#b45309" },
-      ],
-    },
-  },
-}
-
-// ─── Product Subsite ──────────────────────────────────────────────────────────
-
-function ProductNavbar({
-  product,
-  productPage,
-  setProductPage,
-  accent,
-  darkNav,
-  navigate,
-}: {
-  product: typeof PRODUCTS[0]
-  productPage: string
-  darkNav?: boolean
-  setProductPage: (p: string) => void
-  accent: string
-  navigate: (r: Route) => void
-}) {
-  const bg = darkNav ? accent : "white"
-  const border = darkNav ? "transparent" : "#dde1e7"
-  const wordmarkColor = darkNav ? "white" : accent
-  const linkColor = darkNav ? "rgba(255,255,255,0.7)" : "#374151"
-  const activeLinkColor = darkNav ? "white" : "#3b5bdb"
-  const backBorder = darkNav ? "rgba(255,255,255,0.2)" : "#dde1e7"
-  const backColor = darkNav ? "rgba(255,255,255,0.5)" : "#9ca3af"
-
-  return (
-    <nav
-      className="sticky top-0 z-50"
-      style={{ backgroundColor: bg, borderBottom: `1px solid ${border}` }}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex items-center h-14 gap-2">
-        <button
-          onClick={() => setProductPage("home")}
-          className="font-bold text-xl mr-6 tracking-tight"
-          style={{ color: wordmarkColor }}
-        >
-          {product.label.toUpperCase()}
-        </button>
-        <div className="flex items-center flex-1">
-          {product.pages.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setProductPage(p.id)}
-              className="px-3 py-2 text-sm font-medium rounded-md transition-colors"
-              style={{
-                color: productPage === p.id ? activeLinkColor : linkColor,
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={() => navigate({ page: "products" })}
-          className="text-xs px-3 py-1.5 rounded-md transition-colors border"
-          style={{ color: backColor, borderColor: backBorder }}
-        >
-          ← Back to Sheshi
-        </button>
-        <button
-          className="text-white text-sm font-semibold px-4 py-2 rounded-md ml-2"
-          style={{
-            backgroundColor: darkNav ? "rgba(255,255,255,0.15)" : accent,
-            border: darkNav ? "1px solid rgba(255,255,255,0.3)" : "none",
-          }}
-        >
-          Get Started
-        </button>
-      </div>
-    </nav>
-  )
-}
-
-function ProductFooter({
-  product,
-  accent,
-  navigate,
-}: {
-  product: typeof PRODUCTS[0]
-  accent: string
-  navigate: (r: Route) => void
-}) {
-  return (
-    <footer style={{ backgroundColor: accent }} className="text-white">
-      <div className="max-w-7xl mx-auto px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div className="md:col-span-2">
-          <div className="font-bold text-xl mb-2 tracking-tight">
-            {product.label.toUpperCase()}
-          </div>
-          <p className="text-white/50 text-sm max-w-xs">{product.tagline}</p>
-          <button
-            onClick={() => navigate({ page: "home" })}
-            className="mt-4 text-xs text-white/40 hover:text-white/80 transition-colors"
-          >
-            A Sheshi product →
-          </button>
-        </div>
-        <div>
-          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-3">
-            Pages
-          </p>
-          <ul className="space-y-2">
-            {product.pages.map((p) => (
-              <li key={p.id}>
-                <span className="text-sm text-white/60 hover:text-white cursor-pointer transition-colors">
-                  {p.label}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-3">
-            Legal
-          </p>
-          <ul className="space-y-2">
-            {["Privacy Policy", "Terms of Use", "Cookie Policy"].map((l) => (
-              <li key={l}>
-                <span className="text-sm text-white/60 hover:text-white cursor-pointer transition-colors">
-                  {l}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <div className="border-t border-white/10 px-8 py-4 max-w-7xl mx-auto">
-        <p className="text-xs text-white/30">
-          © 2026 {product.label}. A Sheshi company.
-        </p>
-      </div>
-    </footer>
-  )
-}
-
-function ProductSubsite({
-  productId,
-  productPage,
-  setProductPage,
-  navigate,
-}: {
-  productId: string
-  productPage: string
-  setProductPage: (p: string) => void
-  navigate: (r: Route) => void
-}) {
-  const product = PRODUCTS.find((p) => p.id === productId)
-  if (!product) return null
-  const accent = ACCENT_COLORS[productId] ?? "#1a2744"
-  const layout = PRODUCT_LAYOUTS[productId]
-
-  let content: React.ReactNode
-
-  if (productPage === "home") {
-    const heroEl =
-      layout.homeHero === "centered" ? (
-        <HeroCentered eyebrow={product.tagline} bg={accent} />
-      ) : (
-        <HeroSplit eyebrow={product.tagline} />
-      )
-    content = (
-      <div>
-        {heroEl}
-        {layout.homeSections.map((s, i) => renderSection(s, i))}
-      </div>
-    )
-  } else {
-    const pageLabel =
-      product.pages.find((p) => p.id === productPage)?.label ?? productPage
-    const sections = layout.pageSections[productPage] ?? [
-      { type: "featurecards", count: 3 },
-      { type: "zigzag", count: 2 },
-      { type: "testimonial", accent },
-      { type: "ctaband", accent },
-    ]
-    content = (
-      <div>
-        <HeroSplit eyebrow={`${product.label} — ${pageLabel}`} />
-        {sections.map((s, i) => renderSection(s, i))}
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col bg-[#f8f9fb]">
-      <ProductNavbar
-        product={product}
-        productPage={productPage}
-        setProductPage={setProductPage}
-        accent={accent}
-        darkNav={layout.darkNav}
-        navigate={navigate}
-      />
-      <main className="flex-1">{content}</main>
-      <ProductFooter product={product} accent={accent} navigate={navigate} />
-    </div>
-  )
+  );
 }
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-function Navbar({
-  navigate,
-  currentPage,
-}: {
-  navigate: (r: Route) => void
-  currentPage: string
-}) {
-  const [openMenu, setOpenMenu] = useState<string | null>(null)
+function Navbar({ navigate, currentPage }: { navigate: (r: Route) => void; currentPage: string }) {
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
   return (
-    <nav className="bg-white border-b border-[#dde1e7] sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 flex items-center h-14 gap-1">
-        <button
-          onClick={() => navigate({ page: "home" })}
-          className="font-bold text-xl text-[#1a2744] mr-6 tracking-tight"
-        >
-          SHESHI
-        </button>
-        <div className="flex items-center flex-1">
-          {NAV.map((item) => (
-            <div
-              key={item.page}
-              className="relative"
-              onMouseEnter={() => item.children && setOpenMenu(item.page)}
-              onMouseLeave={() => setOpenMenu(null)}
-            >
-              <button
-                onClick={() => {
-                  navigate({ page: item.page })
-                  setOpenMenu(null)
-                }}
-                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                  currentPage === item.page
-                    ? "text-[#3b5bdb]"
-                    : "text-[#374151] hover:text-[#1a2744]"
-                }`}
-              >
-                {item.label}
-                {item.children && (
-                  <span className="ml-1 text-[10px] opacity-50">▾</span>
-                )}
-              </button>
-              {item.children && openMenu === item.page && (
-                <div className="absolute top-full left-0 bg-white border border-[#dde1e7] rounded-lg shadow-lg py-2 min-w-48 z-50">
-                  {item.children.map((child) => (
-                    <button
-                      key={child.sub}
-                      onClick={() => {
-                        navigate({
-                          page: item.page,
-                          sub: child.sub,
-                          ...(item.page === "products"
-                            ? { productPage: "home" }
-                            : {}),
-                        })
-                        setOpenMenu(null)
-                      }}
-                      className="block w-full text-left px-4 py-2.5 text-sm text-[#374151] hover:bg-[#f8f9fb]"
-                    >
-                      {child.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 ml-auto">
-          <button className="text-sm font-medium text-[#374151] px-3 py-2 hover:text-[#1a2744]">
-            Log in
+    <nav className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 flex items-center h-16 justify-between gap-2">
+        <div className="flex items-center gap-8">
+          <button
+            onClick={() => navigate({ page: "home" })}
+            className="font-bold text-xl text-slate-900 tracking-tight flex items-center gap-2 cursor-pointer"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+            <span>SHESHI</span>
           </button>
-          <button className="bg-[#1a2744] text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-[#3b5bdb] transition-colors">
-            Get Started
+
+          <div className="hidden lg:flex items-center gap-1">
+            {NAV.map((item) => (
+              <div
+                key={item.page}
+                className="relative"
+                onMouseEnter={() => item.children && setOpenMenu(item.page)}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <button
+                  onClick={() => {
+                    navigate({ page: item.page });
+                    setOpenMenu(null);
+                  }}
+                  className={`px-3 py-2 text-xs font-semibold rounded-md transition-colors cursor-pointer flex items-center gap-1 ${
+                    currentPage === item.page ? "text-blue-600 bg-blue-50/60" : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {item.children && <span className="text-[10px] opacity-40">▾</span>}
+                </button>
+
+                {item.children && openMenu === item.page && (
+                  <div className="absolute top-full left-0 bg-white border border-slate-200 rounded-xl shadow-xl py-2 min-w-56 z-50">
+                    {item.children.map((child) => (
+                      <button
+                        key={child.sub}
+                        onClick={() => {
+                          navigate({
+                            page: item.page,
+                            sub: child.sub,
+                            ...(item.page === "products" ? { productPage: "home" } : {}),
+                          });
+                          setOpenMenu(null);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors cursor-pointer"
+                      >
+                        {child.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate({ page: "contact" })}
+            className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 cursor-pointer"
+          >
+            Talk to Us
+          </button>
+          <button
+            onClick={() => navigate({ page: "contact" })}
+            className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm transition-all cursor-pointer"
+          >
+            Request Demo
           </button>
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 function Footer({ navigate }: { navigate: (r: Route) => void }) {
   return (
-    <footer className="bg-[#1a2744] text-white">
-      <div className="max-w-7xl mx-auto px-8 py-14 grid grid-cols-2 md:grid-cols-5 gap-8">
-        <div className="md:col-span-2">
-          <div className="font-bold text-xl mb-3 tracking-tight">SHESHI</div>
-          <p className="text-[#94a3b8] text-sm max-w-xs">
-            The financial operating system for enterprises, startups, and
-            finance professionals.
+    <footer className="bg-[#090e17] text-white border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div className="col-span-2">
+          <div className="flex items-center gap-2 font-bold text-xl mb-3 tracking-tight">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+            <span>SHESHI</span>
+          </div>
+          <p className="text-slate-400 text-xs max-w-sm leading-relaxed mb-4">
+            The Financial Operating System — the governed layer between your ERP and every financial output your organisation produces.
+          </p>
+          <p className="text-[11px] text-slate-500 font-mono">
+            Close, plan, consolidate, analyse, collaborate, report.
           </p>
         </div>
-        {[
-          {
-            title: "Company",
-            links: [
-              { label: "About", route: { page: "company", sub: "about" } },
-              {
-                label: "People & Culture",
-                route: { page: "company", sub: "culture" },
-              },
-              { label: "Careers", route: { page: "company", sub: "careers" } },
-              { label: "Events", route: { page: "resources", sub: "events" } },
-              { label: "Contact", route: { page: "contact" } },
-            ],
-          },
-          {
-            title: "Products",
-            links: PRODUCTS.map((p) => ({
-              label: p.label,
-              route: { page: "products", sub: p.id, productPage: "home" },
-            })),
-          },
-          {
-            title: "Legal",
-            links: [
-              {
-                label: "Privacy Policy",
-                route: { page: "legal", sub: "privacy" },
-              },
-              { label: "Terms of Use", route: { page: "legal", sub: "terms" } },
-              {
-                label: "Cookie Policy",
-                route: { page: "legal", sub: "cookies" },
-              },
-              {
-                label: "Security Disclosure",
-                route: { page: "legal", sub: "security" },
-              },
-              {
-                label: "Trust Center",
-                route: { page: "technology", sub: "trust" },
-              },
-              { label: "Sitemap", route: { page: "legal", sub: "sitemap" } },
-            ],
-          },
-        ].map((col) => (
-          <div key={col.title}>
-            <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-widest mb-3">
-              {col.title}
-            </p>
-            <ul className="space-y-2">
-              {col.links.map((l) => (
-                <li key={l.label}>
-                  <button
-                    onClick={() => navigate(l.route)}
-                    className="text-sm text-[#cbd5e1] hover:text-white transition-colors"
-                  >
-                    {l.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+
+        <div>
+          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Products</p>
+          <ul className="space-y-2.5 text-xs text-slate-400">
+            {PRODUCTS.map((p) => (
+              <li key={p.id}>
+                <button
+                  onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
+                  className="hover:text-white transition-colors cursor-pointer text-left"
+                >
+                  {p.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Company</p>
+          <ul className="space-y-2.5 text-xs text-slate-400">
+            <li><button onClick={() => navigate({ page: "company", sub: "about" })} className="hover:text-white transition-colors cursor-pointer">About Sheshi</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "story" })} className="hover:text-white transition-colors cursor-pointer">Our Story</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "leadership" })} className="hover:text-white transition-colors cursor-pointer">Leadership</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "culture" })} className="hover:text-white transition-colors cursor-pointer">People &amp; Culture</button></li>
+            <li><button onClick={() => navigate({ page: "company", sub: "careers" })} className="hover:text-white transition-colors cursor-pointer">Careers</button></li>
+            <li><button onClick={() => navigate({ page: "resources", sub: "events" })} className="hover:text-white transition-colors cursor-pointer">Events</button></li>
+            <li><button onClick={() => navigate({ page: "contact" })} className="hover:text-white transition-colors cursor-pointer">Contact Us</button></li>
+          </ul>
+        </div>
+
+        <div>
+          <p className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 font-mono">Governance &amp; Trust</p>
+          <ul className="space-y-2.5 text-xs text-slate-400">
+            <li><button onClick={() => navigate({ page: "technology", sub: "trust" })} className="hover:text-white transition-colors cursor-pointer text-blue-400">Trust Center (99.99%)</button></li>
+            <li><button onClick={() => navigate({ page: "technology", sub: "security" })} className="hover:text-white transition-colors cursor-pointer">Security Disclosure</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "privacy" })} className="hover:text-white transition-colors cursor-pointer">Privacy Policy</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "terms" })} className="hover:text-white transition-colors cursor-pointer">Terms of Service</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "cookies" })} className="hover:text-white transition-colors cursor-pointer">Cookie Policy</button></li>
+            <li><button onClick={() => navigate({ page: "legal", sub: "sitemap" })} className="hover:text-white transition-colors cursor-pointer">System Sitemap</button></li>
+          </ul>
+        </div>
       </div>
-      <div className="border-t border-white/10 px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
-        <p className="text-xs text-[#64748b]">
-          © 2026 Sheshi. All rights reserved.
-        </p>
-        <div className="flex gap-5">
-          {["LinkedIn", "Twitter", "GitHub"].map((s) => (
-            <span
-              key={s}
-              className="text-xs text-[#64748b] hover:text-white cursor-pointer transition-colors"
-            >
-              {s}
-            </span>
-          ))}
+
+      <div className="border-t border-slate-800/80 px-6 md:px-12 py-5 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <p>© 2026 Sheshi Technologies Inc. Built from inside finance for the world outside it.</p>
+        <div className="flex gap-4">
+          <span className="hover:text-white cursor-pointer">LinkedIn</span>
+          <span className="hover:text-white cursor-pointer">Twitter / X</span>
+          <span className="hover:text-white cursor-pointer">SOC 2 Verified</span>
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
-// ─── Router ───────────────────────────────────────────────────────────────────
+// ─── Router & Root Component ──────────────────────────────────────────────────
 
 function resolvePageComponent(route: Route, navigate: (r: Route) => void) {
-  if (route.page === "home") return <HomePage navigate={navigate} />
-  if (route.page === "contact") return <ContactPage />
-  if (route.page === "legal") return <LegalPage doc={route.sub ?? "privacy"} />
+  if (route.page === "home") return <HomePage navigate={navigate} />;
+  if (route.page === "contact") return <ContactPage />;
+  if (route.page === "legal") return <LegalPage doc={route.sub ?? "privacy"} />;
 
   if (route.page === "products" && !route.sub) {
     return (
       <div>
-        <HeroSplit eyebrow="Our Products" />
-        <div className="bg-white px-8 py-20">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <PageHero
+          title="Sheshi Autonomous Product Suite"
+          subtitle="One Financial Operating System underlying distinct operational contexts for enterprises, startups, and advisory firms."
+          breadcrumb={["Home", "Products"]}
+        />
+        <div className="bg-white px-6 md:px-12 py-20 border-b border-slate-200/80">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
             {PRODUCTS.map((p) => (
               <button
                 key={p.id}
-                onClick={() =>
-                  navigate({ page: "products", sub: p.id, productPage: "home" })
-                }
-                className="text-left bg-white border border-[#dde1e7] rounded-xl p-8 hover:border-[#3b5bdb] transition-colors group"
+                onClick={() => navigate({ page: "products", sub: p.id, productPage: "home" })}
+                className="text-left bg-white border border-slate-200 rounded-2xl p-8 hover:border-blue-500 hover:shadow-lg transition-all group cursor-pointer"
               >
                 <div
-                  className="w-12 h-12 rounded-lg mb-5"
-                  style={{ backgroundColor: ACCENT_COLORS[p.id] + "20" }}
-                />
-                <h3 className="text-xl font-bold text-[#1a2744] mb-1 group-hover:text-[#3b5bdb] transition-colors">
+                  className="w-12 h-12 rounded-xl mb-6 flex items-center justify-center text-xl text-white font-bold"
+                  style={{ backgroundColor: p.accent }}
+                >
+                  {p.label[0]}
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
                   {p.label}
                 </h3>
-                <p className="text-sm text-[#6b7280] mb-4">{p.tagline}</p>
-                <span className="text-xs font-semibold text-[#3b5bdb]">
-                  Visit product site →
+                <p className="text-xs font-semibold text-blue-600 mb-3">{p.tagline}</p>
+                <p className="text-sm text-slate-600 leading-relaxed mb-6">{p.description}</p>
+                <span className="text-xs font-semibold text-blue-600 group-hover:underline">
+                  Visit autonomous product site →
                 </span>
               </button>
             ))}
           </div>
         </div>
-        <CTABand />
+        <CTABand navigate={navigate} />
       </div>
-    )
+    );
   }
 
-  const pageData = PAGE_DATA[route.page]?.[route.sub ?? ""]
+  const pageData = PAGE_DATA[route.page]?.[route.sub ?? ""];
   if (pageData) {
     return (
-      <GenericPage
-        title={pageData.title}
-        subtitle={pageData.subtitle}
-        hero={pageData.hero}
-        breadcrumb={[
-          route.page.charAt(0).toUpperCase() + route.page.slice(1),
-          pageData.title,
-        ]}
-        sections={pageData.sections}
-      />
-    )
+      <div>
+        {pageData.hero === "centered" ? (
+          <HeroCentered eyebrow={pageData.title} title={pageData.title} subtitle={pageData.subtitle} navigate={navigate} />
+        ) : (
+          <HeroSplit eyebrow={pageData.title} title={pageData.title} subtitle={pageData.subtitle} navigate={navigate} />
+        )}
+        {pageData.sections.map((s, i) => renderSection(s, i, navigate))}
+      </div>
+    );
   }
 
-  const SECTION_TITLES: Record<string, string> = {
-    company: "Company",
-    solutions: "Solutions",
-    technology: "Technology",
-    resources: "Resources",
-    partners: "Partners",
-  }
   return (
     <div>
-      <HeroSplit eyebrow={SECTION_TITLES[route.page] ?? route.page} />
-      <CTABand />
+      <PageHero title={route.page.toUpperCase()} breadcrumb={["Home", route.page]} />
+      <CapabilityGrid count={6} />
+      <CTABand navigate={navigate} />
     </div>
-  )
+  );
 }
 
-// ─── App ──────────────────────────────────────────────────────────────────────
-
 export default function App() {
-  const [route, setRoute] = useState<Route>({ page: "home" })
+  const [route, setRoute] = useState<Route>({ page: "home" });
 
   function navigate(r: Route) {
-    setRoute(r)
-    window.scrollTo({ top: 0, behavior: "smooth" })
+    setRoute(r);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
   function setProductPage(p: string) {
-    setRoute((prev) => ({ ...prev, productPage: p }))
-    window.scrollTo({ top: 0, behavior: "smooth" })
+    setRoute((prev) => ({ ...prev, productPage: p }));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   if (route.page === "products" && route.sub) {
@@ -3566,14 +2729,14 @@ export default function App() {
         setProductPage={setProductPage}
         navigate={navigate}
       />
-    )
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f9fb]">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
       <Navbar navigate={navigate} currentPage={route.page} />
       <main className="flex-1">{resolvePageComponent(route, navigate)}</main>
       <Footer navigate={navigate} />
     </div>
-  )
+  );
 }
