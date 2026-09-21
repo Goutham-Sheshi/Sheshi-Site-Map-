@@ -23,10 +23,12 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       port: parseInt(process.env.PORT || '5173'),
+      allowedHosts: true,
     },
     preview: {
       host: true,
       port: parseInt(process.env.PORT || '4173'),
+      allowedHosts: true,
     },
     build: {
       outDir: isSingleFile ? 'dist-singlefile' : 'dist',

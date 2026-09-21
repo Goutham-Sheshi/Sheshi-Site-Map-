@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import QuantaSubsite from "./components/products/QuantaSubsite";
+import CatalyxSubsite from "./components/products/CatalyxSubsite";
+import ConsultEaseSubsite from "./components/products/ConsultEaseSubsite";
+import SheshiFRSubsite from "./components/products/SheshiFRSubsite";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -2805,112 +2809,47 @@ function ProductSubsite({
   setProductPage: (p: string) => void;
   navigate: (r: Route) => void;
 }) {
-  const product = PRODUCTS.find((p) => p.id === productId);
-  if (!product) return null;
+  if (productId === "quanta") {
+    return (
+      <QuantaSubsite
+        productPage={productPage}
+        setProductPage={setProductPage}
+        navigate={navigate}
+      />
+    );
+  }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      {/* Product Top Sub-Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center h-14 justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => setProductPage("home")}
-              className="font-bold text-base tracking-tight text-slate-900 hover:text-blue-600 transition-colors cursor-pointer flex items-center gap-2"
-            >
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: product.accent }} />
-              <span>{product.label.toUpperCase()}</span>
-            </button>
-            <div className="hidden md:flex items-center gap-1">
-              {product.pages.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setProductPage(p.id)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                    productPage === p.id ? "bg-slate-100 text-blue-600 font-semibold" : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
+  if (productId === "catalyx") {
+    return (
+      <CatalyxSubsite
+        productPage={productPage}
+        setProductPage={setProductPage}
+        navigate={navigate}
+      />
+    );
+  }
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate({ page: "products" })}
-              className="text-xs text-slate-500 hover:text-slate-900 font-medium cursor-pointer"
-            >
-              ← Back to Sheshi Ecosystem
-            </button>
-            <button
-              onClick={() => navigate({ page: "contact" })}
-              className="text-xs text-white font-semibold px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-              style={{ backgroundColor: product.accent }}
-            >
-              Request Access
-            </button>
-          </div>
-        </div>
-      </nav>
+  if (productId === "consultease") {
+    return (
+      <ConsultEaseSubsite
+        productPage={productPage}
+        setProductPage={setProductPage}
+        navigate={navigate}
+      />
+    );
+  }
 
-      {/* Product Content */}
-      <main className="flex-1">
-        <div className="bg-gradient-to-b from-white via-blue-50/25 to-slate-50 text-slate-900 px-6 md:px-12 py-20 border-b border-slate-200 text-center">
-          <div className="max-w-4xl mx-auto">
-            <span
-              className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border mb-4 inline-block font-semibold"
-              style={{ color: product.accent, borderColor: product.accent + "40", backgroundColor: product.accent + "12" }}
-            >
-              Independent Sheshi Product • {product.label}
-            </span>
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">{product.tagline}</h1>
-            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
-              {product.description}
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={() => navigate({ page: "contact" })}
-                className="text-xs font-semibold text-white px-5 py-2.5 rounded-lg shadow-sm cursor-pointer"
-                style={{ backgroundColor: product.accent }}
-              >
-                Schedule Architecture Demo
-              </button>
-              <button
-                onClick={() => navigate({ page: "home" })}
-                className="text-xs font-semibold text-slate-700 border border-slate-300 hover:bg-slate-50 px-5 py-2.5 rounded-lg cursor-pointer bg-white"
-              >
-                Explore Overall Platform
-              </button>
-            </div>
-          </div>
-        </div>
+  if (productId === "sheshifr") {
+    return (
+      <SheshiFRSubsite
+        productPage={productPage}
+        setProductPage={setProductPage}
+        navigate={navigate}
+      />
+    );
+  }
 
-        {/* Bespoke Domain Tool per Product */}
-        {productId === "quanta" && <RuleEngineSimulatorSection />}
-        {productId === "catalyx" && <StartupRunwayForecasterSection />}
-        {productId === "consultease" && <AdvisoryCockpitSection />}
-        {productId === "sheshifr" && <FinancialStatementsViewerSection />}
-
-        <MetricsRow count={3} />
-        <ZigzagSection rows={2} />
-        <CTABand navigate={navigate} />
-      </main>
-
-      {/* Product Subsite Footer */}
-      <footer className="bg-slate-50 text-slate-600 border-t border-slate-200 px-6 md:px-12 py-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <div>
-            <span className="font-bold text-slate-900 mr-2">{product.label}</span>
-            <span>A Sheshi Financial Operating System Product</span>
-          </div>
-          <button onClick={() => navigate({ page: "home" })} className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">
-            Return to Sheshi Corporate Home &rarr;
-          </button>
-        </div>
-      </footer>
-    </div>
-  );
+  return null;
 }
 
 // ─── Interactive Flowchart Site Map Section ───────────────────────────────────
