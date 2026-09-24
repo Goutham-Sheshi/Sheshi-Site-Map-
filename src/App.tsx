@@ -9,6 +9,7 @@ import TechnologyPages from "./components/pages/TechnologyPages";
 import ResourcesPages from "./components/pages/ResourcesPages";
 import TopicsPages from "./components/pages/TopicsPages";
 import PartnersPages from "./components/pages/PartnersPages";
+import logoImg from "./assets/logo.png";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,6 +18,7 @@ type Route = {
   sub?: string;
   product?: string;
   productPage?: string;
+  slug?: string;
 };
 
 // ─── Navigation Data ──────────────────────────────────────────────────────────
@@ -3728,7 +3730,7 @@ function Navbar({ navigate, currentPage }: { navigate: (r: Route) => void; curre
             onClick={() => navigate({ page: "home" })}
             className="font-bold text-xl text-slate-900 tracking-tight flex items-center gap-2 cursor-pointer"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+            <img src={logoImg} alt="Sheshi Logo" className="h-7 w-7 object-contain" />
             <span>SHESHI</span>
           </button>
 
@@ -3805,7 +3807,7 @@ function Footer({ navigate }: { navigate: (r: Route) => void }) {
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 grid grid-cols-2 md:grid-cols-5 gap-8">
         <div className="col-span-2">
           <div className="flex items-center gap-2 font-bold text-xl mb-3 tracking-tight text-slate-900">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+            <img src={logoImg} alt="Sheshi Logo" className="h-7 w-7 object-contain" />
             <span>SHESHI</span>
           </div>
           <p className="text-slate-600 text-xs max-w-sm leading-relaxed mb-4">
@@ -3840,6 +3842,7 @@ function Footer({ navigate }: { navigate: (r: Route) => void }) {
             <li><button onClick={() => navigate({ page: "company", sub: "leadership" })} className="hover:text-blue-600 transition-colors cursor-pointer">Leadership</button></li>
             <li><button onClick={() => navigate({ page: "company", sub: "culture" })} className="hover:text-blue-600 transition-colors cursor-pointer">People &amp; Culture</button></li>
             <li><button onClick={() => navigate({ page: "company", sub: "careers" })} className="hover:text-blue-600 transition-colors cursor-pointer">Careers</button></li>
+            <li><button onClick={() => navigate({ page: "resources", sub: "blog" })} className="hover:text-blue-600 transition-colors cursor-pointer text-blue-600 font-semibold">Engineering Blog</button></li>
             <li><button onClick={() => navigate({ page: "resources", sub: "events" })} className="hover:text-blue-600 transition-colors cursor-pointer">Events</button></li>
             <li><button onClick={() => navigate({ page: "contact" })} className="hover:text-blue-600 transition-colors cursor-pointer">Contact Us</button></li>
           </ul>
@@ -3877,7 +3880,8 @@ function resolvePageComponent(route: Route, navigate: (r: Route) => void) {
   if (route.page === "company") return <CompanyPages sub={route.sub} navigate={navigate} />;
   if (route.page === "solutions") return <SolutionsPages sub={route.sub} navigate={navigate} />;
   if (route.page === "technology") return <TechnologyPages sub={route.sub} navigate={navigate} />;
-  if (route.page === "resources") return <ResourcesPages sub={route.sub} navigate={navigate} />;
+  if (route.page === "resources") return <ResourcesPages sub={route.sub} slug={route.slug} navigate={navigate} />;
+  if (route.page === "blog") return <ResourcesPages sub="blog" slug={route.slug} navigate={navigate} />;
   if (route.page === "partners") return <PartnersPages sub={route.sub} navigate={navigate} />;
   if (route.page === "topics" && route.sub) return <TopicsPages sub={route.sub} navigate={navigate} />;
   if (route.page === "contact") return <ContactPage />;
@@ -4015,6 +4019,12 @@ export default function App() {
       const parts = hash.split("/");
       if (parts[0] === "products" && parts[1]) {
         setRoute({ page: "products", sub: parts[1], productPage: parts[2] || "home" });
+      } else if (parts[0] === "resources" && (parts[1] === "blog" || parts[1] === "insights") && parts[2]) {
+        setRoute({ page: "resources", sub: parts[1], slug: parts[2] });
+      } else if (parts[0] === "blog" && parts[1]) {
+        setRoute({ page: "resources", sub: "blog", slug: parts[1] });
+      } else if (parts[0] === "blog") {
+        setRoute({ page: "resources", sub: "blog" });
       } else if (parts[0]) {
         setRoute({ page: parts[0], sub: parts[1] });
       }
@@ -4028,6 +4038,7 @@ export default function App() {
     setRoute(r);
     let hash = "#/" + r.page;
     if (r.sub) hash += "/" + r.sub;
+    if (r.slug) hash += "/" + r.slug;
     if (r.productPage) hash += "/" + r.productPage;
     window.location.hash = hash;
     window.scrollTo({ top: 0, behavior: "smooth" });

@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Route } from "../../types";
+import BlogListPage from "../blog/BlogListPage";
+import BlogPostPage from "../blog/BlogPostPage";
+import { BLOG_POSTS } from "../../data/blogData";
 
 export default function ResourcesPages({
   sub,
+  slug,
   navigate,
 }: {
   sub?: string;
+  slug?: string;
   navigate: (r: Route) => void;
 }) {
   switch (sub) {
@@ -16,13 +21,13 @@ export default function ResourcesPages({
       return <ResearchPage navigate={navigate} />;
     case "blog":
     case "insights":
-      return <BlogPage navigate={navigate} />;
+      return <BlogContainer slug={slug} navigate={navigate} />;
     case "casestudies":
       return <CaseStudiesPage navigate={navigate} />;
     case "updates":
       return <UpdatesPage navigate={navigate} />;
     default:
-      return <BlogPage navigate={navigate} />;
+      return <BlogContainer slug={slug} navigate={navigate} />;
   }
 }
 
@@ -234,81 +239,49 @@ function ResearchPage({ navigate }: { navigate: (r: Route) => void }) {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════════
-// 3. BLOG & INSIGHTS
+// 3. BLOG & INSIGHTS (WORKING BLOG SYSTEM)
 // ═════════════════════════════════════════════════════════════════════════════════
 
-function BlogPage({ navigate }: { navigate: (r: Route) => void }) {
-  const [topic, setTopic] = useState("all");
+interface BlogContainerProps {
+  slug?: string;
+  navigate: (r: Route) => void;
+}
 
-  const articles = [
-    { title: "Why Probabilistic LLMs Fail on General Ledgers (and Why Determinism Matters)", tag: "tech", time: "6 min read", author: "Goutham Sheshi, FCA", desc: "An architectural examination of how mathematical ledger invariants prevent financial hallucinations." },
-    { title: "Mastering ASC 810: How Multinationals Eliminate Intercompany Reconciliation Debt", tag: "accounting", time: "8 min read", author: "Marcus Sterling, CPA", desc: "A practical guide to bilateral elimination matrices and automated cumulative translation adjustments." },
-    { title: "The Day-0 Close Blueprint: How to Compress 14-Day Month-Ends to 4.5 Hours", tag: "close", time: "10 min read", author: "Dr. Elena Rostova", desc: "Step-by-step engineering walkthrough on implementing Kafka CDC ingestion from SAP S/4HANA." },
-    { title: "SOX 404 Control Automation in the Cloud: What Big 4 Auditors Actually Inspect", tag: "governance", time: "7 min read", author: "Claire Vance", desc: "How cryptographic block verification eliminates manual audit PBC sample requests." },
-  ];
+function BlogContainer({ slug, navigate }: BlogContainerProps) {
+  const [activeSlug, setActiveSlug] = useState<string | null>(slug || null);
 
-  const filtered = topic === "all" ? articles : articles.filter((a) => a.tag === topic);
+  // Sync internal state when external slug changes (e.g. browser back/forward or direct hash change)
+  useEffect(() => {
+    setActiveSlug(slug || null);
+  }, [slug]);
+
+  const handleSelectArticle = (selectedSlug: string) => {
+    setActiveSlug(selectedSlug);
+    navigate({ page: "resources", sub: "blog", slug: selectedSlug });
+  };
+
+  const handleBackToBlog = () => {
+    setActiveSlug(null);
+    navigate({ page: "resources", sub: "blog" });
+  };
+
+  const currentPost = activeSlug ? BLOG_POSTS.find((p) => p.slug === activeSlug) : null;
+
+  if (currentPost) {
+    return (
+      <BlogPostPage
+        post={currentPost}
+        navigate={navigate}
+        onBackToBlog={handleBackToBlog}
+      />
+    );
+  }
 
   return (
-    <div className="bg-[#f8fafc] text-slate-900 min-h-screen py-16 px-6 md:px-12">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 shadow-xs mb-4">
-            Thought Leadership &amp; Engineering
-          </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-            Financial Insights &amp; Architecture
-          </h1>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            In-depth guides on autonomous accounting, streaming ledgers, and financial governance written by
-            practitioners.
-          </p>
-        </div>
-
-        {/* Topic Filter */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-          {[
-            { id: "all", label: "All Insights" },
-            { id: "tech", label: "Financial Systems Architecture" },
-            { id: "accounting", label: "ASC 810 & IFRS Accounting" },
-            { id: "close", label: "Continuous Close" },
-            { id: "governance", label: "SOX Governance" },
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTopic(t.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all ${
-                topic === t.id
-                  ? "bg-blue-600 text-white shadow-xs"
-                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Article Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {filtered.map((art, i) => (
-            <div key={i} className="p-8 bg-white rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3 text-xs font-mono">
-                  <span className="text-blue-600 font-bold uppercase">{art.tag}</span>
-                  <span className="text-slate-400">{art.time}</span>
-                </div>
-                <h2 className="text-xl font-bold text-slate-900 mb-3">{art.title}</h2>
-                <p className="text-xs text-slate-600 leading-relaxed mb-6">{art.desc}</p>
-              </div>
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span>By {art.author}</span>
-                <span className="text-blue-600 font-bold hover:underline cursor-pointer">Read Article →</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <BlogListPage
+      navigate={navigate}
+      onSelectArticle={handleSelectArticle}
+    />
   );
 }
 

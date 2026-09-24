@@ -3,6 +3,7 @@ export type Route = {
   sub?: string;
   product?: string;
   productPage?: string;
+  slug?: string;
 };
 
 export interface ProductNavPage {
